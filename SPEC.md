@@ -158,7 +158,13 @@ to a project stream, an actor **punches in** (`work.punchin` with
 `work.punchout` release it. While another actor holds an unexpired lease, every
 mutating append to that stream is refused. `work.takeover` claims a stream only
 after expiry or an explicit handoff. In distributed use, strict mode
-(`RAPP_REQUIRE_LEASE=1`) makes the lease mandatory for all appends.
+(`RAPP_REQUIRE_LEASE=1`) makes the lease mandatory for all appends. A hive
+workspace (`mode: hive` in `rappid.json`) forces strict mode. Actor ids are
+unauthenticated free text and local frames are unsigned (rapp/1 mandates
+signatures only on `net:` swarm streams): among conforming writers the lease
+arbitrates; against a non-conforming writer the protocol guarantees
+deterministic detection (§9.4 and the §9.5 append-only tripwire), not
+prevention. Frame-signing for hive members is future work.
 
 ### 9.2 Partition by stream
 Different projects are independent chains — operators on different streams

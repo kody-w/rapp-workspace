@@ -10,8 +10,16 @@ Concurrency model (rapp-projects/PROTOCOL.md + DISTRIBUTED.md):
   extends it; work.handoff / work.punchout release it; work.takeover claims a
   stream ONLY after the prior lease expired or was handed off. While another
   actor holds an unexpired lease, every mutating append is refused. With
-  RAPP_REQUIRE_LEASE=1 (mandatory in distributed mode) even solo appends
-  require holding the lease.
+  RAPP_REQUIRE_LEASE=1 (mandatory in distributed mode; auto-forced when the
+  workspace rappid.json declares mode "hive") even solo appends require
+  holding the lease.
+
+HONESTY NOTE: among CONFORMING writers the lease arbitrates and the chain's
+duplicate-seq check deterministically DETECTS any fork (including the offline
+double-punchin race). Actor ids are unauthenticated free text and local frames
+are unsigned (rapp/1 requires signatures only on net:/swarm streams), so
+against a spoofing or non-conforming writer the guarantee is detection plus
+git review — not prevention. Frame-signing for hive mode is future work.
 
 Usage:
   append_frame.py --project <slug> --event <kind> [--payload '<json>'] [--actor ID]
@@ -55,7 +63,13 @@ def project_dir(slug):
 def read_chain(slug):
     frames = []
     for f in sorted(glob.glob(os.path.join(project_dir(slug), "frames", "*.json"))):
-        frames.append((f, json.load(open(f))))
+        try:
+            with open(f) as fh:
+                frames.append((f, json.load(fh)))
+        except (json.JSONDecodeError, OSError) as e:
+            raise SystemExit(f"CHAIN UNREADABLE at {os.path.basename(f)}: {e} — "
+                             f"a partial/corrupt frame; restore it from git or quarantine "
+                             f"it per DISTRIBUTED.md before continuing.")
     return frames
 
 
@@ -98,19 +112,43 @@ def lease_state(chain):
     return holder, expires, is_open
 
 
+_UTC_FORM = None
+def _utc_valid(s):
+    global _UTC_FORM
+    if _UTC_FORM is None:
+        import re
+        _UTC_FORM = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$")
+    return isinstance(s, str) and bool(_UTC_FORM.match(s))
+
+
 def lease_active(chain):
     holder, expires, is_open = lease_state(chain)
     if not is_open or holder is None:
         return None, None
-    if expires and fmt_utc(now_dt()) > expires:
+    # A missing or malformed expiry must NEVER create an immortal lease:
+    # treat it as already expired so the stream stays takeover-able.
+    if not _utc_valid(expires):
+        return None, (holder, expires or "<missing>")
+    if fmt_utc(now_dt()) > expires:
         return None, (holder, expires)          # expired — takeover allowed
     return (holder, expires), None
+
+
+def strict_mode():
+    """Strict when env-set OR when the enclosing workspace declares mode:hive."""
+    if os.environ.get("RAPP_REQUIRE_LEASE") == "1":
+        return True
+    try:
+        with open(os.path.join(os.path.dirname(ROOT), "rappid.json")) as fh:
+            return json.load(fh).get("mode") == "hive"
+    except (OSError, json.JSONDecodeError):
+        return False
 
 
 def check_lease(chain, event, actor):
     """Enforce the concurrency rules. Raises SystemExit on refusal."""
     active, expired = lease_active(chain)
-    strict = os.environ.get("RAPP_REQUIRE_LEASE") == "1"
+    strict = strict_mode()
     if event == "work.punchin":
         if active:
             raise SystemExit(f"REFUSED: {active[0]} holds an active lease until {active[1]}. "
@@ -131,7 +169,8 @@ def check_lease(chain, event, actor):
         raise SystemExit(f"REFUSED: no active lease to {event.split('.')[1]} "
                          f"(expired lease: {expired[0] if expired else 'none'}). Punch in first.")
     if strict:
-        raise SystemExit("REFUSED: RAPP_REQUIRE_LEASE=1 — punch in before appending.")
+        raise SystemExit("REFUSED: strict lease mode (RAPP_REQUIRE_LEASE=1 or hive "
+                         "workspace) — punch in before appending.")
 
 
 def write_frame(slug, frame):
@@ -141,7 +180,14 @@ def write_frame(slug, frame):
     fd, tmp = tempfile.mkstemp(dir=fdir, suffix=".tmp")
     with os.fdopen(fd, "w") as f:
         f.write(json.dumps(frame, sort_keys=True, separators=(",", ":")))
-    os.rename(tmp, os.path.join(fdir, name))  # atomic: power loss loses nothing
+        f.flush()
+        os.fsync(f.fileno())                    # durability before the rename
+    os.rename(tmp, os.path.join(fdir, name))    # atomic naming
+    try:
+        dfd = os.open(fdir, os.O_RDONLY)
+        os.fsync(dfd); os.close(dfd)            # persist the directory entry
+    except OSError:
+        pass
     return name
 
 
@@ -156,8 +202,14 @@ def append(slug, event, payload, actor):
     body.setdefault("project", slug)
     if actor and "actor" not in body:
         body["actor"] = {"id": actor}
+    # Monotonic stamp: a fast-clock peer's head must not lock slower clocks out
+    # (rapp/1 step 4 refuses utc < head.utc). Bump to head.utc + 1ms if needed.
+    utc = fmt_utc(now_dt())
+    if utc <= head["utc"]:
+        base = datetime.strptime(head["utc"], "%Y-%m-%dT%H:%M:%S.%fZ")
+        utc = fmt_utc(base.replace(tzinfo=timezone.utc) + timedelta(milliseconds=1))
     frame = rapp.build_frame("body.pulse", head["stream_id"], head["seq"] + 1,
-                             fmt_utc(now_dt()), body, prev=head["payload_hash"])
+                             utc, body, prev=head["payload_hash"])
     ok, step, reason = rapp.verify_frame(frame, head=head,
                                          stream_id_of_record=head["stream_id"])
     if not ok:
