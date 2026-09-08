@@ -7,6 +7,9 @@ themselves: leases, handoffs, and takeovers are chain events, forks are
 detected by hash verification and healed append-only.
 
 - **[SPEC.md](SPEC.md)** — `rapp-workspace/1.1`, the protocol of record.
+- **[SKILL.md](SKILL.md)** — operator skill for any AI agent: assumes zero RAPP
+  knowledge; setup, the frame commands, refusals, the hive sync loop, fork
+  recovery, and a self-test. Drop it into your agent's skills directory.
 - **[tools/append_frame.py](tools/append_frame.py)** — reference frame writer
   with lease enforcement (punchin / heartbeat / handoff / takeover / punchout),
   fork detection, and full-chain verification. Requires a checkout of
