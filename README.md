@@ -52,6 +52,29 @@ checksum-locked Private Hive project skill at
 `.github/skills/rapp-private-hive`. It refuses conflicting or unsafe existing
 skill content rather than overwriting it.
 
+## Local workspace manager
+
+Create a private manager outside this public protocol repository, scan local
+Git roots, and use its generated dashboard or CLI:
+
+```bash
+python3 tools/workspace_manager.py init \
+  --workspace ~/RAPP-Workspace-Manager \
+  --owner <owner-handle> \
+  --rapp1-path ~/src/rapp-1
+python3 tools/workspace_manager.py scan \
+  --workspace ~/RAPP-Workspace-Manager \
+  --root ~/Documents/GitHub \
+  --rapp1-path ~/src/rapp-1
+python3 tools/workspace_manager.py list \
+  --workspace ~/RAPP-Workspace-Manager
+```
+
+The registry contains paths and RAPP identity metadata only. It does not copy
+source, notes, or other content out of the routed workspaces. Discovered RAPP
+identities are accepted only after canonical validation; symlinked identity
+files are ignored.
+
 ## Deploy a Private Hive
 
 After migration:
@@ -79,6 +102,8 @@ mutation until those capabilities have separate verified adapters.
   galactic Hive Mind federation candidate
 - [`docs/rapp-work.md`](docs/rapp-work.md) — RAPP Work business/compliance layer
 - [`tools/append_frame.py`](tools/append_frame.py) — project-frame lease writer
+- [`tools/workspace_manager.py`](tools/workspace_manager.py) — pointer-only
+  manager for local Git and RAPP workspaces
 
 RAPP/1 remains authoritative for identity, canonicalization, frames, hashes,
 signatures, eggs, and registries. RAPP Workspace and RAPP Work add policy
