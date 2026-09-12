@@ -100,7 +100,22 @@ The transfer rule is explicit opt-in:
 Migration and preparation MUST verify that pre-existing workspace bytes and
 symlink targets remain unchanged.
 
-## 6. Project skills and migration
+## 6. Workspace manager
+
+The reference manager (`tools/workspace_manager.py`) can create a solo manager
+workspace, scan one or more local Git roots, regenerate its pointer-only
+`registry.json` and `HOME.md`, list registered paths, and open a selected path
+with the local operating system.
+
+The manager holds pointers only: name, path, kind, mode, world, RAPPID, and
+routing tags. It MUST NOT ingest files from routed workspaces. Discovery may
+read only repository presence and a non-symlinked root-level `rappid.json`.
+A discovered identity MUST pass the canonical `rapp.rappid_valid` check before
+the manager labels the path a RAPP Workspace. The generated manager is itself
+a private RAPP Workspace with a mint-once identity and may carry its own
+manager project frame stream.
+
+## 7. Project skills and migration
 
 A shared RAPP Workspace MUST carry its standard capabilities under
 `.github/skills`.
@@ -117,7 +132,7 @@ An older workspace migration:
 
 Migration is not deployment. It grants no remote access and performs no push.
 
-## 7. Authority and publication
+## 8. Authority and publication
 
 A deployable Private Hive has:
 
@@ -149,7 +164,7 @@ migrate/prepare
 Signing or creating a Git commit is not deployment. The channel pointer/ref CAS
 is the publication linearization point.
 
-## 8. Storage portability
+## 9. Storage portability
 
 The Hive is verified data, not a storage provider. Filesystem/NAS, private Git,
 SharePoint, LAN, and future stores are adapters.
@@ -167,7 +182,7 @@ The current reference deployment implements:
 It refuses unsupported providers and public Git before sending bytes.
 SharePoint is specified as a future adapter, not claimed as implemented.
 
-## 9. Mother Hive and dimensions
+## 10. Mother Hive and dimensions
 
 Each Private Hive has one Mother Hive authority. Devices, branches, local
 workspaces, and channel projections are dimensions of that Hive.
@@ -187,7 +202,7 @@ Dream Catcher:
 Two disconnected writers MUST NOT independently extend the same canonical
 stream. They write separate dimension streams and converge later.
 
-## 10. Hive Mind federation
+## 11. Hive Mind federation
 
 The Hive Mind is the universal singleton logical federation and interoperable
 graph formed by sovereign Private Hives.
@@ -214,7 +229,7 @@ authorize assimilation. Each destination appends its own local import receipt.
 RAPP/1 ordering remains unchanged. Causal eligibility is a profile projection
 over verified dependencies; it never rewrites frame timestamps or envelopes.
 
-## 11. RAPP Projects
+## 12. RAPP Projects
 
 Project history MAY use append-only RAPP/1 streams under `rapp-projects/`.
 The reference `tools/append_frame.py` provides project genesis, punch-in,
@@ -225,7 +240,7 @@ Leases coordinate conforming writers. They do not authenticate actor identity.
 Private Hive authority and signed business operations use the stronger signed
 profiles above.
 
-## 12. Security and sovereignty
+## 13. Security and sovereignty
 
 - Owner consent is required for outward and irreversible actions.
 - Private keys never enter workspace, staging, publication, logs, or Git.
@@ -240,7 +255,7 @@ profiles above.
   already obtained by an authorized recipient.
 - Public DOGG and private GODD are never conflated.
 
-## 13. Conformance
+## 14. Conformance
 
 A `rapp-workspace/2.0` implementation MUST:
 
@@ -258,7 +273,7 @@ A `rapp-workspace/2.0` implementation MUST:
 12. pass the relevant workspace, Hive, deployment, and federation conformance
     suites.
 
-## 14. Compatibility
+## 15. Compatibility
 
 `rapp-workspace/1.0` and `/1.1` workspaces migrate additively to 2.0. Their
 existing files, frame histories, and RAPPIDs remain authoritative. Migration
