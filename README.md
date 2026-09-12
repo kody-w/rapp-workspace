@@ -1,95 +1,87 @@
 # RAPP Workspace
 
-**The private workspace protocol for the rapp/1 family** — one owner, many
-worlds; solo or team (hive); local-first always; and, new in 1.1, **distributed
-multi-operator operation** where concurrency is carried by rapp/1 frames
-themselves: leases, handoffs, and takeovers are chain events, forks are
-detected by hash verification and healed append-only.
+**A local-first workspace that carries its own AI capabilities and can grow into
+a sovereign Private Hive without losing local data.**
 
-- **[SPEC.md](SPEC.md)** — `rapp-workspace/1.1`, the protocol of record.
-- **[SKILL.md](SKILL.md)** — operator skill for any AI agent: assumes zero RAPP
-  knowledge; setup, the frame commands, refusals, the hive sync loop, fork
-  recovery, and a self-test. Drop it into your agent's skills directory.
-- **[tools/append_frame.py](tools/append_frame.py)** — reference frame writer
-  with lease enforcement (punchin / heartbeat / handoff / takeover / punchout),
-  fork detection, and full-chain verification. Requires a checkout of
-  [`rapp-1`](https://github.com/kody-w/rapp-1) (set `RAPP1_PATH`).
+RAPP Workspace is the workspace layer of the RAPP/1 family. Clone or share the
+repository and GitHub Copilot CLI discovers its project skills automatically
+from `.github/skills/`.
 
-## What a workspace is, in plain terms
+## The model
 
-A private folder of Markdown and data for **one owner** and **one world** of
-work, which an AI keeps organized as chief of staff. Project progress is not a
-status doc that gets overwritten; it is a stream of small JSON **frames**, one
-file each, hash-chained so history cannot be silently rewritten. Boards and
-status pages are regenerated from the frames. Before an operator (human or AI)
-writes frames to a project they **punch in** and hold a time-limited lease;
-everyone else is refused until they punch out. A team sharing one workspace
-through a private git remote is a **hive**.
+- **Local workspace:** the complete on-device workspace. Everything is
+  local-only unless its owner explicitly selects it for sharing.
+- **Private Hive:** the access-restricted, off-device portion of a workspace.
+  Members—humans, AIs, agents, and services—organize their own areas and shared
+  projects under the same RAPPID-based rules.
+- **DOGG:** globally safe data. DOGG never contains PII.
+- **GODD:** private data. Selected GODD may be shared inside sealed Hive rooms;
+  the most sensitive GODD remains local.
+- **Mother Hive:** one Private Hive's signed authority and canonical head.
+- **Hive dimensions:** local devices, branches, and storage projections that
+  converge back into their Mother Hive through Dream Catcher.
+- **Hive Mind:** the universal singleton logical federation of sovereign
+  Private Hives. It is one interoperable graph, not one owner, key, server,
+  database, or globally writable head.
 
-## Why
+## Capabilities included with the workspace
 
-Organically grown work scatters across repos until no one — human or AI — can
-hold it. A RAPP Workspace collapses one world of work into one private vault an
-AI keeps organized, with project history as append-only, hash-chained rapp/1
-frame streams. Hive mode lets a whole team share that vault through a private
-store **without stepping on each other's toes**: one stream, one lease; verify
-before you trust; append, never rewrite.
+| Project skill | Purpose |
+|---|---|
+| `.github/skills/rapp-workspace` | Operate append-only project frames, leases, handoffs, verification, and fork recovery. |
+| `.github/skills/rapp-private-hive` | Migrate older workspaces without data loss, prepare selections, create signed authority, publish to qualified filesystems/NAS or private GitHub, and independently verify/pull the Hive. |
 
-## Quick taste
+Copilot CLI loads project skills after the repository is trusted. In an
+already-running session, use `/skills reload`.
 
-```bash
-export RAPP1_PATH=~/src/rapp-1 RAPP_ACTOR=alice RAPP_REQUIRE_LEASE=1
+## Update an older workspace
 
-python3 tools/append_frame.py --genesis --project demo --title "Demo" --goal "Try the protocol"
-python3 tools/append_frame.py --punchin  --project demo --actor alice --intent "first pass"
-python3 tools/append_frame.py --project demo --event work.checkpoint --actor alice --payload '{"step":"s1"}'
-python3 tools/append_frame.py --punchout --project demo --actor alice
-python3 tools/append_frame.py --verify --all
-```
-
-A second actor punching in while alice holds the lease is refused; after the
-lease lapses, `--takeover` claims the stream — and every one of those events is
-itself a verifiable frame in the chain.
-
-## For AI agents
-
-[`SKILL.md`](SKILL.md) is a self-contained Agent Skill. An agent that has never
-heard of RAPP can read it and set up, join, and operate a workspace: vocabulary,
-one-time setup, minting a workspace identity, every frame command with a table
-of refusals and what to do about them, the conformance rules, the hive sync
-loop, append-only fork recovery, the pre-push gate, and a scratch self-test.
-
-Install it wherever your agent loads skills, for example:
+Run the migration script from a trusted clone of this repository:
 
 ```bash
-mkdir -p ~/.claude/skills/rapp-workspace
-curl -sL https://raw.githubusercontent.com/kody-w/rapp-workspace/main/SKILL.md \
-  -o ~/.claude/skills/rapp-workspace/SKILL.md
+python3 /path/to/rapp-workspace/.github/skills/rapp-private-hive/scripts/prepare_workspace.py migrate \
+  --workspace /path/to/existing-workspace \
+  --member-rappid 'rappid:@owner/member:<64hex>' \
+  --hive-name my-private-hive \
+  --world-id my-world
 ```
 
-Then ask the agent to "create a RAPP Workspace for <world>" or "punch in to
-<project> and log a checkpoint". Every snippet in the skill was run verbatim
-before it shipped.
+Migration is additive and identity-preserving. It snapshots and rechecks every
+existing file and symlink, adds `.rapp-hive/`, and embeds the exact
+checksum-locked Private Hive project skill at
+`.github/skills/rapp-private-hive`. It refuses conflicting or unsafe existing
+skill content rather than overwriting it.
 
-## How the guarantees work
+## Deploy a Private Hive
 
-- **Frames are the authority.** Everything else is a derived projection.
-- **Append only.** Frames are never edited or deleted; corrections append and
-  forks are quarantined into `frames/_forked/`, never removed.
-- **Atomic writes.** Temp file, fsync, rename; a crash loses no committed frame.
-- **Leases are frames.** Punch-in, heartbeat, handoff, takeover, and punch-out
-  all live in the chain, so the concurrency history is auditable.
-- **Detection, not prevention, against a non-conforming writer.** Actor ids are
-  unauthenticated and local frames are unsigned; among conforming writers the
-  lease arbitrates, and any fork is caught deterministically by chain
-  verification (two frames can never share a `seq` and both verify).
+After migration:
 
-## Lineage
+```bash
+cd /path/to/existing-workspace
+python3 .github/skills/rapp-private-hive/scripts/deploy_hive.py --preflight
+```
 
-`rapp-workspace/1.0` defined the private vault, the two-faces data layer, the
-world boundary, and solo/hive modes. 1.1 names the shared home the **RAPP
-Workspace store** and adds §9 Distributed operation. Instances stay private by
-design — this repo carries only the protocol and the reference tool, never a
-workspace's content.
+Follow
+[`DEPLOYMENT.md`](.github/skills/rapp-private-hive/DEPLOYMENT.md) for explicit
+owner-key creation, authority initialization, approval, private filesystem/NAS
+or private GitHub publication, and independent client verification.
 
-MIT. Part of the RAPP foundation (`rapp-1` is the kernel of canon).
+The current deployment MVP intentionally refuses SharePoint, automatic GODD
+sealing/key release, federation activation, owner rotation, and topology
+mutation until those capabilities have separate verified adapters.
+
+## Protocols
+
+- [`SPEC.md`](SPEC.md) — `rapp-workspace/2.0`
+- [`protocols/rapp-hive/1`](protocols/rapp-hive/1/SPEC.md) — sovereign Private
+  Hive authority and Dream Catcher convergence
+- [`protocols/rapp-federation/1`](protocols/rapp-federation/1/SPEC.md) — bounded
+  galactic Hive Mind federation candidate
+- [`docs/rapp-work.md`](docs/rapp-work.md) — RAPP Work business/compliance layer
+- [`tools/append_frame.py`](tools/append_frame.py) — project-frame lease writer
+
+RAPP/1 remains authoritative for identity, canonicalization, frames, hashes,
+signatures, eggs, and registries. RAPP Workspace and RAPP Work add policy
+without changing the eleven-key RAPP/1 frame envelope.
+
+MIT.
