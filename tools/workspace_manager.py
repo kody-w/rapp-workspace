@@ -99,7 +99,7 @@ def discover_git_workspaces(root):
     return sorted(set(found), key=lambda path: str(path).casefold())
 
 
-def read_workspace_pointer(path):
+def read_workspace_pointer(path, rapp_module):
     pointer = {
         "name": path.name,
         "path": str(path),
@@ -110,7 +110,7 @@ def read_workspace_pointer(path):
         "tags": [],
     }
     identity_path = path / "rappid.json"
-    if not identity_path.is_file():
+    if identity_path.is_symlink() or not identity_path.is_file():
         return pointer
 
     try:
@@ -118,14 +118,26 @@ def read_workspace_pointer(path):
     except (json.JSONDecodeError, OSError):
         return pointer
 
-    if identity.get("schema") == "rapp/1" and identity.get("kind") == "workspace":
+    rappid = identity.get("rappid")
+    tags = identity.get("tags", [])
+    if not isinstance(tags, list) or not all(isinstance(tag, str) for tag in tags):
+        tags = []
+    if (
+        identity.get("schema") == "rapp/1"
+        and identity.get("kind") == "workspace"
+        and rapp_module.rappid_valid(rappid)
+    ):
         pointer.update(
             {
                 "kind": "rapp-workspace",
-                "mode": identity.get("mode"),
-                "world_id": identity.get("world_id"),
-                "rappid": identity.get("rappid"),
-                "tags": identity.get("tags", []),
+                "mode": identity.get("mode") if identity.get("mode") in ("solo", "hive") else None,
+                "world_id": (
+                    identity.get("world_id")
+                    if isinstance(identity.get("world_id"), str)
+                    else None
+                ),
+                "rappid": rappid,
+                "tags": tags,
             }
         )
     return pointer
@@ -260,12 +272,15 @@ this manager unless they are required for routing.
 def scan_manager(args):
     workspace = Path(args.workspace).expanduser().resolve()
     identity = manager_identity(workspace)
+    rapp = load_rapp(find_rapp1(args.rapp1_path))
+    if not rapp.rappid_valid(identity.get("rappid")):
+        raise SystemExit("manager rappid failed canonical RAPP/1 validation")
     roots = sorted({str(Path(root).expanduser().resolve()) for root in args.root})
     paths = set()
     for root in roots:
         paths.update(discover_git_workspaces(root))
     paths.discard(workspace)
-    entries = [read_workspace_pointer(path) for path in sorted(paths, key=str)]
+    entries = [read_workspace_pointer(path, rapp) for path in sorted(paths, key=str)]
     registry = {
         "schema": REGISTRY_SCHEMA,
         "manager_rappid": identity["rappid"],
@@ -280,7 +295,7 @@ def scan_manager(args):
 
 
 def load_registry(workspace):
-    manager_identity(workspace)
+    identity = manager_identity(workspace)
     path = Path(workspace).expanduser().resolve() / "registry.json"
     try:
         registry = json.loads(path.read_text(encoding="utf-8"))
@@ -288,6 +303,10 @@ def load_registry(workspace):
         raise SystemExit(f"missing registry: {path}")
     if registry.get("schema") != REGISTRY_SCHEMA:
         raise SystemExit(f"unsupported registry schema in {path}")
+    if registry.get("manager_rappid") != identity["rappid"]:
+        raise SystemExit(f"registry identity mismatch in {path}")
+    if registry.get("world_id") != identity["world_id"]:
+        raise SystemExit(f"registry world boundary mismatch in {path}")
     return registry
 
 
@@ -337,6 +356,7 @@ def parser():
     scan = sub.add_parser("scan", help="replace the registry from local Git roots")
     scan.add_argument("--workspace", required=True)
     scan.add_argument("--root", action="append", required=True)
+    scan.add_argument("--rapp1-path")
     scan.set_defaults(run=scan_manager)
 
     listing = sub.add_parser("list", help="list registered workspace pointers")
