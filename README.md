@@ -28,6 +28,7 @@ from `.github/skills/`.
 
 | Project skill | Purpose |
 |---|---|
+| `.github/skills/autonomous-rapp-estate-manager` | Establish, consolidate, test, and maintain a full pointer-only local AI estate from one autonomous workflow. |
 | `.github/skills/rapp-workspace` | Operate append-only project frames, leases, handoffs, verification, and fork recovery. |
 | `.github/skills/rapp-private-hive` | Migrate older workspaces without data loss, prepare selections, create signed authority, publish to qualified filesystems/NAS or private GitHub, and independently verify/pull the Hive. |
 
