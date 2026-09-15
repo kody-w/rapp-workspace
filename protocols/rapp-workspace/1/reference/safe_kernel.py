@@ -20,6 +20,7 @@ DISABLED = frozenset({
     "model_submission", "redistribution", "execution", "network", "loopback", "imports", "host_tool",
     "external_effect", "partitioned_effect", "native_rebinding", "live_migration", "timed_erasure",
     "learned_semantic_capability", "html_materialization", "live_delta", "unqualified_runtime",
+    "repository_clone", "branch_history", "hive_publication",
 })
 
 
@@ -31,6 +32,132 @@ def unb64(value):
     raw = base64.b64decode(value, validate=True)
     require(b64(raw) == value, "noncanonical base64")
     return raw
+
+
+def _bounded_text(value, maximum, reason):
+    require(type(value) is str and 0 < len(value.encode("utf-8")) <= maximum
+            and not any(ord(char) < 32 for char in value), reason)
+    return value
+
+
+def _canonical_sha256(value):
+    raw = json.dumps(
+        value, sort_keys=True, ensure_ascii=True, allow_nan=False,
+        separators=(",", ":"),
+    ).encode("ascii")
+    return sha(raw)
+
+
+def catalog_document(core, raw):
+    try:
+        value = core.r._strict_json(raw)
+        domain(value)
+    except (ValueError, TypeError, UnicodeError, RecursionError) as error:
+        raise Refusal("invalid-catalog-json") from error
+    require(type(value) is dict and set(value) == {
+        "schema", "catalog_id", "root_id", "shard_index", "shard_count",
+        "snapshot_sha256", "branch_scope", "branch_evidence_status",
+        "recursive", "entries",
+    } and value["schema"] == "rapp-workspace/catalog-chunk/1",
+        "closed-catalog-document-required")
+    _bounded_text(value["catalog_id"], 128, "invalid-catalog-id")
+    _bounded_text(value["root_id"], 512, "invalid-catalog-root")
+    require(type(value["shard_index"]) is int and type(value["shard_count"]) is int
+            and 1 <= value["shard_count"] <= 32
+            and 0 <= value["shard_index"] < value["shard_count"],
+            "invalid-catalog-shard")
+    require(type(value["snapshot_sha256"]) is str
+            and len(value["snapshot_sha256"]) == 64
+            and all(char in "0123456789abcdef" for char in value["snapshot_sha256"]),
+            "invalid-catalog-snapshot")
+    require(value["branch_scope"] == "default-branch-only"
+            and value["branch_evidence_status"] == "external-host-observation-unproven"
+            and type(value["recursive"]) is bool,
+            "unsupported-catalog-scope")
+    entries = value["entries"]
+    require(type(entries) is list and 1 <= len(entries) <= 256, "catalog-entry-bound")
+    seen = set()
+    for entry in entries:
+        require(type(entry) is dict and set(entry) == {
+            "id", "kind", "parent", "labels", "metadata_sha256", "share_class",
+        }, "closed-catalog-entry-required")
+        _bounded_text(entry["id"], 512, "invalid-catalog-entry-id")
+        _bounded_text(entry["kind"], 64, "invalid-catalog-entry-kind")
+        require(entry["parent"] is None or type(entry["parent"]) is str,
+                "invalid-catalog-entry-parent")
+        if entry["parent"] is not None:
+            _bounded_text(entry["parent"], 512, "invalid-catalog-entry-parent")
+        require(type(entry["labels"]) is list and len(entry["labels"]) <= 16
+                and all(type(label) is str for label in entry["labels"])
+                and len(entry["labels"]) == len(set(entry["labels"])),
+                "invalid-catalog-entry-labels")
+        for label in entry["labels"]:
+            _bounded_text(label, 128, "invalid-catalog-entry-label")
+        digest = entry["metadata_sha256"]
+        require(type(digest) is str and len(digest) == 64
+                and all(char in "0123456789abcdef" for char in digest),
+                "invalid-catalog-entry-metadata")
+        require(entry["share_class"] in (
+            "public-source", "private-source", "excluded-source",
+        ), "invalid-catalog-share-class")
+        require(entry["id"] not in seen, "duplicate-catalog-entry")
+        seen.add(entry["id"])
+    return value
+
+
+def organization_document(core, raw):
+    try:
+        value = core.r._strict_json(raw)
+        domain(value)
+    except (ValueError, TypeError, UnicodeError, RecursionError) as error:
+        raise Refusal("invalid-organization-json") from error
+    require(type(value) is dict and set(value) == {
+        "schema", "catalog_id", "root_group", "groups", "assignments",
+    } and value["schema"] == "rapp-workspace/organization-tree/1",
+        "closed-organization-document-required")
+    _bounded_text(value["catalog_id"], 128, "invalid-catalog-id")
+    _bounded_text(value["root_group"], 64, "invalid-organization-root")
+    groups = value["groups"]
+    require(type(groups) is list and 1 <= len(groups) <= 512, "organization-group-bound")
+    by_id = {}
+    for group in groups:
+        require(type(group) is dict and set(group) == {"id", "name", "parent"},
+                "closed-organization-group-required")
+        group_id = _bounded_text(group["id"], 64, "invalid-organization-group-id")
+        require(group_id[0].isalpha() and group_id.isascii()
+                and all(char.islower() or char.isdigit() or char == "-" for char in group_id),
+                "invalid-organization-group-id")
+        _bounded_text(group["name"], 128, "invalid-organization-group-name")
+        require(group["parent"] is None or type(group["parent"]) is str,
+                "invalid-organization-parent")
+        if group["parent"] is not None:
+            _bounded_text(group["parent"], 64, "invalid-organization-parent")
+        require(group_id not in by_id, "duplicate-organization-group")
+        by_id[group_id] = group
+    require(value["root_group"] in by_id
+            and by_id[value["root_group"]]["parent"] is None
+            and sum(group["parent"] is None for group in groups) == 1,
+            "organization-root-mismatch")
+    depths = {}
+    for group_id in by_id:
+        visited, current, depth = set(), group_id, 0
+        while current != value["root_group"]:
+            require(current not in visited, "organization-cycle")
+            visited.add(current)
+            parent = by_id[current]["parent"]
+            require(parent in by_id, "organization-orphan-parent")
+            current, depth = parent, depth + 1
+            require(depth <= 32, "organization-depth-bound")
+        depths[group_id] = depth
+    assignments = value["assignments"]
+    require(type(assignments) is list and len(assignments) <= 10000,
+            "organization-assignment-bound")
+    for assignment in assignments:
+        require(type(assignment) is dict and set(assignment) == {"entry_id", "group_id"},
+                "closed-organization-assignment-required")
+        _bounded_text(assignment["entry_id"], 512, "invalid-organization-entry")
+        _bounded_text(assignment["group_id"], 64, "invalid-organization-group-id")
+    return value, by_id, depths
 
 
 @dataclass(frozen=True)
@@ -134,6 +261,7 @@ class Controller:
             CREATE TABLE IF NOT EXISTS adoptions(operation TEXT PRIMARY KEY, request TEXT, candidate TEXT, record TEXT);
             CREATE TABLE IF NOT EXISTS requests(work TEXT PRIMARY KEY, result TEXT);
             CREATE TABLE IF NOT EXISTS faults(hash TEXT PRIMARY KEY, raw BLOB);
+            CREATE TABLE IF NOT EXISTS assessments(hash TEXT PRIMARY KEY);
         """)
         binding = self._policy_value(policy)
         old = self._get("policy")
@@ -362,6 +490,293 @@ class Controller:
         require(remaining > 0, "root-owned-byte-budget-before-access")
         raw = read_file(path, min(MAX_OCTETS, remaining))
         return self.capture_octets(subject, raw, consistency="stable-descriptor-not-coherent")
+
+    def _observation_octets(self, reference, expected_subject):
+        source = self.body(reference)
+        require(source["schema"] == PROFILE + "/observation",
+                "catalog-or-tree-source-must-be-observation")
+        require(source["native_subject"] == expected_subject
+                and source["world_id"] == self.policy.world_id
+                and source["instance_rappid"] == self.policy.instance_rappid,
+                "catalog-source-subject-or-world-substitution")
+        self.guard(expected_subject, "local_synthesis", source["restrictions"])
+        self.guard(expected_subject, "retention", source["restrictions"])
+        return source, self._decode_source(source)
+
+    def register_catalog_shard(self, subject, source):
+        self.guard(subject, "local_synthesis")
+        self.guard(subject, "retention")
+        observed, raw = self._observation_octets(source, subject)
+        document = catalog_document(self.core, raw)
+        restrictions = self.propagate([observed["restrictions"]])
+        with self.transaction():
+            return self._emit(self._payload(
+                "catalog-shard", subject, restrictions, source=source,
+                catalog_id=document["catalog_id"], root_id=document["root_id"],
+                shard_index=document["shard_index"], shard_count=document["shard_count"],
+                snapshot_sha256=document["snapshot_sha256"],
+                branch_scope=document["branch_scope"],
+                branch_evidence_status=document["branch_evidence_status"],
+                recursive=document["recursive"],
+                entry_ids=[entry["id"] for entry in document["entries"]],
+                entry_count=len(document["entries"]), source_sha256=sha(raw),
+                grants_authority=False))
+
+    def _catalog_entries(self, expected_subject, shard_references):
+        require(type(shard_references) is list and 1 <= len(shard_references) <= 32,
+                "catalog-shard-reference-bound")
+        addresses = [address(reference) for reference in shard_references]
+        require(len(addresses) == len(set(addresses)), "catalog-shard-reference-bound")
+        documents, restrictions = [], []
+        catalog_id, root_id, shard_count = None, None, None
+        snapshot_sha256, branch_scope, branch_evidence_status, recursive = None, None, None, None
+        entries = {}
+        indexes = set()
+        for reference in shard_references:
+            shard = self.body(reference)
+            require(shard["schema"] == PROFILE + "/catalog-shard",
+                    "catalog-shard-record-required")
+            require(shard["native_subject"] == expected_subject
+                    and shard["world_id"] == self.policy.world_id
+                    and shard["instance_rappid"] == self.policy.instance_rappid,
+                    "catalog-shard-subject-or-world-substitution")
+            observed, raw = self._observation_octets(shard["source"], expected_subject)
+            document = catalog_document(self.core, raw)
+            require(shard["native_subject"] == observed["native_subject"]
+                    and shard["catalog_id"] == document["catalog_id"]
+                    and shard["root_id"] == document["root_id"]
+                    and shard["shard_index"] == document["shard_index"]
+                    and shard["shard_count"] == document["shard_count"]
+                    and shard["snapshot_sha256"] == document["snapshot_sha256"]
+                    and shard["branch_scope"] == document["branch_scope"]
+                    and shard["branch_evidence_status"] == document["branch_evidence_status"]
+                    and shard["recursive"] == document["recursive"]
+                    and shard["entry_ids"] == [entry["id"] for entry in document["entries"]]
+                    and shard["entry_count"] == len(document["entries"])
+                    and shard["source_sha256"] == sha(raw),
+                    "catalog-shard-substitution")
+            maximum = self.propagate([observed["restrictions"]])
+            require(all(not shard["restrictions"]["rights"][right] or maximum["rights"][right]
+                        for right in RIGHTS)
+                    and set(shard["restrictions"]["audience"]) <= set(maximum["audience"]),
+                    "catalog-shard-restrictions-widened")
+            if catalog_id is None:
+                catalog_id, root_id, shard_count, snapshot_sha256, branch_scope, branch_evidence_status, recursive = (
+                    document["catalog_id"], document["root_id"], document["shard_count"],
+                    document["snapshot_sha256"], document["branch_scope"],
+                    document["branch_evidence_status"], document["recursive"],
+                )
+            require((document["catalog_id"], document["root_id"], document["shard_count"],
+                     document["snapshot_sha256"], document["branch_scope"],
+                     document["branch_evidence_status"], document["recursive"])
+                    == (catalog_id, root_id, shard_count, snapshot_sha256, branch_scope,
+                        branch_evidence_status, recursive),
+                    "catalog-shard-family-mismatch")
+            require(document["shard_index"] not in indexes, "duplicate-catalog-shard-index")
+            indexes.add(document["shard_index"])
+            for entry in document["entries"]:
+                require(entry["id"] not in entries, "duplicate-catalog-entry-across-shards")
+                entries[entry["id"]] = entry
+            documents.append(document)
+            restrictions.append(shard["restrictions"])
+        require(len(documents) == shard_count and indexes == set(range(shard_count)),
+                "incomplete-catalog-shards")
+        snapshot = [
+            {
+                "id": entry["id"], "kind": entry["kind"], "parent": entry["parent"],
+                "labels": entry["labels"], "metadata_sha256": entry["metadata_sha256"],
+                "share_class": entry["share_class"],
+            }
+            for entry in sorted(entries.values(), key=lambda item: item["id"])
+        ]
+        require(_canonical_sha256(snapshot) == snapshot_sha256,
+                "catalog-snapshot-commitment-mismatch")
+        for entry_id, entry in entries.items():
+            parent = entry["parent"]
+            require(parent is None or parent == root_id or parent in entries,
+                    "catalog-parent-outside-complete-shards")
+            visited, current, depth = set(), entry_id, 0
+            while entries[current]["parent"] in entries:
+                require(current not in visited, "catalog-parent-cycle")
+                visited.add(current)
+                current = entries[current]["parent"]
+                depth += 1
+                require(depth <= 128, "catalog-recursion-depth-bound")
+            if not recursive:
+                require(entry["parent"] in (None, root_id),
+                        "nonrecursive-catalog-has-descendants")
+        return catalog_id, root_id, snapshot_sha256, entries, restrictions
+
+    def assess_organization(self, subject, catalog_shards, tree_source, *,
+                            max_bucket, allowed_depth, refinement_round=0,
+                            previous=None):
+        self.guard(subject, "local_synthesis")
+        self.guard(subject, "retention")
+        require(type(max_bucket) is int and 1 <= max_bucket <= 10000
+                and type(allowed_depth) is int and 1 <= allowed_depth <= 32
+                and type(refinement_round) is int and 0 <= refinement_round <= 32,
+                "organization-quality-bound")
+        require((previous is None) == (refinement_round == 0),
+                "organization-refinement-round-parent-mismatch")
+        catalog_id, _, snapshot_sha256, entries, inherited = self._catalog_entries(
+            subject, catalog_shards)
+        tree, raw = self._observation_octets(tree_source, subject)
+        document, groups, depths = organization_document(self.core, raw)
+        require(document["catalog_id"] == catalog_id, "organization-catalog-substitution")
+        seen, valid, duplicate_assignments, unknown_assignments = set(), set(), 0, 0
+        buckets = {group_id: 0 for group_id in groups}
+        for assignment in document["assignments"]:
+            entry_id, group_id = assignment["entry_id"], assignment["group_id"]
+            if entry_id in seen:
+                duplicate_assignments += 1
+            seen.add(entry_id)
+            if entry_id not in entries or group_id not in groups:
+                unknown_assignments += 1
+                continue
+            valid.add(entry_id)
+            buckets[group_id] += 1
+        unassigned = len(set(entries) - valid)
+        largest_bucket = max(buckets.values(), default=0)
+        max_depth = max(depths.values(), default=0)
+        quality = (unassigned + duplicate_assignments + unknown_assignments,
+                   max(0, largest_bucket - max_bucket),
+                   max(0, max_depth - allowed_depth))
+        status = "verified" if quality == (0, 0, 0) else "needs-refinement"
+        progress = True
+        prior_restrictions = []
+        if previous is not None:
+            prior = self.body(previous)
+            require(prior["schema"] == PROFILE + "/organization-assessment"
+                    and prior["native_subject"] == subject
+                    and self.db.execute(
+                        "SELECT 1 FROM assessments WHERE hash=?", (address(previous),)
+                    ).fetchone()
+                    and prior["catalog_id"] == catalog_id
+                    and prior["snapshot_sha256"] == snapshot_sha256
+                    and prior["catalog_shards"] == catalog_shards
+                    and prior["status"] == "needs-refinement"
+                    and prior["max_bucket"] == max_bucket
+                    and prior["allowed_depth"] == allowed_depth
+                    and refinement_round == prior["refinement_round"] + 1,
+                    "invalid-organization-refinement-parent")
+            self.guard(subject, "local_synthesis", prior["restrictions"])
+            self.guard(subject, "retention", prior["restrictions"])
+            prior_restrictions.append(prior["restrictions"])
+            prior_quality = (
+                prior["unassigned"] + prior["duplicate_assignments"] + prior["unknown_assignments"],
+                max(0, prior["largest_bucket"] - max_bucket),
+                max(0, prior["max_depth"] - allowed_depth),
+            )
+            progress = quality < prior_quality
+            if status != "verified" and not progress:
+                status = "no-progress"
+        restrictions = self.propagate([tree["restrictions"], *inherited, *prior_restrictions])
+        with self.transaction():
+            assessment = self._emit(self._payload(
+                "organization-assessment", subject, restrictions,
+                tree_source=tree_source, catalog_shards=catalog_shards,
+                catalog_id=catalog_id, snapshot_sha256=snapshot_sha256,
+                root_group=document["root_group"],
+                entry_count=len(entries), assigned_count=len(valid),
+                group_count=len(groups), max_depth=max_depth,
+                largest_bucket=largest_bucket, max_bucket=max_bucket,
+                allowed_depth=allowed_depth, unassigned=unassigned,
+                duplicate_assignments=duplicate_assignments,
+                unknown_assignments=unknown_assignments,
+                refinement_round=refinement_round, previous=previous,
+                status=status, progress=progress, grants_authority=False))
+            self.db.execute("INSERT INTO assessments VALUES (?)", (address(assessment),))
+            return assessment
+
+    def candidate_outcome(self, subject, assessment, query, selected_ids):
+        self.guard(subject, "local_synthesis")
+        self.guard(subject, "retention")
+        _bounded_text(query, 1024, "invalid-outcome-query")
+        require(type(selected_ids) is list and len(selected_ids) <= 1024
+                and all(type(value) is str for value in selected_ids),
+                "invalid-outcome-selection")
+        for value in selected_ids:
+            _bounded_text(value, 512, "invalid-outcome-selection")
+        require(len(selected_ids) == len(set(selected_ids)), "invalid-outcome-selection")
+        evaluated = self.body(assessment)
+        require(evaluated["schema"] == PROFILE + "/organization-assessment"
+                and evaluated["native_subject"] == subject
+                and self.db.execute(
+                    "SELECT 1 FROM assessments WHERE hash=?", (address(assessment),)
+                ).fetchone()
+                and evaluated["status"] == "verified",
+                "outcome-requires-verified-organization")
+        _, _, snapshot_sha256, entries, inherited = self._catalog_entries(
+            subject, evaluated["catalog_shards"])
+        require(evaluated["snapshot_sha256"] == snapshot_sha256,
+                "outcome-catalog-snapshot-substitution")
+        require(set(selected_ids) <= set(entries), "outcome-selection-outside-catalog")
+        restrictions = self.propagate([evaluated["restrictions"], *inherited])
+        with self.transaction():
+            return self._emit(self._payload(
+                "outcome-resolution", subject, restrictions, assessment=assessment,
+                query_sha256=sha(query.encode("utf-8")), selected_ids=selected_ids,
+                status="candidate" if selected_ids else "unresolved",
+                semantic_fidelity="unproven", grants_authority=False))
+
+    def propose_subscription(self, subject, assessment, selected_ids, *,
+                             approved_private_ids=()):
+        self.guard(subject, "local_synthesis")
+        self.guard(subject, "retention")
+        require(type(selected_ids) is list and len(selected_ids) <= 1024
+                and all(type(value) is str for value in selected_ids),
+                "invalid-subscription-selection")
+        for value in selected_ids:
+            _bounded_text(value, 512, "invalid-subscription-selection")
+        require(len(selected_ids) == len(set(selected_ids)),
+                "invalid-subscription-selection")
+        require(isinstance(approved_private_ids, (list, tuple))
+                and all(type(value) is str for value in approved_private_ids),
+                "invalid-private-subscription-approval")
+        approved_values = list(approved_private_ids)
+        approved = set(approved_values)
+        require(len(approved) == len(approved_values) <= 1024
+                and approved <= set(selected_ids),
+                "invalid-private-subscription-approval")
+        evaluated = self.body(assessment)
+        require(evaluated["schema"] == PROFILE + "/organization-assessment"
+                and evaluated["native_subject"] == subject
+                and self.db.execute(
+                    "SELECT 1 FROM assessments WHERE hash=?", (address(assessment),)
+                ).fetchone()
+                and evaluated["status"] == "verified",
+                "subscription-requires-verified-organization")
+        _, _, snapshot_sha256, entries, inherited = self._catalog_entries(
+            subject, evaluated["catalog_shards"])
+        require(evaluated["snapshot_sha256"] == snapshot_sha256,
+                "subscription-catalog-snapshot-substitution")
+        require(set(selected_ids) <= set(entries), "subscription-selection-outside-catalog")
+        require(approved <= {
+            entry_id for entry_id, entry in entries.items()
+            if entry["share_class"] == "private-source"
+        }, "private-approval-must-name-private-source")
+        allowed, withheld_private, withheld_excluded, approved_count = [], 0, 0, 0
+        for entry_id in selected_ids:
+            share_class = entries[entry_id]["share_class"]
+            if share_class == "public-source":
+                allowed.append(entry_id)
+            elif share_class == "private-source" and entry_id in approved:
+                allowed.append(entry_id)
+                approved_count += 1
+            elif share_class == "private-source":
+                withheld_private += 1
+            else:
+                withheld_excluded += 1
+        restrictions = self.propagate([evaluated["restrictions"], *inherited])
+        with self.transaction():
+            return self._emit(self._payload(
+                "subscription-proposal", subject, restrictions,
+                assessment=assessment, target="rapp-private-hive",
+                selected_ids=allowed, withheld_private=withheld_private,
+                withheld_excluded=withheld_excluded,
+                externally_approved_private=approved_count,
+                external_owner_approval_required=True,
+                publication_authorized=False, grants_authority=False))
 
     def synthesize(self, subject, source, operation="identity-octets", field=""):
         self.guard(subject, "local_synthesis")
@@ -725,6 +1140,10 @@ class Controller:
         require((not records and adopted_head is None)
                 or (adopted_head is not None and address(adopted_head) in records),
                 "controller-ledger-recovery-quarantine")
+        for (assessment_hash,) in self.db.execute("SELECT hash FROM assessments ORDER BY hash"):
+            assessment = self.body({"space": "rapp/1:wave", "hash": assessment_hash})
+            require(assessment["schema"] == PROFILE + "/organization-assessment",
+                    "assessment-ledger-recovery-quarantine")
         # Historical receipts remain scoped evidence even if their former evaluator is unavailable.
         return {"rapp_integrity": "verified", "frames": 0 if head is None else head["seq"] + 1,
                 "semantic_fidelity": "historical-receipts-only", "current_authorization": "not-inferred",

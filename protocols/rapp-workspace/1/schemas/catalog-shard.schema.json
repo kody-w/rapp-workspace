@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1/schemas/catalog-shard.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1/catalog-shard"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "native_subject": {
+      "$ref": "common.schema.json#/$defs/subject"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "source": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "catalog_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "root_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "shard_index": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 31
+    },
+    "shard_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32
+    },
+    "snapshot_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "branch_scope": {
+      "const": "default-branch-only"
+    },
+    "branch_evidence_status": {
+      "const": "external-host-observation-unproven"
+    },
+    "recursive": {
+      "type": "boolean"
+    },
+    "entry_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512,
+        "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+      },
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true
+    },
+    "entry_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 256
+    },
+    "source_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "native_subject",
+    "restrictions",
+    "source",
+    "catalog_id",
+    "root_id",
+    "shard_index",
+    "shard_count",
+    "snapshot_sha256",
+    "branch_scope",
+    "branch_evidence_status",
+    "recursive",
+    "entry_ids",
+    "entry_count",
+    "source_sha256",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

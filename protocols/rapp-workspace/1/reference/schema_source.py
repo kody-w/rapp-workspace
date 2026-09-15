@@ -105,6 +105,39 @@ def schemas():
             "scheduler-exhaust", parents=array(ref("wave"), 64), work=ref("particle"), root=ref("wave"),
             depth=integer(32), attempts=integer(128), reason=text(128, 1), progress={"type": "boolean"},
             terminal={"type": "boolean"}, remaining_frames=integer(512), reserved_stop=fixed(True)),
+        "catalog-shard": record(
+            "catalog-shard", source=ref("wave"), catalog_id=text(128, 1), root_id=text(512, 1),
+            shard_index=integer(31), shard_count=integer(32, 1),
+            snapshot_sha256=ref("hash"), branch_scope=fixed("default-branch-only"),
+            branch_evidence_status=fixed("external-host-observation-unproven"),
+            recursive={"type": "boolean"},
+            entry_ids=array(text(512, 1), 256, 1), entry_count=integer(256, 1),
+            source_sha256=ref("hash"), grants_authority=fixed(False)),
+        "organization-assessment": record(
+            "organization-assessment", tree_source=ref("wave"),
+            catalog_shards=array(ref("wave"), 32, 1), catalog_id=text(128, 1),
+            snapshot_sha256=ref("hash"), root_group=text(64, 1), entry_count=integer(10000),
+            assigned_count=integer(10000), group_count=integer(512, 1),
+            max_depth=integer(32), largest_bucket=integer(10000),
+            max_bucket=integer(10000, 1), allowed_depth=integer(32, 1),
+            unassigned=integer(10000), duplicate_assignments=integer(10000),
+            unknown_assignments=integer(10000), refinement_round=integer(32),
+            previous=nullable(ref("wave")),
+            status={"enum": ["verified", "needs-refinement", "no-progress"]},
+            progress={"type": "boolean"}, grants_authority=fixed(False)),
+        "outcome-resolution": record(
+            "outcome-resolution", assessment=ref("wave"), query_sha256=ref("hash"),
+            selected_ids=array(text(512, 1), 1024),
+            status={"enum": ["candidate", "unresolved"]},
+            semantic_fidelity=fixed("unproven"), grants_authority=fixed(False)),
+        "subscription-proposal": record(
+            "subscription-proposal", assessment=ref("wave"),
+            target=fixed("rapp-private-hive"),
+            selected_ids=array(text(512, 1), 1024),
+            withheld_private=integer(10000), withheld_excluded=integer(10000),
+            externally_approved_private=integer(10000),
+            external_owner_approval_required=fixed(True),
+            publication_authorized=fixed(False), grants_authority=fixed(False)),
     }
     for guarantee in GUARANTEES:
         records[guarantee + "-receipt"] = record(

@@ -89,7 +89,8 @@ necessary proof MUST be disabled/refused, not implemented through a weaker
 fallback. In particular, Workspace/1 core disables remote model submission,
 network/loopback access, arbitrary imports/host tools/code, external effects,
 partitioned execution, live native rebinding/migration, timed physical
-erasure, unqualified runtimes and claims of learned semantic capability.
+erasure, unqualified runtimes, repository cloning, non-default branch history,
+Hive publication and claims of learned semantic capability.
 
 The evaluator accepts a closed data instruction, never Python, shell,
 templates, imports or callbacks. Supported operations are bounded byte
@@ -283,7 +284,59 @@ Unavailable historical replay MUST be labeled unavailable, not false and not
 freshly verified. New execution requires current qualification and rights;
 an old pass or a valid chain cannot satisfy those gates.
 
-## 12. Higher mechanisms: explicit gates or refusal
+## 12. Recursive catalogs, outcome routing and Hive proposals
+
+A unified workspace MAY catalog an explicitly authorized repository estate
+without cloning it or opening every folder. Provider access occurs outside the
+core effect boundary. Workspace/1 receives only finite captured catalog shards
+whose exact bytes, indexes, count and source restrictions are bound to RAPP/1
+frames.
+
+Repository catalogs are **default-branch-only**. A selected default branch is
+the repository's main working branch regardless of its literal name. Branch
+history, other refs, automatic checkout and repository cloning are separate
+effects and remain disabled. The core verifies the closed branch-scope field,
+catalog snapshot and captured tree commitments; it does **not** independently
+prove that an external provider reported the selected ref as default. Current
+records therefore carry `external-host-observation-unproven`. A future
+qualified provider adapter/receipt is required before claiming provider truth.
+A recursive file map MAY remain in manager-owned private storage while the
+framed catalog entry binds its digest, completeness, labels and source
+classification.
+
+Every complete catalog MUST:
+
+- use one catalog/root identity and contiguous shard indexes;
+- refuse missing, duplicate or substituted shards and duplicate entry IDs;
+- retain parent links without cycles or references outside the complete
+  catalog;
+- distinguish public, private and excluded source classifications without
+  treating any classification as publication authority; and
+- propagate restrictions across every shard, tree, outcome and proposal.
+
+An organization tree is a candidate lens output, not authority. The controller
+MUST assess its complete assignments, unknown/duplicate entries, group graph,
+depth and largest direct bucket against externally selected bounds. An
+ineffective but valid tree emits `needs-refinement`. A successor assessment
+MUST bind the previous assessment and demonstrate measurable improvement.
+Repeated non-improvement emits `no-progress`; it MUST NOT be called organized
+or loop forever. Every attempted shape remains in history.
+
+The intended user experience is outcome-first. A user may ask for an outcome
+without naming a repository or path. An outcome-resolution frame binds the
+query digest and selected catalog IDs, but its semantic fidelity remains
+`unproven` until independently evaluated. It cannot grant source access,
+checkout, execution, adoption or any other capability.
+
+A Private Hive subscription is a separate proposal over a verified
+organization. Public-source entries may be proposed. Private-source entries
+MUST be withheld unless the external owner explicitly approves their exact IDs;
+excluded entries remain withheld. The proposal always records
+`publication_authorized:false`. Actual NAS/network publication, signing,
+catalog mutation and subscriber authorization remain the responsibility of a
+separately qualified RAPP Private Hive authority and are disabled in this core.
+
+## 13. Higher mechanisms: explicit gates or refusal
 
 Merge fidelity MUST have a correspondence contract and report comparison
 coverage. No shared/compared dimensions means **unmeasured**, with no numeric
@@ -306,7 +359,7 @@ proof. The earlier byte-only migrator does not satisfy those requirements.
 Workspace/1 core live migration is disabled before source access. Missing original
 spec bytes or native mapping cannot be guessed or solved by re-labeling.
 
-## 13. Blocking conformance and honest completion
+## 14. Blocking conformance and honest completion
 
 The [safety matrix](safety-matrix.json) maps every P0/P1 obligation to an
 implemented gate or explicit disabled capability and deterministic negative
@@ -322,7 +375,10 @@ subject suppression across renditions; zero-overlap merge; context coverage;
 root budgets/stop capacity; historical unavailability; stale delta;
 partition/fork refusal; disabled migration; inert output; executable
 verification-through-consumption; portability/rebinding separation; and
-unproven learned-capability refusal.
+unproven learned-capability refusal. Recursive vectors MUST also cover
+default-branch-only catalogs, incomplete/duplicate shards, parent cycles,
+bucket refinement, no-progress termination, outcome non-authority and private
+Hive withholding.
 
 Completion MUST report each guarantee separately and scan nonzero emitted
 canonical RAPP/1 frames. No single conformance verdict authorizes deployment.

@@ -15,6 +15,9 @@ This root document is navigation, not a second normative specification.
 authorized != safely deployable.** Separate scoped receipts and external
 authority gates are mandatory. Learned/received data can request, never grant.
 Unproven capabilities are explicitly disabled in Workspace/1 core.
+The core also defines bounded default-branch catalog shards, recursive
+organization assessment, outcome-routing candidates and non-publishing Private
+Hive subscription proposals.
 
 - [Normative specification](protocols/rapp-workspace/1/SPEC.md)
 - [Blocking P0/P1 safety matrix](protocols/rapp-workspace/1/safety-matrix.json)

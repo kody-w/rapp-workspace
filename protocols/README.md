@@ -8,7 +8,7 @@ collaboration and compliance while retaining byte-level RAPP/1 conformance.
 
 | Protocol | Purpose | Conformance |
 |---|---|---|
-| [`rapp-workspace/1`](rapp-workspace/1/SPEC.md) | RAPP Workspace/1 core protocol: five distinct guarantees, external capabilities/adoption and fail-closed effects | `python3 ../tools/frame_lens.py conformance --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"` |
+| [`rapp-workspace/1`](rapp-workspace/1/SPEC.md) | RAPP Workspace/1 core protocol: five distinct guarantees, recursive default-branch catalogs, outcome-first organization and fail-closed Hive proposals/effects | `python3 ../tools/frame_lens.py conformance --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"` |
 | [`rapp-hive/1`](rapp-hive/1/SPEC.md) | Private Hive workspaces, generic RAPP objects, sealed GODD rooms, PII-free DOGG, Dream Catcher convergence, and multi-channel projection | `python3 rapp-hive/1/reference/hive_conformance.py` |
 | [`rapp-federation/1`](rapp-federation/1/SPEC.md) | The universal logical Hive Mind: consent-bound business collaboration among sovereign Private Hives, including delay-tolerant exchange and durable receipts | `python3 rapp-federation/1/reference/conformance.py --report rapp-federation/1/conformance-results.json` |
 
