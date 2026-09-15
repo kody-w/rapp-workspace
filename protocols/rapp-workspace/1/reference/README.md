@@ -93,6 +93,10 @@ or mixed tiles refuse before assessment.
 `candidate_outcome` stores only a query digest and selected IDs with semantic
 fidelity still unproven. `propose_subscription` withholds private/excluded
 entries by default and always leaves actual Private Hive publication disabled.
+`compose_workspace` creates controller-owned routing DAG nodes from verified
+catalog entries and child composites. It preserves child identities/worlds,
+copies no content, and refuses duplicate members, forged children, ID conflicts
+and over-depth wrappers.
 
 The blocking matrix covers every P0/P1 requirement. Earlier candidate and
 experimental implementations are isolated under `../prototypes/` and are never

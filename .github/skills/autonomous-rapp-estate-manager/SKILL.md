@@ -75,6 +75,12 @@ Desktop are bounded scan roots, not thousands of editor folders. Exclude
 credentials/native stores/generated outputs and open only outcome-focused
 views.
 
+Use recursive workspace composites when one workspace should contain other
+workspaces. The wrapper is routing-only: retain child RAPPIDs, worlds, source
+roots and authority; never move/copy children or merge their identities.
+Controller-produced composites may be wrapped again, but duplicate membership,
+cycles and changed reuse of one composite ID refuse.
+
 Return exact evidence per guarantee, source preservation scope, active
 refusals and owner blockers. Do not invent approvals, signed registries,
 runtime qualification, deployment, native adapters or a successful migration.

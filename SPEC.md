@@ -17,7 +17,8 @@ authority gates are mandatory. Learned/received data can request, never grant.
 Unproven capabilities are explicitly disabled in Workspace/1 core.
 The core also defines bounded default-branch catalog shards, recursive
 organization assessment, outcome-routing candidates and non-publishing Private
-Hive subscription proposals.
+Hive subscription proposals. Verified workspace trees can be wrapped into
+recursive pointer-only composites without copying or merging child identities.
 
 - [Normative specification](protocols/rapp-workspace/1/SPEC.md)
 - [Blocking P0/P1 safety matrix](protocols/rapp-workspace/1/safety-matrix.json)

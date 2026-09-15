@@ -312,6 +312,7 @@ class Controller:
             CREATE TABLE IF NOT EXISTS requests(work TEXT PRIMARY KEY, result TEXT);
             CREATE TABLE IF NOT EXISTS faults(hash TEXT PRIMARY KEY, raw BLOB);
             CREATE TABLE IF NOT EXISTS assessments(hash TEXT PRIMARY KEY);
+            CREATE TABLE IF NOT EXISTS composites(hash TEXT PRIMARY KEY, composite_id TEXT UNIQUE NOT NULL);
         """)
         binding = self._policy_value(policy)
         old = self._get("policy")
@@ -838,6 +839,132 @@ class Controller:
                 external_owner_approval_required=True,
                 publication_authorized=False, grants_authority=False))
 
+    def _composite_members(self, subject, reference, active=None):
+        active = set() if active is None else active
+        key = address(reference)
+        require(key not in active, "workspace-composite-cycle")
+        active.add(key)
+        try:
+            composite = self.body(reference)
+            require(composite["schema"] == PROFILE + "/workspace-composite"
+                    and composite["native_subject"] == subject
+                    and composite["world_id"] == self.policy.world_id
+                    and composite["instance_rappid"] == self.policy.instance_rappid
+                    and self.db.execute(
+                        "SELECT 1 FROM composites WHERE hash=?", (key,)
+                    ).fetchone(),
+                    "workspace-composite-controller-record-required")
+            self.guard(subject, "local_synthesis", composite["restrictions"])
+            self.guard(subject, "retention", composite["restrictions"])
+            members = set(composite["selected_ids"])
+            composite_ids = {composite["composite_id"]}
+            restrictions = [composite["restrictions"]]
+            depth = 0
+            for child in composite["child_composites"]:
+                child_body, child_members, child_ids, child_restrictions, child_depth = (
+                    self._composite_members(subject, child, active)
+                )
+                require(not members & child_members,
+                        "workspace-composite-duplicate-member")
+                members.update(child_members)
+                composite_ids.update(child_ids)
+                restrictions.extend(child_restrictions)
+                depth = max(depth, child_depth + 1)
+            require(composite["member_count"] == len(members)
+                    and composite["members_sha256"] == _canonical_sha256(sorted(members))
+                    and composite["depth"] == depth,
+                    "workspace-composite-member-substitution")
+            return composite, members, composite_ids, restrictions, depth
+        finally:
+            active.remove(key)
+
+    def compose_workspace(self, subject, assessment, composite_id, selected_ids,
+                          child_composites=()):
+        self.guard(subject, "local_synthesis")
+        self.guard(subject, "retention")
+        _bounded_text(composite_id, 128, "invalid-workspace-composite-id")
+        require(type(selected_ids) is list and len(selected_ids) <= 1024
+                and all(type(value) is str for value in selected_ids),
+                "invalid-workspace-composite-selection")
+        for value in selected_ids:
+            _bounded_text(value, 512, "invalid-workspace-composite-selection")
+        require(len(selected_ids) == len(set(selected_ids)),
+                "invalid-workspace-composite-selection")
+        require(isinstance(child_composites, (list, tuple))
+                and len(child_composites) <= 128,
+                "invalid-workspace-composite-children")
+        child_refs = list(child_composites)
+        child_addresses = [address(reference) for reference in child_refs]
+        require(len(child_addresses) == len(set(child_addresses)),
+                "invalid-workspace-composite-children")
+        evaluated = self.body(assessment)
+        require(evaluated["schema"] == PROFILE + "/organization-assessment"
+                and evaluated["native_subject"] == subject
+                and self.db.execute(
+                    "SELECT 1 FROM assessments WHERE hash=?", (address(assessment),)
+                ).fetchone()
+                and evaluated["status"] == "verified",
+                "workspace-composite-requires-verified-organization")
+        _, _, snapshot_sha256, entries, inherited = self._catalog_entries(
+            subject, evaluated["catalog_shards"])
+        require(evaluated["snapshot_sha256"] == snapshot_sha256
+                and set(selected_ids) <= set(entries)
+                and all("workspace" in entries[entry_id]["labels"]
+                        for entry_id in selected_ids),
+                "workspace-composite-selection-outside-catalog")
+        selected = sorted(selected_ids)
+        children = [
+            reference for _, reference in sorted(zip(child_addresses, child_refs))
+        ]
+        members = set(selected)
+        composite_ids = set()
+        child_restrictions = []
+        depth = 0
+        for child in children:
+            child_body, child_members, child_ids, restrictions, child_depth = (
+                self._composite_members(subject, child)
+            )
+            require(composite_id not in child_ids, "workspace-composite-cycle")
+            require(not members & child_members,
+                    "workspace-composite-duplicate-member")
+            members.update(child_members)
+            composite_ids.update(child_ids)
+            child_restrictions.extend(restrictions)
+            depth = max(depth, child_depth + 1)
+        require(composite_id not in composite_ids and members,
+                "workspace-composite-empty-or-cycle")
+        require(len(members) <= 10000 and depth <= 32,
+                "workspace-composite-bound")
+        restrictions = self.propagate([
+            evaluated["restrictions"], *inherited, *child_restrictions,
+        ])
+        with self.transaction():
+            existing = self.db.execute(
+                "SELECT hash FROM composites WHERE composite_id=?", (composite_id,)
+            ).fetchone()
+            if existing:
+                reference = {"space": "rapp/1:wave", "hash": existing[0]}
+                prior = self.body(reference)
+                require(prior["assessment"] == assessment
+                        and prior["selected_ids"] == selected
+                        and prior["child_composites"] == children,
+                        "workspace-composite-idempotency-conflict")
+                return reference
+            composite = self._emit(self._payload(
+                "workspace-composite", subject, restrictions,
+                assessment=assessment, composite_id=composite_id,
+                selected_ids=selected, child_composites=children,
+                member_count=len(members),
+                members_sha256=_canonical_sha256(sorted(members)),
+                depth=depth, recursive=True, routing_only=True,
+                child_identities_preserved=True, child_worlds_preserved=True,
+                content_copied=False, grants_authority=False))
+            self.db.execute(
+                "INSERT INTO composites VALUES (?,?)",
+                (address(composite), composite_id),
+            )
+            return composite
+
     def synthesize(self, subject, source, operation="identity-octets", field=""):
         self.guard(subject, "local_synthesis")
         self.guard(subject, "retention")
@@ -1204,6 +1331,13 @@ class Controller:
             assessment = self.body({"space": "rapp/1:wave", "hash": assessment_hash})
             require(assessment["schema"] == PROFILE + "/organization-assessment",
                     "assessment-ledger-recovery-quarantine")
+        for composite_hash, composite_id in self.db.execute(
+                "SELECT hash,composite_id FROM composites ORDER BY composite_id"):
+            reference = {"space": "rapp/1:wave", "hash": composite_hash}
+            composite, _, _, _, _ = self._composite_members(
+                self.body(reference)["native_subject"], reference)
+            require(composite["composite_id"] == composite_id,
+                    "workspace-composite-ledger-recovery-quarantine")
         # Historical receipts remain scoped evidence even if their former evaluator is unavailable.
         return {"rapp_integrity": "verified", "frames": 0 if head is None else head["seq"] + 1,
                 "semantic_fidelity": "historical-receipts-only", "current_authorization": "not-inferred",

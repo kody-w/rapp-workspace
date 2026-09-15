@@ -16,13 +16,13 @@
   "normative": [
     {
       "path": "SPEC.md",
-      "sha256": "eaa8a94dd01129cedba5598bb5c28f85b2161d27841ecbd8722b8fd5c7c56672",
-      "bytes": 22367
+      "sha256": "ab0d681a0eb103648e306608c01a1e6fd2b3f62092c6d1c25cf80c01e514a638",
+      "bytes": 23227
     },
     {
       "path": "safety-matrix.json",
-      "sha256": "f0f4a41542c6602c60ba6d0e08d203eb554c809e2acf03c5b140bdb37475c14f",
-      "bytes": 5692
+      "sha256": "ab940cec8ab3aaf2a1ffc63b163235edce72759bd49a98d3d0831588d5ae9f8f",
+      "bytes": 5993
     },
     {
       "path": "schemas/adoption-record.schema.json",
@@ -113,6 +113,11 @@
       "path": "schemas/subscription-proposal.schema.json",
       "sha256": "d0ec83e9a6b19a5544040ed783ab52a3c36183742f4f263e4215e5e01e857ef1",
       "bytes": 2012
+    },
+    {
+      "path": "schemas/workspace-composite.schema.json",
+      "sha256": "f1cabbdc220ffa90e58589fdfae0d2ec9709107c1e89674cdd3bc6a638268e7b",
+      "bytes": 2451
     }
   ],
   "reference": [
@@ -138,13 +143,13 @@
     },
     {
       "path": "reference/safe_kernel.py",
-      "sha256": "16fc27db45e0042df3107570e64adc8a5108f9930cbc724d54265b07ec53efdf",
-      "bytes": 77172
+      "sha256": "ea23aff490572cac922304fdfd9fa2b097f843408a22bde94d12fa19b6068fc1",
+      "bytes": 84377
     },
     {
       "path": "reference/schema_source.py",
-      "sha256": "3299cc7137a0365c35810c3aae47716055644587a066d7133cd7ffb9b339e027",
-      "bytes": 9705
+      "sha256": "467a8a6d6f250b70a6e48553fe44e220ba423a7f8c6e3bbc8afafe4b811e59cb",
+      "bytes": 10273
     },
     {
       "path": "reference/total_eval.py",
@@ -155,18 +160,18 @@
   "repository_evidence": [
     {
       "path": "README.md",
-      "sha256": "85e5e9c56dd65e87eed42054cf6cf3da005636b84ebb542b3be7393b76ea977a",
-      "bytes": 7363
+      "sha256": "6f3332dee8332f2d8ff7c7da8b1501a5b4a965e07c5f2b8322c46bddb43e93ef",
+      "bytes": 7671
     },
     {
       "path": "SPEC.md",
-      "sha256": "b772f46e3daf2edab0813a05882c9e638a4b588570325b2cd07f5fad962dc249",
-      "bytes": 1676
+      "sha256": "60a9eda4040ffc2fe5f461100121fa4f3b49b5d7c88ac6c68777937a4443abfd",
+      "bytes": 1800
     },
     {
       "path": "SKILL.md",
-      "sha256": "784fc57786834f0fedd8f3a67a0c6897558857e81d1a27fa9de87c76f14d9962",
-      "bytes": 9238
+      "sha256": "f30c8f70a12ea7f07476378575ff23b0d51c382ede691ab8be0d492a1c0a68c3",
+      "bytes": 9458
     },
     {
       "path": "tools/frame_lens.py",
@@ -175,8 +180,8 @@
     },
     {
       "path": "tests/test_safe_kernel.py",
-      "sha256": "df0bb52704630eb24344626d771efd78810dc7b4597d5c757043f45950e9a376",
-      "bytes": 56465
+      "sha256": "e00b6546056413b83a3a95b696a9bfff7acaa96b35a2ed617b3e59659718cb80",
+      "bytes": 58371
     },
     {
       "path": "protocols/rapp-workspace/prototypes/README.md",
@@ -185,18 +190,18 @@
     },
     {
       "path": "protocols/README.md",
-      "sha256": "a1181a5d1851b113e271e9118b316071f091ec0b91acd657f581c7501c4823ae",
-      "bytes": 2771
+      "sha256": "200836f5d3b0d518343f3314fd6db4984e442263eb1e58495f73f6f977b04247",
+      "bytes": 2780
     },
     {
       "path": ".github/skills/rapp-workspace/SKILL.md",
-      "sha256": "784fc57786834f0fedd8f3a67a0c6897558857e81d1a27fa9de87c76f14d9962",
-      "bytes": 9238
+      "sha256": "f30c8f70a12ea7f07476378575ff23b0d51c382ede691ab8be0d492a1c0a68c3",
+      "bytes": 9458
     },
     {
       "path": ".github/skills/autonomous-rapp-estate-manager/SKILL.md",
-      "sha256": "ad932786d68243c2aeb43f8e47c77c55ed29dbed2121dd3bdb96d69abe76854d",
-      "bytes": 4511
+      "sha256": "79aab90f78389d0ca4121053cd431417579fbe73f4ecb9211070483bef522854",
+      "bytes": 4870
     }
   ],
   "provenance": {
