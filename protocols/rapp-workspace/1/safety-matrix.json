@@ -28,6 +28,7 @@
     {"id": "P1-LEARNING", "gate": "actual-synthesis-and-unseen-transfer-evidence", "status": "learned-semantic-claims-disabled", "vectors": ["fixture-only-learning-claim-refusal"]},
     {"id": "P1-CATALOG", "gate": "complete-default-branch-recursive-catalog-shards", "status": "implemented-structure-provider-default-truth-unproven", "vectors": ["incomplete-shards", "snapshot-mismatch", "duplicate-entry", "parent-cycle", "branch-history-disabled", "provider-default-claim-unproven"]},
     {"id": "P1-OUTCOME", "gate": "outcome-first-organization-quality-and-no-progress", "status": "implemented-structural-semantic-unproven", "vectors": ["broad-bucket-refinement", "improved-successor", "repeated-no-progress", "outcome-not-authority"]},
-    {"id": "P1-HIVE", "gate": "explicit-private-hive-subscription-proposal", "status": "proposal-only-publication-disabled", "vectors": ["public-proposable", "private-withheld", "explicit-private-selection-still-not-publication", "excluded-withheld"]}
+    {"id": "P1-HIVE", "gate": "explicit-private-hive-subscription-proposal", "status": "proposal-only-publication-disabled", "vectors": ["public-proposable", "private-withheld", "explicit-private-selection-still-not-publication", "excluded-withheld"]},
+    {"id": "P1-SCALE", "gate": "hierarchical-external-indexes-and-tiled-organization", "status": "implemented-bounded-metadata-only", "vectors": ["multi-tile-organization", "missing-tile-refusal", "mixed-snapshot-refusal", "focused-view-not-whole-tree", "external-index-digest-binding"]}
   ]
 }

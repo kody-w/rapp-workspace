@@ -96,6 +96,11 @@ repeated non-improvement produces `no-progress`. Outcome queries resolve to
 candidate catalog IDs without granting file access or claiming semantic
 fidelity.
 
+Organization candidates may span 32 content-addressed tiles. Downloads,
+Documents, Desktop and similarly large roots remain bounded external recursive
+indexes; Workspace/1 frames their digests and opens only focused outcome
+subsets. It never turns every file into an editor root.
+
 Private Hive output is proposal-only. Public-source entries may be proposed;
 private entries remain withheld without exact external owner approval, and
 even an approved proposal cannot publish or mutate the signed NAS authority.

@@ -69,6 +69,12 @@ candidate routing only. Private Hive sharing is a separate proposal that
 withholds private entries unless the owner approves exact IDs and never
 publishes by itself.
 
+At whole-machine scale, tile organization assignments under one snapshot and
+keep recursive file maps in private external indexes. Downloads, Documents and
+Desktop are bounded scan roots, not thousands of editor folders. Exclude
+credentials/native stores/generated outputs and open only outcome-focused
+views.
+
 Return exact evidence per guarantee, source preservation scope, active
 refusals and owner blockers. Do not invent approvals, signed registries,
 runtime qualification, deployment, native adapters or a successful migration.
