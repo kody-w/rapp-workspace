@@ -88,6 +88,8 @@ and their shared snapshot commitment. Provider-default truth remains marked
 external-host-observation-unproven.
 `assess_organization` requires the complete shard set and records broad
 buckets, missing assignments, refinement progress or durable no-progress.
+Organization input may be one source or up to 32 same-snapshot tiles; missing
+or mixed tiles refuse before assessment.
 `candidate_outcome` stores only a query digest and selected IDs with semantic
 fidelity still unproven. `propose_subscription` withholds private/excluded
 entries by default and always leaves actual Private Hive publication disabled.

@@ -40,6 +40,37 @@ def catalog_snapshot(entries):
     ).encode("ascii"))
 
 
+def organization_tiles(catalog_id, groups, assignments, *, tree_id="organization", tile_count=1):
+    snapshot = {
+        "tree_id": tree_id,
+        "catalog_id": catalog_id,
+        "root_group": "root",
+        "groups": groups,
+        "assignments": sorted(
+            assignments,
+            key=lambda item: (item["entry_id"], item["group_id"]),
+        ),
+    }
+    digest = sha(json.dumps(
+        snapshot, sort_keys=True, ensure_ascii=True, allow_nan=False,
+        separators=(",", ":"),
+    ).encode("ascii"))
+    return [
+        {
+            "schema": "rapp-workspace/organization-tree-tile/1",
+            "tree_id": tree_id,
+            "catalog_id": catalog_id,
+            "root_group": "root",
+            "tile_index": index,
+            "tile_count": tile_count,
+            "snapshot_sha256": digest,
+            "groups": groups,
+            "assignments": assignments[index::tile_count],
+        }
+        for index in range(tile_count)
+    ]
+
+
 class SafeKernelTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -606,18 +637,16 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
             source = self.c.capture_octets(self.scope.subject(), self.core.octets(document))["source"]
             shards.append(self.c.register_catalog_shard(self.scope.subject(), source))
 
-        broad_tree = {
-            "schema": "rapp-workspace/organization-tree/1",
-            "catalog_id": "github:kody-w",
-            "root_group": "root",
-            "groups": [
+        broad_tree = organization_tiles(
+            "github:kody-w",
+            [
                 {"id": "root", "name": "GitHub", "parent": None},
                 {"id": "all-work", "name": "All Work", "parent": "root"},
             ],
-            "assignments": [
+            [
                 {"entry_id": entry["id"], "group_id": "all-work"} for entry in entries
             ],
-        }
+        )[0]
         broad_source = self.c.capture_octets(
             self.scope.subject(), self.core.octets(broad_tree))["source"]
         first = self.c.assess_organization(
@@ -627,22 +656,20 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
         self.assertEqual(first_body["status"], "needs-refinement")
         self.assertEqual(first_body["largest_bucket"], 4)
 
-        refined_tree = {
-            "schema": "rapp-workspace/organization-tree/1",
-            "catalog_id": "github:kody-w",
-            "root_group": "root",
-            "groups": [
+        refined_tree = organization_tiles(
+            "github:kody-w",
+            [
                 {"id": "root", "name": "GitHub", "parent": None},
                 {"id": "build", "name": "Build", "parent": "root"},
                 {"id": "publish", "name": "Publish", "parent": "root"},
             ],
-            "assignments": [
+            [
                 {"entry_id": "repo:a", "group_id": "build"},
                 {"entry_id": "repo:b", "group_id": "build"},
                 {"entry_id": "repo:c", "group_id": "publish"},
                 {"entry_id": "repo:d", "group_id": "publish"},
             ],
-        }
+        )[0]
         refined_source = self.c.capture_octets(
             self.scope.subject(), self.core.octets(refined_tree))["source"]
         refined = self.c.assess_organization(
@@ -704,13 +731,11 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
             with self.subTest(operation=operation), self.assertRaisesRegex(
                     Refusal, "disabled-workspace1-core"):
                 self.c.require_effect(self.scope.subject(), operation)
-        tree = {
-            "schema": "rapp-workspace/organization-tree/1",
-            "catalog_id": "github:kody-w",
-            "root_group": "root",
-            "groups": [{"id": "root", "name": "GitHub", "parent": None}],
-            "assignments": [{"entry_id": "repo:a", "group_id": "root"}],
-        }
+        tree = organization_tiles(
+            "github:kody-w",
+            [{"id": "root", "name": "GitHub", "parent": None}],
+            [{"entry_id": "repo:a", "group_id": "root"}],
+        )[0]
         tree_source = self.c.capture_octets(self.scope.subject(), self.core.octets(tree))["source"]
         with self.assertRaisesRegex(Refusal, "incomplete-catalog-shards"):
             self.c.assess_organization(
@@ -729,7 +754,11 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
             self.c.candidate_outcome(
                 self.scope.subject(), shard, "invalid assessment", ["repo:a"])
 
-        broad = {**tree, "assignments": []}
+        broad = organization_tiles(
+            "github:kody-w",
+            [{"id": "root", "name": "GitHub", "parent": None}],
+            [],
+        )[0]
         broad_source = self.c.capture_octets(
             self.scope.subject(), self.core.octets(broad))["source"]
         needs = self.c.assess_organization(
@@ -811,13 +840,11 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
             source = self.c.capture_octets(
                 self.scope.subject(), self.core.octets(document))["source"]
             shards.append(self.c.register_catalog_shard(self.scope.subject(), source))
-        tree = {
-            "schema": "rapp-workspace/organization-tree/1",
-            "catalog_id": "github:kody-w",
-            "root_group": "root",
-            "groups": [{"id": "root", "name": "GitHub", "parent": None}],
-            "assignments": [],
-        }
+        tree = organization_tiles(
+            "github:kody-w",
+            [{"id": "root", "name": "GitHub", "parent": None}],
+            [],
+        )[0]
         tree_source = self.c.capture_octets(
             self.scope.subject(), self.core.octets(tree))["source"]
         with self.assertRaisesRegex(Refusal, "catalog-shard-family-mismatch"):
@@ -889,13 +916,11 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
         source = controller.capture_octets(
             first_scope.subject(), self.core.octets(document))["source"]
         shard = controller.register_catalog_shard(first_scope.subject(), source)
-        broad = {
-            "schema": "rapp-workspace/organization-tree/1",
-            "catalog_id": "github:kody-w",
-            "root_group": "root",
-            "groups": [{"id": "root", "name": "GitHub", "parent": None}],
-            "assignments": [],
-        }
+        broad = organization_tiles(
+            "github:kody-w",
+            [{"id": "root", "name": "GitHub", "parent": None}],
+            [],
+        )[0]
         foreign_tree = controller.capture_octets(
             second_scope.subject(), self.core.octets(broad))["source"]
         with self.assertRaisesRegex(Refusal, "subject-or-world-substitution"):
@@ -911,10 +936,11 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
         needs = controller.assess_organization(
             first_scope.subject(), [shard], broad_source,
             max_bucket=1, allowed_depth=2)
-        refined = {
-            **broad,
-            "assignments": [{"entry_id": "repo:a", "group_id": "root"}],
-        }
+        refined = organization_tiles(
+            "github:kody-w",
+            [{"id": "root", "name": "GitHub", "parent": None}],
+            [{"entry_id": "repo:a", "group_id": "root"}],
+        )[0]
         refined_source = controller.capture_octets(
             first_scope.subject(), self.core.octets(refined))["source"]
         verified = controller.assess_organization(
@@ -922,6 +948,84 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
             max_bucket=1, allowed_depth=2, refinement_round=1, previous=needs)
         self.assertEqual(controller.body(verified)["status"], "verified")
         self.assertEqual(controller.body(verified)["restrictions"]["audience"], ["A"])
+
+    def test_tiled_organization_scales_without_one_giant_tree_document(self):
+        policy = replace(
+            self.policy,
+            max_frames=512,
+            max_total_octets=4 * 1024 * 1024,
+        )
+        controller = Controller(
+            self.core, self.root / "tiled-controller", policy, now=NOW)
+        self.addCleanup(controller.close)
+        controller.seed(self.scope.subject())
+        entries = [
+            {
+                "id": f"repo:{index:04d}",
+                "kind": "git-repository-default-branch",
+                "parent": "github:synthetic",
+                "labels": [f"group-{index % 16:02d}"],
+                "metadata_sha256": sha(str(index).encode("ascii")),
+                "share_class": "public-source",
+            }
+            for index in range(1024)
+        ]
+        catalog_digest = catalog_snapshot(entries)
+        shards = []
+        for index in range(4):
+            document = {
+                "schema": "rapp-workspace/catalog-chunk/1",
+                "catalog_id": "github:synthetic",
+                "root_id": "github:synthetic",
+                "shard_index": index,
+                "shard_count": 4,
+                "snapshot_sha256": catalog_digest,
+                "branch_scope": "default-branch-only",
+                "branch_evidence_status": "external-host-observation-unproven",
+                "recursive": True,
+                "entries": entries[index * 256:(index + 1) * 256],
+            }
+            raw = self.core.octets(document)
+            self.assertLessEqual(len(raw), 65536)
+            source = controller.capture_octets(self.scope.subject(), raw)["source"]
+            shards.append(controller.register_catalog_shard(self.scope.subject(), source))
+        groups = [{"id": "root", "name": "Synthetic", "parent": None}] + [
+            {"id": f"group-{index:02d}", "name": f"Outcome {index:02d}", "parent": "root"}
+            for index in range(16)
+        ]
+        assignments = [
+            {"entry_id": entry["id"], "group_id": f"group-{index % 16:02d}"}
+            for index, entry in enumerate(entries)
+        ]
+        documents = organization_tiles(
+            "github:synthetic", groups, assignments,
+            tree_id="github:synthetic:outcomes", tile_count=4)
+        tree_sources = []
+        for document in documents:
+            raw = self.core.octets(document)
+            self.assertLessEqual(len(raw), 65536)
+            tree_sources.append(
+                controller.capture_octets(self.scope.subject(), raw)["source"])
+        with self.assertRaisesRegex(Refusal, "incomplete-organization-tiles"):
+            controller.assess_organization(
+                self.scope.subject(), shards, tree_sources[:-1],
+                max_bucket=64, allowed_depth=3)
+        mixed_document = {**documents[0], "snapshot_sha256": "f" * 64}
+        mixed_source = controller.capture_octets(
+            self.scope.subject(), self.core.octets(mixed_document))["source"]
+        with self.assertRaisesRegex(Refusal, "organization-tile-family-mismatch"):
+            controller.assess_organization(
+                self.scope.subject(), shards, [mixed_source, *tree_sources[1:]],
+                max_bucket=64, allowed_depth=3)
+        assessment = controller.assess_organization(
+            self.scope.subject(), shards, tree_sources,
+            max_bucket=64, allowed_depth=3)
+        body = controller.body(assessment)
+        self.assertEqual(body["status"], "verified")
+        self.assertEqual(body["entry_count"], 1024)
+        self.assertEqual(body["assigned_count"], 1024)
+        self.assertEqual(body["largest_bucket"], 64)
+        self.assertEqual(len(body["tree_sources"]), 4)
 
     def test_schemas_are_closed_bounded_and_workspace1_core_only(self):
         for filename, definition in schemas().items():

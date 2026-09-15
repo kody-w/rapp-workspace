@@ -21,8 +21,14 @@
     "restrictions": {
       "$ref": "common.schema.json#/$defs/restrictions"
     },
-    "tree_source": {
-      "$ref": "common.schema.json#/$defs/wave"
+    "tree_sources": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true
     },
     "catalog_shards": {
       "type": "array",
@@ -40,6 +46,15 @@
       "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
     },
     "snapshot_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "tree_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "tree_snapshot_sha256": {
       "$ref": "common.schema.json#/$defs/hash"
     },
     "root_group": {
@@ -133,10 +148,12 @@
     "world_id",
     "native_subject",
     "restrictions",
-    "tree_source",
+    "tree_sources",
     "catalog_shards",
     "catalog_id",
     "snapshot_sha256",
+    "tree_id",
+    "tree_snapshot_sha256",
     "root_group",
     "entry_count",
     "assigned_count",

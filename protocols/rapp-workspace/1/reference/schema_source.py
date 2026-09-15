@@ -114,9 +114,11 @@ def schemas():
             entry_ids=array(text(512, 1), 256, 1), entry_count=integer(256, 1),
             source_sha256=ref("hash"), grants_authority=fixed(False)),
         "organization-assessment": record(
-            "organization-assessment", tree_source=ref("wave"),
+            "organization-assessment", tree_sources=array(ref("wave"), 32, 1),
             catalog_shards=array(ref("wave"), 32, 1), catalog_id=text(128, 1),
-            snapshot_sha256=ref("hash"), root_group=text(64, 1), entry_count=integer(10000),
+            snapshot_sha256=ref("hash"), tree_id=text(128, 1),
+            tree_snapshot_sha256=ref("hash"), root_group=text(64, 1),
+            entry_count=integer(10000),
             assigned_count=integer(10000), group_count=integer(512, 1),
             max_depth=integer(32), largest_bucket=integer(10000),
             max_bucket=integer(10000, 1), allowed_depth=integer(32, 1),

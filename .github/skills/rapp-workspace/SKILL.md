@@ -81,6 +81,9 @@ Current-authorization receipts are historical snapshots, not bearer grants.
 13. Produce Private Hive subscription proposals only. Withhold private entries
     without exact owner approval; no proposal may publish or mutate Hive
     authority.
+14. Tile large organization candidates under one shared commitment. Treat
+    Downloads/Documents/Desktop as metadata scan boundaries, keep recursive
+    indexes external and digest-bound, and open only focused outcome subsets.
 
 ## One-command demonstration
 

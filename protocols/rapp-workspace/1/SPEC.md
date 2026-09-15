@@ -315,12 +315,23 @@ Every complete catalog MUST:
 - propagate restrictions across every shard, tree, outcome and proposal.
 
 An organization tree is a candidate lens output, not authority. The controller
-MUST assess its complete assignments, unknown/duplicate entries, group graph,
-depth and largest direct bucket against externally selected bounds. An
+MUST accept it as one to 32 contiguous content-addressed tiles sharing one
+complete tree commitment. This avoids one giant organization payload. The
+controller MUST assess the combined assignments, unknown/duplicate entries,
+group graph, depth and largest direct bucket against externally selected
+bounds. Missing, duplicate, mixed-snapshot or substituted tiles refuse. An
 ineffective but valid tree emits `needs-refinement`. A successor assessment
 MUST bind the previous assessment and demonstrate measurable improvement.
 Repeated non-improvement emits `no-progress`; it MUST NOT be called organized
 or loop forever. Every attempted shape remains in history.
+
+Large local sources such as Downloads, Documents or Desktop are **scan
+boundaries**, not one editor folder per file. Recursive file/path metadata
+belongs in bounded, resumable, no-follow external indexes whose exact digests
+are bound by catalog entries. Content is fetched only after an outcome selects
+an authorized object. Generated outputs, credentials, native stores, symlinks,
+device-boundary escapes and the manager itself MUST be excluded. The UI or
+editor MUST open focused outcome subsets, never the whole recursive file tree.
 
 The intended user experience is outcome-first. A user may ask for an outcome
 without naming a repository or path. An outcome-resolution frame binds the
@@ -377,8 +388,9 @@ partition/fork refusal; disabled migration; inert output; executable
 verification-through-consumption; portability/rebinding separation; and
 unproven learned-capability refusal. Recursive vectors MUST also cover
 default-branch-only catalogs, incomplete/duplicate shards, parent cycles,
-bucket refinement, no-progress termination, outcome non-authority and private
-Hive withholding.
+incomplete/mixed organization tiles, bucket refinement, no-progress
+termination, outcome non-authority, large external indexes and private Hive
+withholding.
 
 Completion MUST report each guarantee separately and scan nonzero emitted
 canonical RAPP/1 frames. No single conformance verdict authorizes deployment.

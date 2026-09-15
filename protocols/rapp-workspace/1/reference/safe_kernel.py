@@ -105,18 +105,28 @@ def catalog_document(core, raw):
     return value
 
 
-def organization_document(core, raw):
+def organization_tile(core, raw):
     try:
         value = core.r._strict_json(raw)
         domain(value)
     except (ValueError, TypeError, UnicodeError, RecursionError) as error:
         raise Refusal("invalid-organization-json") from error
     require(type(value) is dict and set(value) == {
-        "schema", "catalog_id", "root_group", "groups", "assignments",
-    } and value["schema"] == "rapp-workspace/organization-tree/1",
+        "schema", "tree_id", "catalog_id", "root_group", "tile_index",
+        "tile_count", "snapshot_sha256", "groups", "assignments",
+    } and value["schema"] == "rapp-workspace/organization-tree-tile/1",
         "closed-organization-document-required")
+    _bounded_text(value["tree_id"], 128, "invalid-organization-tree-id")
     _bounded_text(value["catalog_id"], 128, "invalid-catalog-id")
     _bounded_text(value["root_group"], 64, "invalid-organization-root")
+    require(type(value["tile_index"]) is int and type(value["tile_count"]) is int
+            and 1 <= value["tile_count"] <= 32
+            and 0 <= value["tile_index"] < value["tile_count"],
+            "invalid-organization-tile")
+    require(type(value["snapshot_sha256"]) is str
+            and len(value["snapshot_sha256"]) == 64
+            and all(char in "0123456789abcdef" for char in value["snapshot_sha256"]),
+            "invalid-organization-snapshot")
     groups = value["groups"]
     require(type(groups) is list and 1 <= len(groups) <= 512, "organization-group-bound")
     by_id = {}
@@ -158,6 +168,46 @@ def organization_document(core, raw):
         _bounded_text(assignment["entry_id"], 512, "invalid-organization-entry")
         _bounded_text(assignment["group_id"], 64, "invalid-organization-group-id")
     return value, by_id, depths
+
+
+def organization_documents(core, raws):
+    require(type(raws) is list and 1 <= len(raws) <= 32,
+            "organization-tree-source-bound")
+    documents = [organization_tile(core, raw) for raw in raws]
+    first, groups, depths = documents[0]
+    indexes = set()
+    assignments = []
+    for document, current_groups, current_depths in documents:
+        require((
+            document["tree_id"], document["catalog_id"], document["root_group"],
+            document["tile_count"], document["snapshot_sha256"],
+            document["groups"], current_groups, current_depths,
+        ) == (
+            first["tree_id"], first["catalog_id"], first["root_group"],
+            first["tile_count"], first["snapshot_sha256"],
+            first["groups"], groups, depths,
+        ), "organization-tile-family-mismatch")
+        require(document["tile_index"] not in indexes,
+                "duplicate-organization-tile-index")
+        indexes.add(document["tile_index"])
+        assignments.extend(document["assignments"])
+    require(len(documents) == first["tile_count"]
+            and indexes == set(range(first["tile_count"])),
+            "incomplete-organization-tiles")
+    require(len(assignments) <= 10000, "organization-assignment-bound")
+    snapshot = {
+        "tree_id": first["tree_id"],
+        "catalog_id": first["catalog_id"],
+        "root_group": first["root_group"],
+        "groups": first["groups"],
+        "assignments": sorted(
+            assignments,
+            key=lambda item: (item["entry_id"], item["group_id"]),
+        ),
+    }
+    require(_canonical_sha256(snapshot) == first["snapshot_sha256"],
+            "organization-snapshot-commitment-mismatch")
+    return {**first, "assignments": assignments}, groups, depths
 
 
 @dataclass(frozen=True)
@@ -620,8 +670,16 @@ class Controller:
                 "organization-refinement-round-parent-mismatch")
         catalog_id, _, snapshot_sha256, entries, inherited = self._catalog_entries(
             subject, catalog_shards)
-        tree, raw = self._observation_octets(tree_source, subject)
-        document, groups, depths = organization_document(self.core, raw)
+        tree_sources = tree_source if type(tree_source) is list else [tree_source]
+        require(1 <= len(tree_sources) <= 32
+                and len({address(reference) for reference in tree_sources}) == len(tree_sources),
+                "organization-tree-source-bound")
+        tree_restrictions, tree_raws = [], []
+        for reference in tree_sources:
+            tree, raw = self._observation_octets(reference, subject)
+            tree_restrictions.append(tree["restrictions"])
+            tree_raws.append(raw)
+        document, groups, depths = organization_documents(self.core, tree_raws)
         require(document["catalog_id"] == catalog_id, "organization-catalog-substitution")
         seen, valid, duplicate_assignments, unknown_assignments = set(), set(), 0, 0
         buckets = {group_id: 0 for group_id in groups}
@@ -670,12 +728,14 @@ class Controller:
             progress = quality < prior_quality
             if status != "verified" and not progress:
                 status = "no-progress"
-        restrictions = self.propagate([tree["restrictions"], *inherited, *prior_restrictions])
+        restrictions = self.propagate([*tree_restrictions, *inherited, *prior_restrictions])
         with self.transaction():
             assessment = self._emit(self._payload(
                 "organization-assessment", subject, restrictions,
-                tree_source=tree_source, catalog_shards=catalog_shards,
+                tree_sources=tree_sources, catalog_shards=catalog_shards,
                 catalog_id=catalog_id, snapshot_sha256=snapshot_sha256,
+                tree_id=document["tree_id"],
+                tree_snapshot_sha256=document["snapshot_sha256"],
                 root_group=document["root_group"],
                 entry_count=len(entries), assigned_count=len(valid),
                 group_count=len(groups), max_depth=max_depth,
