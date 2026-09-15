@@ -50,10 +50,16 @@
       "$ref": "common.schema.json#/$defs/hash"
     },
     "branch_scope": {
-      "const": "default-branch-only"
+      "enum": [
+        "default-branch-only",
+        "not-applicable"
+      ]
     },
     "branch_evidence_status": {
-      "const": "external-host-observation-unproven"
+      "enum": [
+        "external-host-observation-unproven",
+        "not-applicable"
+      ]
     },
     "recursive": {
       "type": "boolean"

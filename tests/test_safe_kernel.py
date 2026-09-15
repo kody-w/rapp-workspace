@@ -762,6 +762,24 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
             self.scope.subject(), self.core.octets(invalid_branch))["source"]
         with self.assertRaisesRegex(Refusal, "unsupported-catalog-scope"):
             self.c.register_catalog_shard(self.scope.subject(), invalid_source)
+        local_entry = {
+            **entry,
+            "kind": "local-workspace",
+            "labels": ["workspace"],
+        }
+        local_document = {
+            **document,
+            "shard_count": 1,
+            "snapshot_sha256": catalog_snapshot([local_entry]),
+            "branch_scope": "not-applicable",
+            "branch_evidence_status": "not-applicable",
+            "entries": [local_entry],
+        }
+        local_source = self.c.capture_octets(
+            self.scope.subject(), self.core.octets(local_document))["source"]
+        local_shard = self.c.register_catalog_shard(
+            self.scope.subject(), local_source)
+        self.assertEqual(self.c.body(local_shard)["branch_scope"], "not-applicable")
         for operation in ("repository_clone", "branch_history", "hive_publication"):
             with self.subTest(operation=operation), self.assertRaisesRegex(
                     Refusal, "disabled-workspace1-core"):

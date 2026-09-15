@@ -105,6 +105,8 @@ Verified trees can be wrapped into routing-only workspace composites. A
 composite may contain leaf workspace pointers and child composites, then become
 a child again at the next level. Child identities/worlds remain sovereign;
 duplicate membership, cycles, content copying and authority inheritance refuse.
+Non-Git local workspaces use an explicit branch-not-applicable catalog scope;
+the protocol never invents a repository identity for an ordinary directory.
 
 Private Hive output is proposal-only. Public-source entries may be proposed;
 private entries remain withheld without exact external owner approval, and

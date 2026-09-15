@@ -108,8 +108,11 @@ def schemas():
         "catalog-shard": record(
             "catalog-shard", source=ref("wave"), catalog_id=text(128, 1), root_id=text(512, 1),
             shard_index=integer(31), shard_count=integer(32, 1),
-            snapshot_sha256=ref("hash"), branch_scope=fixed("default-branch-only"),
-            branch_evidence_status=fixed("external-host-observation-unproven"),
+            snapshot_sha256=ref("hash"),
+            branch_scope={"enum": ["default-branch-only", "not-applicable"]},
+            branch_evidence_status={"enum": [
+                "external-host-observation-unproven", "not-applicable",
+            ]},
             recursive={"type": "boolean"},
             entry_ids=array(text(512, 1), 256, 1), entry_count=integer(256, 1),
             source_sha256=ref("hash"), grants_authority=fixed(False)),

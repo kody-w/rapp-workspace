@@ -304,6 +304,11 @@ A recursive file map MAY remain in manager-owned private storage while the
 framed catalog entry binds its digest, completeness, labels and source
 classification.
 
+Non-Git local workspace catalogs MUST use
+`branch_scope:not-applicable` together with
+`branch_evidence_status:not-applicable`. They MUST NOT fabricate a repository,
+branch or commit merely to enter a workspace composite.
+
 Every complete catalog MUST:
 
 - use one catalog/root identity and contiguous shard indexes;
