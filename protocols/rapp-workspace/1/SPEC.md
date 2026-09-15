@@ -333,6 +333,20 @@ an authorized object. Generated outputs, credentials, native stores, symlinks,
 device-boundary escapes and the manager itself MUST be excluded. The UI or
 editor MUST open focused outcome subsets, never the whole recursive file tree.
 
+A verified organization MAY be wrapped into a `workspace-composite`.
+Composites contain catalog entry IDs and/or previously verified child
+composites. They are routing-only pointer structures: child identities and
+worlds remain unchanged, content is never copied, and the parent gains no child
+authority. A composite may itself become a child of another composite, allowing
+the workspace to grow recursively.
+
+Composite IDs are immutable within one controller. Children must already exist
+as controller-produced records, so append order plus transitive validation
+forms a DAG. Duplicate leaf membership, reused IDs with changed content,
+data-shaped composite frames, cycles, depth beyond 32 and more than 10,000
+transitive members MUST refuse. Every wrapper propagates all child/catalog
+restrictions.
+
 The intended user experience is outcome-first. A user may ask for an outcome
 without naming a repository or path. An outcome-resolution frame binds the
 query digest and selected catalog IDs, but its semantic fidelity remains
@@ -389,8 +403,8 @@ verification-through-consumption; portability/rebinding separation; and
 unproven learned-capability refusal. Recursive vectors MUST also cover
 default-branch-only catalogs, incomplete/duplicate shards, parent cycles,
 incomplete/mixed organization tiles, bucket refinement, no-progress
-termination, outcome non-authority, large external indexes and private Hive
-withholding.
+termination, outcome non-authority, large external indexes, recursive
+workspace composition, duplicate/cycle refusal and private Hive withholding.
 
 Completion MUST report each guarantee separately and scan nonzero emitted
 canonical RAPP/1 frames. No single conformance verdict authorizes deployment.

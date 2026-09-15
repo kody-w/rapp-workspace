@@ -140,6 +140,16 @@ def schemas():
             externally_approved_private=integer(10000),
             external_owner_approval_required=fixed(True),
             publication_authorized=fixed(False), grants_authority=fixed(False)),
+        "workspace-composite": record(
+            "workspace-composite", assessment=ref("wave"),
+            composite_id=text(128, 1),
+            selected_ids=array(text(512, 1), 1024),
+            child_composites=array(ref("wave"), 128),
+            member_count=integer(10000, 1), members_sha256=ref("hash"),
+            depth=integer(32), recursive=fixed(True), routing_only=fixed(True),
+            child_identities_preserved=fixed(True),
+            child_worlds_preserved=fixed(True), content_copied=fixed(False),
+            grants_authority=fixed(False)),
     }
     for guarantee in GUARANTEES:
         records[guarantee + "-receipt"] = record(

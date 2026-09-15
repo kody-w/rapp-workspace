@@ -84,6 +84,9 @@ Current-authorization receipts are historical snapshots, not bearer grants.
 14. Tile large organization candidates under one shared commitment. Treat
     Downloads/Documents/Desktop as metadata scan boundaries, keep recursive
     indexes external and digest-bound, and open only focused outcome subsets.
+15. Wrap verified workspace pointers into controller-produced composites.
+    Preserve every child identity/world, copy no content, reject duplicate
+    membership or cycles, and allow the composite to be wrapped again.
 
 ## One-command demonstration
 

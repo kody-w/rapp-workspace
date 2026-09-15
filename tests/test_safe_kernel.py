@@ -607,16 +607,16 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
     def test_recursive_catalog_refines_outcome_tree_and_withholds_hive_private_entries(self):
         entries = [
             {"id": "repo:a", "kind": "git-repository", "parent": "github:kody-w",
-             "labels": ["build-rapp"], "metadata_sha256": "1" * 64,
+             "labels": ["build-rapp", "workspace"], "metadata_sha256": "1" * 64,
              "share_class": "public-source"},
             {"id": "repo:b", "kind": "git-repository", "parent": "github:kody-w",
-             "labels": ["build-rapp"], "metadata_sha256": "2" * 64,
+             "labels": ["build-rapp", "workspace"], "metadata_sha256": "2" * 64,
              "share_class": "private-source"},
             {"id": "repo:c", "kind": "git-repository", "parent": "github:kody-w",
-             "labels": ["publish"], "metadata_sha256": "3" * 64,
+             "labels": ["publish", "workspace"], "metadata_sha256": "3" * 64,
              "share_class": "public-source"},
             {"id": "repo:d", "kind": "git-repository", "parent": "github:kody-w",
-             "labels": ["archive"], "metadata_sha256": "4" * 64,
+             "labels": ["archive", "workspace"], "metadata_sha256": "4" * 64,
              "share_class": "excluded-source"},
         ]
         snapshot = catalog_snapshot(entries)
@@ -703,6 +703,41 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
         self.assertEqual(approved_body["selected_ids"], ["repo:a", "repo:b", "repo:c"])
         self.assertEqual(approved_body["externally_approved_private"], 1)
         self.assertFalse(approved_body["publication_authorized"])
+
+        build = self.c.compose_workspace(
+            self.scope.subject(), refined, "build-workspace", ["repo:a", "repo:b"])
+        publish = self.c.compose_workspace(
+            self.scope.subject(), refined, "publish-workspace", ["repo:c", "repo:d"])
+        root = self.c.compose_workspace(
+            self.scope.subject(), refined, "all-workspaces", [], [build, publish])
+        root_body = self.c.body(root)
+        self.assertEqual(root_body["member_count"], 4)
+        self.assertEqual(root_body["depth"], 1)
+        self.assertTrue(root_body["child_identities_preserved"])
+        self.assertTrue(root_body["child_worlds_preserved"])
+        self.assertFalse(root_body["content_copied"])
+        wrapped = self.c.compose_workspace(
+            self.scope.subject(), refined, "workspace-of-workspaces", [], [root])
+        self.assertEqual(self.c.body(wrapped)["depth"], 2)
+        self.assertEqual(self.c.body(wrapped)["member_count"], 4)
+        self.assertEqual(
+            self.c.compose_workspace(
+                self.scope.subject(), refined, "workspace-of-workspaces", [], [root]),
+            wrapped,
+        )
+        with self.assertRaisesRegex(Refusal, "duplicate-member"):
+            self.c.compose_workspace(
+                self.scope.subject(), refined, "duplicate-member",
+                ["repo:a"], [build])
+        forged = self.c.body(build)
+        forged["composite_id"] = "forged-composite"
+        forged_ref = self.c.emit(forged)
+        with self.assertRaisesRegex(Refusal, "controller-record-required"):
+            self.c.compose_workspace(
+                self.scope.subject(), refined, "forged-parent", [], [forged_ref])
+        with self.assertRaisesRegex(Refusal, "idempotency-conflict"):
+            self.c.compose_workspace(
+                self.scope.subject(), refined, "build-workspace", ["repo:a"])
 
     def test_recursive_catalog_incomplete_no_progress_and_unverified_outcomes_refuse(self):
         entry = {"id": "repo:a", "kind": "git-repository", "parent": "github:kody-w",
