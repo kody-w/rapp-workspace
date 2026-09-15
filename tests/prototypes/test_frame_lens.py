@@ -14,7 +14,7 @@ from unittest.mock import patch
 import uuid
 
 REPO = Path(__file__).resolve().parents[2]
-REFERENCE = REPO / "protocols/rapp-workspace/grail-1.0/experimental/reference"
+REFERENCE = REPO / "protocols/rapp-workspace/prototypes/grail-1.0/experimental/reference"
 sys.path.insert(0, str(REFERENCE))
 from common import Parent, Refusal, address, read_file, sha, wave, write_file
 from pins import encode, historical_catalog, index_matches, manifest
@@ -132,7 +132,7 @@ class FrameLensTests(unittest.TestCase):
         self.w = self.fx.w
 
     def test_archived_20_bytes_are_exact_and_root_is_only_entry(self):
-        raw = (REPO / "protocols/rapp-workspace/historical/pre-grail/2.0/SPEC.md").read_bytes()
+        raw = (REPO / "protocols/rapp-workspace/prototypes/published/2.0/SPEC.md").read_bytes()
         self.assertEqual((len(raw), sha(raw)), (10596, "86fe0ec4085e4f7bf33fe622519342bfed9f754ee4bdf45f41288129bf6e256c"))
         self.assertIn("first Grail", (REFERENCE.parent / "SPEC.md").read_text())
         self.assertNotEqual((REPO / "SPEC.md").read_bytes(), raw)
@@ -530,7 +530,7 @@ print(p.r.canonical(w.projection()))
         for capability in (b"frame_lens.py", b"workspace_manager.py", b"append_frame.py",
                            b"prepare_workspace.py", b"deploy_hive.py", b"metadata_egg"):
             self.assertIn(capability, raw)
-        self.assertIn(b"protocols/rapp-workspace/grail-1.0/SPEC.md", raw)
+        self.assertIn(b"protocols/rapp-workspace/prototypes/grail-1.0/SPEC.md", raw)
         self.assertNotIn(b'"$schema":', raw)
 
     def test_tamper_path_identity_rollback_and_checkpoint_loss_refuse(self):

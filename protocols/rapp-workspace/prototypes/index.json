@@ -1,0 +1,46 @@
+{
+  "schema": "rapp-workspace-prototype-index/1",
+  "authority": false,
+  "status": "prototype-history",
+  "core_profile": "rapp-workspace/1",
+  "prototypes": [
+    {
+      "id": "rapp-workspace/grail-1.0",
+      "classification": "published-candidate-prototype",
+      "authority": false,
+      "current_validator_accepted": false,
+      "spec": {
+        "path": "protocols/rapp-workspace/prototypes/grail-1.0/SPEC.md",
+        "sha256": "3da45fabcfedb94c67a032ebb12fc02716b44b32822933d43c998825c632935f",
+        "bytes": 18383
+      },
+      "manifest": {
+        "path": "protocols/rapp-workspace/prototypes/grail-1.0/manifest.json",
+        "sha256": "fa4bee666cc56c1db43d9f5f452358f8d623e85deb31b8fcb32b58553cebbdae",
+        "bytes": 6254
+      }
+    },
+    {
+      "id": "published-workspace-snapshots",
+      "classification": "published-prototype-catalog",
+      "authority": false,
+      "current_validator_accepted": false,
+      "catalog": {
+        "path": "protocols/rapp-workspace/prototypes/published/index.json",
+        "sha256": "d1b304137cc1382b81659f4023b47e0df4c38cff6fdb77b1b90468027d1fa165",
+        "bytes": 3962
+      }
+    },
+    {
+      "id": "legacy-pointer-manager",
+      "classification": "implementation-prototype",
+      "authority": false,
+      "current_validator_accepted": false,
+      "entry": {
+        "path": "protocols/rapp-workspace/prototypes/legacy-manager/workspace_manager.py",
+        "sha256": "f33ee779aeb6f2aa5fe535cba4f19a4d85a9ae708ea7e0fe3c1e0e28934432e7",
+        "bytes": 13538
+      }
+    }
+  ]
+}

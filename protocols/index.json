@@ -1,6 +1,6 @@
 {
   "schema": "rapp-estate-protocol-index/1",
-  "generated_utc": "2026-09-15T03:12:29.169Z",
+  "generated_utc": "2026-09-15T16:19:18.852Z",
   "profiles": [
     {
       "name": "rapp-hive/1",
@@ -23,77 +23,35 @@
       "conformance": "protocols/rapp-federation/1/reference/conformance.py"
     },
     {
-      "name": "rapp-workspace/grail-1.0",
-      "human_name": "RAPP Workspace/1 Grail",
+      "name": "rapp-workspace/1",
+      "human_name": "RAPP Workspace/1",
       "parent": "rapp/1",
-      "status": "minimal-safe-kernel-candidate",
-      "generation": "first-grail",
-      "signed_grail_activation": false,
-      "spec_path": "protocols/rapp-workspace/grail-1.0/SPEC.md",
-      "spec_sha256": "3da45fabcfedb94c67a032ebb12fc02716b44b32822933d43c998825c632935f",
-      "spec_bytes": 18383,
-      "manifest_path": "protocols/rapp-workspace/grail-1.0/manifest.json",
-      "manifest_sha256": "fa4bee666cc56c1db43d9f5f452358f8d623e85deb31b8fcb32b58553cebbdae",
-      "manifest_bytes": 6254,
-      "provenance_path": "protocols/rapp-workspace/grail-1.0/provenance.json",
-      "provenance_sha256": "c3db29b2ad61fdfd38e9bd899de60b3cc351cf85181267fd71d762449ada1583",
-      "provenance_bytes": 4356,
-      "schemas_path": "protocols/rapp-workspace/grail-1.0/schemas",
-      "conformance": "protocols/rapp-workspace/grail-1.0/reference/conformance.py",
-      "demo": "protocols/rapp-workspace/grail-1.0/reference/safe_demo.py",
+      "authority": true,
+      "status": "core",
+      "generation": "core",
+      "signed_activation": false,
+      "spec_path": "protocols/rapp-workspace/1/SPEC.md",
+      "spec_sha256": "a0ede31854b9bf3b0abf72f73e9b973a05c9f2ff02f57b8846955d9d1951c59a",
+      "spec_bytes": 18271,
+      "manifest_path": "protocols/rapp-workspace/1/manifest.json",
+      "manifest_sha256": "a2d4434bfcead8e5fe44504a5d4759b96eb15104b4789b96a0b23b9e0b71162a",
+      "manifest_bytes": 6086,
+      "provenance_path": "protocols/rapp-workspace/1/provenance.json",
+      "provenance_sha256": "f2b830739105b45cf04ab1780a5d3fa6cabe877bd1bf966a51cd4b1505c220af",
+      "provenance_bytes": 4329,
+      "schemas_path": "protocols/rapp-workspace/1/schemas",
+      "conformance": "protocols/rapp-workspace/1/reference/conformance.py",
+      "demo": "protocols/rapp-workspace/1/reference/safe_demo.py",
       "learned_semantic_capability": "disabled-unproven",
       "external_effects": "disabled"
     }
   ],
-  "authority": false,
-  "workspace_latest": "rapp-workspace/grail-1.0",
-  "legacy_workspace_inputs": [
-    {
-      "source_generation": "pre-grail",
-      "source_spec": "rapp-workspace/1.1",
-      "spec_path": "protocols/rapp-workspace/historical/pre-grail/1.1/revisions/f222130dbef42ac9cd10e15f69f7f125cfadfc326108ef6015110b1a05008a16.md",
-      "spec_sha256": "f222130dbef42ac9cd10e15f69f7f125cfadfc326108ef6015110b1a05008a16",
-      "spec_bytes": 10032,
-      "authority": false,
-      "current_validator_accepted": false
-    },
-    {
-      "source_generation": "pre-grail",
-      "source_spec": "rapp-workspace/1.1",
-      "spec_path": "protocols/rapp-workspace/historical/pre-grail/1.1/SPEC.md",
-      "spec_sha256": "869d34e77a909365c844d239d6c8cdd0e70476a0fa4d828f7d58ec9b65c0e1a8",
-      "spec_bytes": 10464,
-      "authority": false,
-      "current_validator_accepted": false
-    },
-    {
-      "source_generation": "pre-grail",
-      "source_spec": "rapp-workspace/2.0",
-      "spec_path": "protocols/rapp-workspace/historical/pre-grail/2.0/revisions/c969c9fda6b022d0129a27962220fc2512a0680c1518fe6582130e3167210f6e.md",
-      "spec_sha256": "c969c9fda6b022d0129a27962220fc2512a0680c1518fe6582130e3167210f6e",
-      "spec_bytes": 9815,
-      "authority": false,
-      "current_validator_accepted": false
-    },
-    {
-      "source_generation": "pre-grail",
-      "source_spec": "rapp-workspace/2.0",
-      "spec_path": "protocols/rapp-workspace/historical/pre-grail/2.0/SPEC.md",
-      "spec_sha256": "86fe0ec4085e4f7bf33fe622519342bfed9f754ee4bdf45f41288129bf6e256c",
-      "spec_bytes": 10596,
-      "authority": false,
-      "current_validator_accepted": false
-    },
-    {
-      "source_generation": "pre-grail",
-      "source_spec": "rapp-workspace/1.0",
-      "spec_path": null,
-      "spec_sha256": null,
-      "spec_bytes": null,
-      "authority": false,
-      "status": "unavailable-spec-explicit-owner-approved-baseline-only",
-      "current_validator_accepted": false
-    }
-  ],
-  "workspace_brand": "RAPP Workspace/1 Grail"
+  "authority": true,
+  "workspace_latest": "rapp-workspace/1",
+  "workspace_brand": "RAPP Workspace/1",
+  "workspace_prototypes": {
+    "path": "protocols/rapp-workspace/prototypes/index.json",
+    "sha256": "6f4b1c747659c883e1657d8547d31483c02a74205a5b0f522f35c5eefe1a3443",
+    "bytes": 1557
+  }
 }

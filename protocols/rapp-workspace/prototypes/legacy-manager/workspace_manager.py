@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pre-Grail experimental 2.0 pointer manager; not the Workspace Grail/1 projection."""
+"""Prototype experimental 2.0 pointer manager; not the Workspace Grail/1 projection."""
 
 import argparse
 import json
@@ -191,7 +191,7 @@ python3 tools/workspace_manager.py list --workspace .
 python3 tools/workspace_manager.py open --workspace . --name <workspace-name>
 ```
 
-`registry.json` is the local routing store for this pre-Grail experimental 2.0
+`registry.json` is the local routing store for this prototype experimental 2.0
 manager, not a RAPP/1 signed registry. Workspace Grail/1 instead rebuilds manager
 state from adopted frame history. Source files remain in their own worlds.
 """

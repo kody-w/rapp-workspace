@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1/schemas/adoption-record.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1/adoption-record"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "native_subject": {
+      "$ref": "common.schema.json#/$defs/subject"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "request": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "candidate": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "operation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "controller_epoch": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "frontier": {
+      "$ref": "common.schema.json#/$defs/frontier"
+    },
+    "data_only": {
+      "const": true
+    },
+    "external_effects": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "native_subject",
+    "restrictions",
+    "request",
+    "candidate",
+    "operation_id",
+    "controller_epoch",
+    "frontier",
+    "data_only",
+    "external_effects"
+  ],
+  "additionalProperties": false
+}

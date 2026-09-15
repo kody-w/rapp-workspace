@@ -1,0 +1,193 @@
+{
+  "schema": "rapp-workspace-file-manifest/1",
+  "profile": "rapp-workspace/1",
+  "brand": "RAPP Workspace/1",
+  "parent": "rapp/1",
+  "authority": true,
+  "status": "core",
+  "signed_activation": false,
+  "assurances": [
+    "rapp_integrity",
+    "observation",
+    "semantic_fidelity",
+    "current_authorization",
+    "safe_deployment"
+  ],
+  "normative": [
+    {
+      "path": "SPEC.md",
+      "sha256": "a0ede31854b9bf3b0abf72f73e9b973a05c9f2ff02f57b8846955d9d1951c59a",
+      "bytes": 18271
+    },
+    {
+      "path": "safety-matrix.json",
+      "sha256": "41b85f30c18abea902dd270159781e4e5c8e16d97d1eb85e6b11e217dcfadbfc",
+      "bytes": 4592
+    },
+    {
+      "path": "schemas/adoption-record.schema.json",
+      "sha256": "5e1e071488c81ddb4cd72c1ec2a7370ef3479b70be62870337315125df2de4cf",
+      "bytes": 1577
+    },
+    {
+      "path": "schemas/adoption-request.schema.json",
+      "sha256": "7ddb3ab5bcaebb7472108ff754d51d4d4166c009a96931174e6244ed904a1782",
+      "bytes": 1658
+    },
+    {
+      "path": "schemas/common.schema.json",
+      "sha256": "0aeb6cbd3034c94a2fbd4e0a81078dcdf7646c1ecc513d589dcfe74461e3a833",
+      "bytes": 9141
+    },
+    {
+      "path": "schemas/current_authorization-receipt.schema.json",
+      "sha256": "30f6731cffaa76637d3e4948b46cbef231ee1cbd51f2432f71616bc56d2a222d",
+      "bytes": 2018
+    },
+    {
+      "path": "schemas/derivation.schema.json",
+      "sha256": "c6bcc197ee14d863a8c1cb08c0901d8c8518d004563671bcf3f8cb4c8f4dcf67",
+      "bytes": 2988
+    },
+    {
+      "path": "schemas/lens-request.schema.json",
+      "sha256": "ae0b074425bb2d73f3e3e7f6f6ec9e051161d4b51a7d51d029638c7b556936d1",
+      "bytes": 1833
+    },
+    {
+      "path": "schemas/observation-receipt.schema.json",
+      "sha256": "be8d9d30043c4517b9cb7678811af8a7f30b05d602a186df936e981d8a07f1b6",
+      "bytes": 1988
+    },
+    {
+      "path": "schemas/observation.schema.json",
+      "sha256": "6bbba2b0351816b21a16ec3dd5d5b5f74e665625447d60daced2e0ccb43606c0",
+      "bytes": 1834
+    },
+    {
+      "path": "schemas/rapp_integrity-receipt.schema.json",
+      "sha256": "3a6dadba89f786f2c4c0708493298cf15d2dce0d1ec255c92c1e56b101086a9c",
+      "bytes": 1997
+    },
+    {
+      "path": "schemas/refusal.schema.json",
+      "sha256": "207972062bfae88d688819d63e1d84f10f2c888c9ac7d351e1d0bf9b13c411d8",
+      "bytes": 1532
+    },
+    {
+      "path": "schemas/safe_deployment-receipt.schema.json",
+      "sha256": "828f891be4e33847e619653ea733d2c8b88b45a8474d201a69e6935dac7afcc0",
+      "bytes": 2000
+    },
+    {
+      "path": "schemas/scheduler-exhaust.schema.json",
+      "sha256": "7e7aad2b57a51d7a50f04a65836179cafdc9bc65f4a1efca0837ca43d6e941db",
+      "bytes": 1925
+    },
+    {
+      "path": "schemas/seed.schema.json",
+      "sha256": "f18f6f9d19acc06341465fcc23ed78901de33da130e51d9ee261f4df4a56745b",
+      "bytes": 1187
+    },
+    {
+      "path": "schemas/semantic_fidelity-receipt.schema.json",
+      "sha256": "637cbe3a70e48af158ed647349d2f3870d03702f67f7f92248f805f5e1f2b2a8",
+      "bytes": 2006
+    }
+  ],
+  "reference": [
+    {
+      "path": "reference/common.py",
+      "sha256": "93535b9ed69f55919fa0bc74c855112db52cdf65cc483ce9f188b08aab314f10",
+      "bytes": 10696
+    },
+    {
+      "path": "reference/conformance.py",
+      "sha256": "060a68ca06284bf5a662988a8a24739c6a507035b888c7476763aa56f19a3c2f",
+      "bytes": 2326
+    },
+    {
+      "path": "reference/pins.py",
+      "sha256": "538681fb0489baef9c37eef9dc91302b0a5c1ccf14fb9f5f7f1aab61bf03532d",
+      "bytes": 4645
+    },
+    {
+      "path": "reference/safe_demo.py",
+      "sha256": "a24b9bc9c4e0d19333949d2d5660386904fb86d6243b966b2e9f1983fb79d095",
+      "bytes": 9004
+    },
+    {
+      "path": "reference/safe_kernel.py",
+      "sha256": "9c62ba13b8edc37bc3b9fa9d0400dcc38d4c8cd71c13ab665cc804a84e518e0e",
+      "bytes": 50703
+    },
+    {
+      "path": "reference/schema_source.py",
+      "sha256": "f05e63bf2ed7aed354344002cfd99e78fd2733ba52e16b4253c66a84a2d8e337",
+      "bytes": 7430
+    },
+    {
+      "path": "reference/total_eval.py",
+      "sha256": "08027edd61f663309d0447c31425723815c2a10742e472ee92b829cb1bf63da2",
+      "bytes": 651
+    }
+  ],
+  "repository_evidence": [
+    {
+      "path": "README.md",
+      "sha256": "6fe1218024e631ad208d60a4dfea13909a51b482085951416bda7383a4670549",
+      "bytes": 6054
+    },
+    {
+      "path": "SPEC.md",
+      "sha256": "3b7da484be2224053c0b303f7a4624ca436bbc1a098f338397ef27c661a7847d",
+      "bytes": 1497
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "09517e771c5295a333cf1e79500b86d1e87f840e6436e5860e537c882263634a",
+      "bytes": 8335
+    },
+    {
+      "path": "tools/frame_lens.py",
+      "sha256": "ecf1d51a61fd61e6039532dfe8dddb17503568748bdb984c37bcc0de9a33e4ee",
+      "bytes": 1002
+    },
+    {
+      "path": "tests/test_safe_kernel.py",
+      "sha256": "0512c2418d6f87613289553f6d158f15e191c630cffb574b9befb97fa8226f50",
+      "bytes": 34148
+    },
+    {
+      "path": "protocols/rapp-workspace/prototypes/README.md",
+      "sha256": "dc36783a729887f5379c67cbe7a6d7132b607b046bc110cbd6ef01fcfa0e8aa2",
+      "bytes": 878
+    },
+    {
+      "path": "protocols/README.md",
+      "sha256": "165746ddd0586918d6400175b4ddd3ebca765f5025a585a580f2db3a72e49fce",
+      "bytes": 2725
+    },
+    {
+      "path": ".github/skills/rapp-workspace/SKILL.md",
+      "sha256": "09517e771c5295a333cf1e79500b86d1e87f840e6436e5860e537c882263634a",
+      "bytes": 8335
+    },
+    {
+      "path": ".github/skills/autonomous-rapp-estate-manager/SKILL.md",
+      "sha256": "483ab287b28e62bfc5c0f6e08f634e25b3fbed457847d265f74da598a69a1e5e",
+      "bytes": 3734
+    }
+  ],
+  "provenance": {
+    "path": "provenance.json",
+    "sha256": "f2b830739105b45cf04ab1780a5d3fa6cabe877bd1bf966a51cd4b1505c220af",
+    "bytes": 4329
+  },
+  "prototype_catalog": {
+    "path": "protocols/rapp-workspace/prototypes/index.json",
+    "sha256": "6f4b1c747659c883e1657d8547d31483c02a74205a5b0f522f35c5eefe1a3443",
+    "bytes": 1557
+  },
+  "authority_boundary": "capability/adoption controller is external to all learned/received data"
+}

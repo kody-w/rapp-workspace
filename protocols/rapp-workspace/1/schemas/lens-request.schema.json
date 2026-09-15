@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1/schemas/lens-request.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1/lens-request"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "native_subject": {
+      "$ref": "common.schema.json#/$defs/subject"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "source": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "operation": {
+      "enum": [
+        "identity-octets",
+        "json-field"
+      ]
+    },
+    "field": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 256,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "runtime_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "synthesis_reads": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/read"
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "necessary_reads": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/read"
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "native_subject",
+    "restrictions",
+    "source",
+    "operation",
+    "field",
+    "runtime_sha256",
+    "synthesis_reads",
+    "necessary_reads",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}
