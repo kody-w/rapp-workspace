@@ -183,6 +183,94 @@
       ],
       "additionalProperties": false
     },
+    "workspace_binding": {
+      "type": "object",
+      "properties": {
+        "entry_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "child_rappid": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 76,
+              "maxLength": 213,
+              "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "child_world_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_metadata_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "verification_status": {
+          "enum": [
+            "verified-external-binding",
+            "preserved-by-reference-unverified"
+          ]
+        },
+        "evidence": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:wave"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "entry_id",
+        "child_rappid",
+        "child_world_id",
+        "source_metadata_sha256",
+        "verification_status",
+        "evidence",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    },
     "frontier": {
       "type": "object",
       "properties": {
@@ -199,6 +287,31 @@
           "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
         },
         "policy": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "activation_mode": {
+          "enum": [
+            "live",
+            "synthetic"
+          ]
+        },
+        "activation": {
           "type": "object",
           "properties": {
             "space": {
@@ -349,6 +462,8 @@
         "instance_rappid",
         "world_id",
         "policy",
+        "activation_mode",
+        "activation",
         "graph_head",
         "adoption_head",
         "routing_head",

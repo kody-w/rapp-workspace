@@ -24,9 +24,52 @@ from the trusted host, not from captured/learned data. `Scope` binds an opaque
 native subject and optional exact local file path. Rights are independent;
 capture/retention/synthesis are checked before access. The controller's
 private SQLite state and process lock form one local serialization domain.
-`Controller(..., now=<trusted-host-UTC>)` requires time explicitly; no candidate
-timestamp or historical demo clock supplies live authorization freshness.
-Only the synthetic built-in demo uses a frozen fixture clock.
+`Controller` defaults to **live activation** and the host UTC clock. Every
+authorization boundary samples that clock anew; `now` is read-only last-sample
+diagnostics, not a constructor parameter. The clock floor advances on
+authorized reads and survives transaction rollback. A host may inject
+`clock()` returning canonical UTC milliseconds; a callback sourced from
+candidate data is not trusted. Host-clock correctness and whole-store rollback
+protection remain external obligations.
+
+Live construction requires the closed `activation-document.schema.json` and
+an independently installed `verify_activation(document, now)` callback:
+
+```python
+controller = Controller(
+    core, owned_directory, external_policy,
+    activation=host_selected_activation,
+    verify_activation=host_verify_activation,
+)
+```
+
+The callback must authenticate the **entire exact** document against a protected
+allowlist/trust anchor, including the signer key ID and fresh revocation state.
+The document binds `spec_id`, `spec_sha256`, `runtime_sha256` (the manifest
+hash), `instance_rappid`, `world_id`, `not_before_utc`, `expires_utc`,
+`signer_key_id` and `revocation_status`. The reference checks exact bindings and
+validity and requires a literal `True` from the callback on every boundary.
+Neither `revocation_status:active` nor recomputing the local hashes authenticates
+anything. Exceptions and truthy data-shaped results refuse before source IO.
+An always-true production callback is not an implementation of this contract.
+The reference provides no signature scheme, signer, key storage or qualified
+revocation client; those belong to the trusted host integration.
+
+Synthetic use must be explicit:
+
+```python
+controller = Controller(
+    core, owned_directory, external_policy,
+    activation_mode="synthetic", clock=lambda: "2026-09-15T03:12:29.000Z",
+)
+```
+
+All frames/receipts, frontiers, projections and demo reports carry
+`activation_mode`. A supplied-file demo also uses labeled synthetic activation
+but samples the actual host clock. The exact activation is persisted and must
+match on reopen; mode changes and activation substitution refuse. Authenticated
+renewal/rotation and migration from the old record shapes are not implemented.
+Do not remove controller state or silently rewrite pins to get around this.
 
 `capture_octets` accepts finite immutable byte objects and records only that
 scope. `capture_file` uses no-follow stable-descriptor reads, never claiming
@@ -93,10 +136,54 @@ or mixed tiles refuse before assessment.
 `candidate_outcome` stores only a query digest and selected IDs with semantic
 fidelity still unproven. `propose_subscription` withholds private/excluded
 entries by default and always leaves actual Private Hive publication disabled.
-`compose_workspace` creates controller-owned routing DAG nodes from verified
-catalog entries and child composites. It preserves child identities/worlds,
-copies no content, and refuses duplicate members, forged children, ID conflicts
-and over-depth wrappers.
+`compose_workspace` creates controller-owned routing DAG nodes from catalog
+entries and verified child composites. Its closed `workspace_bindings`
+descriptors bind entry IDs and metadata digests. Unknown metadata has null
+RAPPID/world/evidence and stays `preserved-by-reference-unverified`; absence
+of a native write is not evidence that an identity/world was observed.
+
+To establish a stronger **metadata association**, install
+`verify_workspace_binding(claim, metadata)` on the controller, independently
+of candidate data, then call:
+
+```python
+binding = controller.register_workspace_binding(
+    subject, assessment, entry_id,
+    child_rappid=observed_child_rappid, child_world_id=observed_child_world,
+    metadata=exact_metadata_bytes,
+)
+```
+
+The closed claim contains `entry_id`, `child_rappid`, `child_world_id` and
+`source_metadata_sha256`. The bytes must match the selected catalog entry's
+digest; capture/synthesis/retention restrictions apply. Only an independent
+verifier's literal `True` creates an indexed `workspace-binding` evidence
+record. Future composites may reference it; existing composites are immutable.
+Composite fields expose verified/unverified counts, complete transitive binding
+commitments and `child_identity_status`/`child_world_status`. Only fully
+evidenced membership reports `verified-external-bindings`. This proves no
+ongoing native state, current child rights or migration safety. Verified and
+unverified pointers alike confer **no authority**.
+
+`CompositeWork` is one ephemeral context per complete request/recovery pass.
+It memoizes validated wave hashes, catalog data and evidence; checks active
+paths for cycles; and reserves aggregate nodes, edges, depth, serialized
+frame/index bytes and deterministic work units before further work. The limits
+in `ExternalPolicy` default to hard ceilings of 512 nodes, 4,096 edges, 16 MiB,
+1,000,000 work units and depth 32. Work includes catalog walks and member
+aggregation/sorting; bytes include newly emitted composite/binding frames.
+Policy updates cannot increase those limits. A too-small limit can quarantine
+recovery of an existing larger estate; never reset state to bypass it.
+Wide, deep and shared DAGs must either verify within the budget or refuse
+without creating a wrapper. This is bounded validation, not a latency promise.
+
+`verify_history` verifies bounded RAPP history, then checks one shared composite
+context, exact host activation, clock floor, workspace-binding/assessment/
+composite tables and their atomic indexes. Missing, extra or substituted rows
+quarantine the controller. Historical checks do not query current activation
+or infer renewed permissions; current work still reauthenticates. External
+checkpoints cover the new record sets as well. Complete malicious store
+rewrites require independent protected anchors, not self-authentication.
 
 The blocking matrix covers every P0/P1 requirement. Earlier candidate and
 experimental implementations are isolated under `../prototypes/` and are never

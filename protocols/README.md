@@ -23,6 +23,16 @@ semantic fidelity, current authorization and safe deployment**:
 `python3 ../tools/frame_lens.py demo --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"`.
 Effective grants are external to learned/received graphs. Unsupported native,
 model, network, migration and deployment effects refuse before access.
+Live Workspace/1 controllers additionally require independently authenticated
+activation of exact spec/runtime-manifest/instance/world/validity/signer/
+revocation bindings and fresh trusted clock samples at each authorization
+boundary. The reference supplies a host trust hook, not production signing.
+The demo explicitly labels synthetic activation; neither local hash
+recomputation nor passing conformance creates a signed estate registry entry.
+Composite metadata bindings report verified evidence or preserved-by-reference
+unverified status, never unconditional child identity/world preservation.
+One bounded memoized traversal and checked authority-table/index recovery
+cover all composite descendants.
 The prior Frame Anything evolution prototype is retained only as opt-in
 withdrawn experimental evidence, not current authority or release acceptance.
 

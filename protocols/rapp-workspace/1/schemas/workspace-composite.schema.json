@@ -15,6 +15,15 @@
       "maxLength": 128,
       "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
     },
+    "activation_mode": {
+      "enum": [
+        "live",
+        "synthetic"
+      ]
+    },
+    "activation": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
     "native_subject": {
       "$ref": "common.schema.json#/$defs/subject"
     },
@@ -70,11 +79,39 @@
     "routing_only": {
       "const": true
     },
-    "child_identities_preserved": {
-      "const": true
+    "workspace_bindings": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/workspace_binding"
+      },
+      "minItems": 0,
+      "maxItems": 1024,
+      "uniqueItems": true
     },
-    "child_worlds_preserved": {
-      "const": true
+    "bindings_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "verified_binding_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "unverified_binding_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "child_identity_status": {
+      "enum": [
+        "verified-external-bindings",
+        "preserved-by-reference-unverified"
+      ]
+    },
+    "child_world_status": {
+      "enum": [
+        "verified-external-bindings",
+        "preserved-by-reference-unverified"
+      ]
     },
     "content_copied": {
       "const": false
@@ -87,6 +124,8 @@
     "schema",
     "instance_rappid",
     "world_id",
+    "activation_mode",
+    "activation",
     "native_subject",
     "restrictions",
     "assessment",
@@ -98,8 +137,12 @@
     "depth",
     "recursive",
     "routing_only",
-    "child_identities_preserved",
-    "child_worlds_preserved",
+    "workspace_bindings",
+    "bindings_sha256",
+    "verified_binding_count",
+    "unverified_binding_count",
+    "child_identity_status",
+    "child_world_status",
     "content_copied",
     "grants_authority"
   ],

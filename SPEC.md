@@ -19,6 +19,11 @@ The core also defines bounded default-branch catalog shards, recursive
 organization assessment, outcome-routing candidates and non-publishing Private
 Hive subscription proposals. Verified workspace trees can be wrapped into
 recursive pointer-only composites without copying or merging child identities.
+Unknown child identity/world metadata stays explicitly unverified. Exact
+metadata-binding evidence never supplies capabilities. Live controllers require
+independent authenticated activation and fresh host-clock samples at every
+authorization boundary; synthetic controllers and receipts are labeled.
+Shared traversal budgets and authority-table recovery checks are mandatory.
 
 - [Normative specification](protocols/rapp-workspace/1/SPEC.md)
 - [Blocking P0/P1 safety matrix](protocols/rapp-workspace/1/safety-matrix.json)

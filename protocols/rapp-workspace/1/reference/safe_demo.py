@@ -2,7 +2,6 @@
 
 import argparse
 from dataclasses import replace
-from datetime import datetime, timezone
 import json
 from pathlib import Path
 import subprocess
@@ -12,7 +11,7 @@ import uuid
 
 from common import Parent, Refusal, ROOT, read_file, require, sha, write_file
 from pins import encode
-from safe_kernel import Controller, ExternalPolicy, Scope
+from safe_kernel import Controller, ExternalPolicy, Scope, host_utc_now
 from schema_source import PROFILE
 
 NOW = "2026-09-15T03:12:29.000Z"
@@ -34,14 +33,15 @@ def run_demo(core, output, *, fixture=None, rights=None, show=print):
                         {"capture", "retention", "local_synthesis", "adoption", "materialization"})
     policy = ExternalPolicy(instance, "safe-demo-world", sha(read_file(ROOT / "SPEC.md")),
                             sha(read_file(ROOT / "manifest.json")), allowed, (scope,))
-    clock = NOW if fixture is None else datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
-    controller = Controller(core, output / "controller", policy, now=clock)
+    clock = (lambda: NOW) if fixture is None else host_utc_now
+    controller = Controller(core, output / "controller", policy, clock=clock, activation_mode="synthetic")
     try:
         if controller._get("root") is not None:
             raise Refusal("use a fresh output for a new explicit demo run; do not reset controller state")
         controller.seed(scope.subject())
         if show:
             show("[EXTERNAL POLICY] " + json.dumps({"spec_id": PROFILE, "rights": sorted(allowed),
+                                                    "activation_mode": "synthetic",
                                                     "from_learned_graph": False}, sort_keys=True))
         captured = (controller.capture_file(scope.subject(), fixture) if fixture is not None
                     else controller.capture_octets(scope.subject(),
@@ -110,6 +110,7 @@ def run_demo(core, output, *, fixture=None, rights=None, show=print):
             require(scanned["verdict"] == "COMPLIANT" and not scanned["findings"], "invalid integrity evidence")
             scan_method = "canonical-rapp-check-on-authorized-local-export"
         report.update(rapp_frames_verified=verified["frames"], scanner_scope="RAPP-integrity-only",
+                      activation_mode="synthetic", activation_authenticated=False,
                       scan_method=scan_method, current_authority_from_graph=False, external_effects="disabled")
         write_file(output / "report.json", encode(report))
         if show:

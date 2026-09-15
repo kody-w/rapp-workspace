@@ -22,6 +22,12 @@ The Workspace/1 core reference deliberately narrows the previous experiments:
   separate pinned, scoped receipts; none silently satisfies another.
 - Effective capability grants and adoption live in an **external single-writer
   controller**, not the learned graph.
+- A live controller requires an independently authenticated activation binding
+  exact spec/runtime-manifest hashes, instance/world, validity, signer and
+  revocation. Matching locally recomputed hashes alone never activates it.
+- Every authorization boundary samples the trusted host clock. Expiry cannot
+  be bypassed by leaving a controller open; deterministic fixture clocks and
+  synthetic activation must be explicitly installed and labeled.
 - Adoption checks the complete policy/source/routing/adoption/suppression/
   runtime frontier and commits atomically with crash recovery/idempotence.
 - A root-owned bounded scheduler reserves stop capacity and persists its
@@ -42,7 +48,8 @@ From this checkout, with the explicitly supplied canonical RAPP/1 checkout:
 python3 -B tools/frame_lens.py demo --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"
 ```
 
-The demo prints each guarantee separately. It can adopt an **inert captured
+The demo explicitly uses **synthetic activation** and labels every record and
+report accordingly. It prints each guarantee separately and can adopt an **inert captured
 view** after an independent synthetic controller approves an exact complete
 byte-coverage/inverse contract. It still reports **safe deployment refused**
 and does not imply estate activation.
@@ -79,8 +86,12 @@ Low-entropy hashes and lineage are sensitive GODD. Deleting a view cannot
 erase immutable history or prior copies.
 
 The exact effect-free evaluator image is verified through consumption.
-Full production interpreter/OS/key-custody/deployment qualification is not
-claimed; the deployment receipt stays refused.
+The reference implements activation through a deterministic host verification
+hook/protected exact allowlist, not new cryptography. Full production signer,
+revocation-service, interpreter/OS/key-custody/deployment qualification is not
+claimed; the deployment receipt stays refused. Authenticated activation
+rotation/renewal and automatic upgrades of old controller stores are not
+implemented; resetting history is not a substitute.
 
 ## Recursive estates without folder management
 
@@ -103,10 +114,26 @@ subsets. It never turns every file into an editor root.
 
 Verified trees can be wrapped into routing-only workspace composites. A
 composite may contain leaf workspace pointers and child composites, then become
-a child again at the next level. Child identities/worlds remain sovereign;
-duplicate membership, cycles, content copying and authority inheritance refuse.
+a child again at the next level. Each selected pointer binds its entry ID and
+source metadata digest. Unknown identity/world metadata stays
+`preserved-by-reference-unverified`, not “preserved: true.” An independently
+installed metadata verifier may produce a scoped workspace-binding record;
+composites expose evidence references, verified/unverified counts and aggregate
+identity/world status. Even verified bindings confer no child capabilities or
+claim ongoing native preservation.
+Duplicate membership, cycles, content copying and authority inheritance refuse.
 Non-Git local workspaces use an explicit branch-not-applicable catalog scope;
 the protocol never invents a repository identity for an ordinary directory.
+
+One request/recovery context memoizes child composites by wave hash and bounds
+aggregate nodes (512), edges (4,096), serialized frame/index bytes (16 MiB),
+work units (1,000,000) and depth (32), including wide and shared DAGs. These are
+hard ceilings, not speed guarantees. Authority indexes and their binding,
+assessment and composite tables are checked together on recovery; local hashes
+cannot protect against rewriting an entire store without an external checkpoint.
+
+If an interface uses **“Truth-Speed,”** it is non-normative outcome-first UX
+terminology only—not a truth, authorization, completeness or latency guarantee.
 
 Private Hive output is proposal-only. Public-source entries may be proposed;
 private entries remain withheld without exact external owner approval, and
@@ -150,8 +177,10 @@ The Workspace/1 core kernel/conformance is stdlib-only. Existing signed sibling
 tests retain their documented dependencies. Tests use public/synthetic data
 and scan nonzero actual RAPP/1 frames; a zero-artifact pass is insufficient.
 
-Independent anchors and signed estate activation, protected monotonic hosting,
-qualified native snapshot/migration adapters and safe production execution
-remain separate deployment blockers.
+The [reference API](protocols/rapp-workspace/1/reference/README.md) documents
+the mandatory live activation hook and explicit synthetic mode. Independent
+anchors/production signing, protected monotonic hosting, qualified native
+snapshot/migration adapters and safe production execution remain separate
+deployment blockers.
 
 MIT. External source provenance does not relicense papers or confer authority.

@@ -31,11 +31,11 @@
       "generation": "core",
       "signed_activation": false,
       "spec_path": "protocols/rapp-workspace/1/SPEC.md",
-      "spec_sha256": "77e7bae0726090e4c40ecb88f56557e6335256d3e32faa3cbb0ebf308d07905c",
-      "spec_bytes": 23449,
+      "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
+      "spec_bytes": 31443,
       "manifest_path": "protocols/rapp-workspace/1/manifest.json",
-      "manifest_sha256": "82520ed5c94cb7449fad6c80966d83c67302f058f3d5e2808fa49a459656560f",
-      "manifest_bytes": 6956,
+      "manifest_sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370",
+      "manifest_bytes": 7990,
       "provenance_path": "protocols/rapp-workspace/1/provenance.json",
       "provenance_sha256": "f2b830739105b45cf04ab1780a5d3fa6cabe877bd1bf966a51cd4b1505c220af",
       "provenance_bytes": 4329,
@@ -43,7 +43,9 @@
       "conformance": "protocols/rapp-workspace/1/reference/conformance.py",
       "demo": "protocols/rapp-workspace/1/reference/safe_demo.py",
       "learned_semantic_capability": "disabled-unproven",
-      "external_effects": "disabled"
+      "external_effects": "disabled",
+      "live_activation": "exact-document-external-verifier-required",
+      "production_key_custody": "external-unqualified"
     }
   ],
   "authority": true,

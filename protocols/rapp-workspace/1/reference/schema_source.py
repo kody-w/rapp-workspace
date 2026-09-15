@@ -43,6 +43,7 @@ def nullable(schema):
 
 def record(name, **props):
     return obj(schema=fixed(PROFILE + "/" + name), instance_rappid=ref("rappid"), world_id=text(128, 1),
+               activation_mode={"enum": ["live", "synthetic"]}, activation=ref("particle"),
                native_subject=ref("subject"), restrictions=ref("restrictions"), **props)
 
 
@@ -58,13 +59,21 @@ def schemas():
     b64 = text(87384, 0, r"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$")
     read = obj(kind={"enum": ["content", "negative", "enumeration", "environment"]},
                selector=text(512), expected=hash_value)
+    utc = text(24, 24, r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$")
+    binding_status = {"enum": ["verified-external-binding", "preserved-by-reference-unverified"]}
+    child_status = {"enum": ["verified-external-bindings", "preserved-by-reference-unverified"]}
     common = {
         "$schema": DRAFT, "$id": URI + "common.schema.json",
         "$defs": {
             "hash": hash_value, "rappid": rid, "subject": obj(namespace=text(128, 1), native_key=text(256, 1)),
             "wave": address("rapp/1:wave"), "particle": address("rapp/1:particle"),
             "restrictions": restrictions, "read": read,
+            "workspace_binding": obj(
+                entry_id=text(512, 1), child_rappid=nullable(rid), child_world_id=nullable(text(128, 1)),
+                source_metadata_sha256=hash_value, verification_status=binding_status,
+                evidence=nullable(address("rapp/1:wave")), grants_authority=fixed(False)),
             "frontier": obj(instance_rappid=rid, world_id=text(128, 1), policy=address("rapp/1:particle"),
+                            activation_mode={"enum": ["live", "synthetic"]}, activation=address("rapp/1:particle"),
                             graph_head=nullable(address("rapp/1:wave")),
                             adoption_head=nullable(address("rapp/1:wave")), routing_head=nullable(address("rapp/1:wave")),
                             suppressions=address("rapp/1:particle"), source_bindings=address("rapp/1:particle"),
@@ -73,6 +82,11 @@ def schemas():
         "type": "object", "properties": {}, "required": [], "additionalProperties": False,
     }
     records = {
+        "activation-document": obj(
+            schema=fixed(PROFILE + "/activation-document"), spec_id=fixed(PROFILE),
+            spec_sha256=hash_value, runtime_sha256=hash_value, instance_rappid=rid, world_id=text(128, 1),
+            not_before_utc=utc, expires_utc=utc, signer_key_id=text(128, 1),
+            revocation_status={"enum": ["active", "revoked"]}),
         "seed": record("seed", generation=fixed("workspace1-core"), spec_sha256=ref("hash"),
                        immutable_invariants=fixed(True), effect_authority=fixed("external-controller-only")),
         "observation": record(
@@ -150,8 +164,19 @@ def schemas():
             child_composites=array(ref("wave"), 128),
             member_count=integer(10000, 1), members_sha256=ref("hash"),
             depth=integer(32), recursive=fixed(True), routing_only=fixed(True),
-            child_identities_preserved=fixed(True),
-            child_worlds_preserved=fixed(True), content_copied=fixed(False),
+            workspace_bindings=array(ref("workspace_binding"), 1024),
+            bindings_sha256=ref("hash"), verified_binding_count=integer(10000),
+            unverified_binding_count=integer(10000),
+            child_identity_status=child_status, child_world_status=child_status,
+            content_copied=fixed(False),
+            grants_authority=fixed(False)),
+        "workspace-binding": record(
+            "workspace-binding", assessment=ref("wave"), entry_id=text(512, 1),
+            child_rappid=ref("rappid"), child_world_id=text(128, 1),
+            source_metadata_sha256=ref("hash"),
+            verification_status=fixed("verified-external-binding"),
+            verification_method=fixed("external-host-metadata-verifier"),
+            evidence=ref("particle"),
             grants_authority=fixed(False)),
     }
     for guarantee in GUARANTEES:
