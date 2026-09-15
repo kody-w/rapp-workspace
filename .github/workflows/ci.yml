@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  workspace1-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          repository: kody-w/rapp-1
+          ref: dda32d741c7218f41443a5bd17eebfe0eae82cb7
+          path: rapp-1
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Core schemas and pins
+        run: |
+          python3 -B tools/frame_lens.py schemas
+          python3 -B tools/frame_lens.py pins
+      - name: Core tests
+        env:
+          RAPP1_PATH: ${{ github.workspace }}/rapp-1
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -B -m unittest discover -s tests -v
+      - name: Core conformance
+        run: >-
+          python3 -B tools/frame_lens.py conformance
+          --rapp1-path "${{ github.workspace }}/rapp-1"
+          --output .validation/workspace1-core-ci
+      - name: Compile
+        run: python3 -m py_compile tools/*.py protocols/rapp-workspace/1/reference/*.py tests/*.py

@@ -1,0 +1,367 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1/schemas/common.schema.json",
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "rappid": {
+      "type": "string",
+      "minLength": 76,
+      "maxLength": 213,
+      "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "subject": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "native_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "namespace",
+        "native_key"
+      ],
+      "additionalProperties": false
+    },
+    "wave": {
+      "type": "object",
+      "properties": {
+        "space": {
+          "const": "rapp/1:wave"
+        },
+        "hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "space",
+        "hash"
+      ],
+      "additionalProperties": false
+    },
+    "particle": {
+      "type": "object",
+      "properties": {
+        "space": {
+          "const": "rapp/1:particle"
+        },
+        "hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "space",
+        "hash"
+      ],
+      "additionalProperties": false
+    },
+    "restrictions": {
+      "type": "object",
+      "properties": {
+        "rights": {
+          "type": "object",
+          "properties": {
+            "capture": {
+              "type": "boolean"
+            },
+            "local_synthesis": {
+              "type": "boolean"
+            },
+            "model_submission": {
+              "type": "boolean"
+            },
+            "retention": {
+              "type": "boolean"
+            },
+            "redistribution": {
+              "type": "boolean"
+            },
+            "adoption": {
+              "type": "boolean"
+            },
+            "materialization": {
+              "type": "boolean"
+            },
+            "execution": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "capture",
+            "local_synthesis",
+            "model_submission",
+            "retention",
+            "redistribution",
+            "adoption",
+            "materialization",
+            "execution"
+          ],
+          "additionalProperties": false
+        },
+        "privacy": {
+          "const": "godd"
+        },
+        "hashes_sensitive": {
+          "const": true
+        },
+        "deletion": {
+          "const": "no-guaranteed-recall"
+        },
+        "retention": {
+          "const": "append-only-local"
+        },
+        "audience": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "rights",
+        "privacy",
+        "hashes_sensitive",
+        "deletion",
+        "retention",
+        "audience"
+      ],
+      "additionalProperties": false
+    },
+    "read": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "content",
+            "negative",
+            "enumeration",
+            "environment"
+          ]
+        },
+        "selector": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 512,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "expected": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "kind",
+        "selector",
+        "expected"
+      ],
+      "additionalProperties": false
+    },
+    "frontier": {
+      "type": "object",
+      "properties": {
+        "instance_rappid": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "world_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "graph_head": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:wave"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "adoption_head": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:wave"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "routing_head": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:wave"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "suppressions": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "source_bindings": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "runtime_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "instance_rappid",
+        "world_id",
+        "policy",
+        "graph_head",
+        "adoption_head",
+        "routing_head",
+        "suppressions",
+        "source_bindings",
+        "runtime_sha256",
+        "sequence"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false
+}

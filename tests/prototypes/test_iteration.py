@@ -9,7 +9,7 @@ import unittest
 import uuid
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "protocols/rapp-workspace/grail-1.0/experimental/reference"))
+sys.path.insert(0, str(REPO / "protocols/rapp-workspace/prototypes/grail-1.0/experimental/reference"))
 from common import Parent, Refusal, address, write_file
 from framing import capture_object, frame_object, synthesize_attempt, synthesize_context_attempt
 from iteration import LensLoop, attempt_payload, information, pending, state, work_key

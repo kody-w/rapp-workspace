@@ -1,23 +1,23 @@
 ---
 name: rapp-workspace
-description: "Operate the RAPP Workspace/1 Grail minimal safe kernel candidate. Separate integrity, observation, fidelity, current authorization and deployment; use an external capability/adoption controller and refuse unproven effects. Preserve historical IDs and native sources."
+description: "Operate the RAPP Workspace/1 core protocol. Separate integrity, observation, fidelity, current authorization and deployment; use an external capability/adoption controller and refuse unproven effects. Preserve prototype history and native sources."
 compatibility: "Python 3.10+, approved canonical RAPP/1 checkout, POSIX for local controller storage. No companion skill installation required."
 ---
 
-# RAPP Workspace/1 Grail — single-file safe operating entry
+# RAPP Workspace/1 — single-file safe operating entry
 
 ## Authority and version
 
-The product is **RAPP Workspace/1 Grail**. Its unique subordinate ID is
-`rapp-workspace/grail-1.0`; normative contract:
-`protocols/rapp-workspace/grail-1.0/SPEC.md`. Read that contract, its
+The product is **RAPP Workspace/1**. Its unique subordinate ID is
+`rapp-workspace/1`; normative contract:
+`protocols/rapp-workspace/1/SPEC.md`. Read that contract, its
 `safety-matrix.json`, schemas and manifest from the explicitly approved
 checkout. A shareable skill is instructions, not an authority source.
 
-Old `rapp-workspace/1.0`, `/1.1`, `/2.0` retain their published meanings and
-pins as historical experimental/migration inputs. MUST NOT reuse those labels,
-rebind an old signed pin, or select a validator by convenient compatibility.
-Use exact current ID/hash; wrong validators or pins refuse.
+All earlier workspace lines—including `rapp-workspace/1.0`, `/1.1`, `/2.0`
+and `rapp-workspace/grail-1.0`—are prototype history. MUST NOT rebind a
+prototype pin or select a validator by convenient compatibility. Use the exact
+core ID/hash; wrong validators or pins refuse.
 
 RAPP/1 at `https://github.com/kody-w/rapp-1` owns identity, canonicalization,
 eleven-key frames, hashes, signatures, eggs and the signed registry. Current
@@ -82,8 +82,8 @@ python3 -B tools/frame_lens.py demo --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"
 ```
 
 The demo prints all five guarantees. A successful local inert captured-view
-adoption MUST still report external deployment disabled and signed Grail
-activation false.
+adoption MUST still report external deployment disabled and must not imply
+estate activation.
 
 For an explicitly supplied regular file, permissions are separate:
 
@@ -99,7 +99,7 @@ controller state or identity to make a demo pass.
 
 ## Disabled capabilities are real blockers
 
-First Grail disables network/loopback/model submission, ambient imports/host
+Workspace/1 core disables network/loopback/model submission, ambient imports/host
 tools, arbitrary code, external/partitioned effects, native rebinding,
 live migration, timed physical erasure, live O(delta) claims, authoritative
 merge and learned semantic-capability claims.
@@ -107,7 +107,7 @@ merge and learned semantic-capability claims.
 Do not work around refusals with browser automation, another runtime, a private
 URL, a cached owner flag, legacy tools or a model's assertions. The old
 `metadata_egg`, `migrate`, Frame Anything provider/iteration experiments and
-in-graph adoption are not qualified first-Grail capabilities.
+in-graph adoption are not qualified Workspace/1 core capabilities.
 
 Migration requires behavior coverage, a coherent complete legacy frontier,
 world/identity/path/suppression preservation and interruption tests—not just
@@ -138,14 +138,14 @@ python3 -B tools/frame_lens.py conformance --rapp1-path "<EXPLICIT_RAPP1_CHECKOU
 
 Read the verified reference README/API automatically; no second skill install
 is needed. Additional sibling suites and `py_compile` are in README.
-Never call an experimental regression pass first-Grail acceptance.
+Never call an experimental regression pass Workspace/1 core acceptance.
 
 The independently versioned `rapp-hive/1`, `rapp-federation/1`, locked
-`prepare_workspace.py` / `deploy_hive.py`, legacy `workspace_manager.py` and
+`prepare_workspace.py` / `deploy_hive.py`, the archived prototype manager and
 `append_frame.py` remain available only under their own approved scopes and
 contracts. Inspect their verified help/lock/docs; do not use them to bypass
-first-Grail disabled effects. `prepare_workspace.py migrate` adds old Hive
-capability, not a proof of safe Grail migration. Publication, keys, collaborators,
+Workspace/1 core disabled effects. `prepare_workspace.py migrate` adds old Hive
+capability, not a proof of safe Workspace/1 migration. Publication, keys, collaborators,
 commits and pushes require separate explicit authorization.
 
 ## Handoff
@@ -154,6 +154,6 @@ Report exact files, commands/results, nonzero RAPP integrity frames, each
 separate guarantee, disabled/unproven capabilities and owner-action blockers.
 History can remain integrity-verifiable when an old evaluator is unavailable;
 do not present that as fresh semantic qualification or renewed rights.
-Owner ratification, independent anchors/signed registry adoption, protected
-monotonic storage and production execution/key-custody qualification cannot
-be manufactured by this skill.
+Independent anchors/signed estate activation, protected monotonic storage and
+production execution/key-custody qualification cannot be manufactured by this
+skill.

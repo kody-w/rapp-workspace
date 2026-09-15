@@ -12,7 +12,7 @@ from unittest.mock import patch
 import uuid
 
 REPO = Path(__file__).resolve().parents[2]
-REFERENCE = REPO / "protocols/rapp-workspace/grail-1.0/experimental/reference"
+REFERENCE = REPO / "protocols/rapp-workspace/prototypes/grail-1.0/experimental/reference"
 sys.path.insert(0, str(REFERENCE))
 
 from common import Parent, Refusal, address, sha, write_file

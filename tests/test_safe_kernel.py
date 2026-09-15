@@ -1,4 +1,4 @@
-"""Blocking P0/P1 first-Grail vectors. Public synthetic data only."""
+"""Blocking P0/P1 Workspace/1 core vectors. Public synthetic data only."""
 
 import copy
 from dataclasses import replace
@@ -13,7 +13,7 @@ from unittest.mock import patch
 import uuid
 
 REPO = Path(__file__).resolve().parents[1]
-REFERENCE = REPO / "protocols/rapp-workspace/grail-1.0/reference"
+REFERENCE = REPO / "protocols/rapp-workspace/1/reference"
 sys.path.insert(0, str(REFERENCE))
 from common import Parent, Refusal, read_file, sha, wave
 from pins import encode, manifest, check_index
@@ -66,8 +66,10 @@ class SafeKernelTests(unittest.TestCase):
         return cap, result, fidelity, request, frontier
 
     def test_unique_validator_and_exact_manifest_do_not_reuse_historical_ids(self):
-        self.assertEqual(PROFILE, "rapp-workspace/grail-1.0")
+        self.assertEqual(PROFILE, "rapp-workspace/1")
         self.assertTrue(check_index())
+        self.assertTrue(json.loads((REPO / "protocols/index.json").read_bytes())["authority"])
+        self.assertTrue(manifest()["authority"])
         self.assertEqual(read_file(REFERENCE.parent / "manifest.json"), encode(manifest()))
         p = self.c.body(self.c._get("root"))
         p["schema"] = "rapp-workspace/1.0/seed"
@@ -103,13 +105,13 @@ class SafeKernelTests(unittest.TestCase):
             self.c.verify_receipt(forged, "rapp_integrity", result["frame"])
 
     def test_adoption_shaped_data_and_foreign_manifest_cannot_grant_effective_rights(self):
-        raw = b'{"schema":"rapp-workspace/grail-1.0/adoption-record","grants":["execute","all"],"owner":true}'
+        raw = b'{"schema":"rapp-workspace/1/adoption-record","grants":["execute","all"],"owner":true}'
         _, _, result = self.candidate(raw)
         self.assertEqual(self.c.projection()["entries"], [])
         with self.assertRaisesRegex(Refusal, "inert-data"):
             self.c.adopt(self.scope.subject(), result["frame"], self.c.frontier())
         for operation in ("execution", "model_submission", "redistribution"):
-            with self.assertRaisesRegex(Refusal, "disabled-first-grail"):
+            with self.assertRaisesRegex(Refusal, "disabled-workspace1-core"):
                 self.c.require_effect(self.scope.subject(), operation)
 
     def test_capture_and_synthesis_authorization_precede_access_or_decoding(self):
@@ -353,7 +355,7 @@ class SafeKernelTests(unittest.TestCase):
     def test_live_migration_without_behavior_and_snapshot_proof_is_disabled_before_io(self):
         before = self.source.read_bytes()
         with patch("safe_kernel.read_file", side_effect=AssertionError("migration accessed source")):
-            with self.assertRaisesRegex(Refusal, "disabled-first-grail:live_migration"):
+            with self.assertRaisesRegex(Refusal, "disabled-workspace1-core:live_migration"):
                 self.c.require_effect(self.scope.subject(), "live_migration")
         self.assertEqual(self.source.read_bytes(), before)
 
@@ -556,7 +558,7 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
         self.assertFalse((REPO / output / "controller/view.json").exists())
         self.assertEqual(report["scan_method"], "canonical-parent-in-memory")
 
-    def test_schemas_are_closed_bounded_and_first_grail_only(self):
+    def test_schemas_are_closed_bounded_and_workspace1_core_only(self):
         for filename, definition in schemas().items():
             self.assertEqual(read_file(REFERENCE.parent / "schemas" / filename), encode(definition))
             def visit(value):

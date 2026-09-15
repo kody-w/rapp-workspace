@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""RAPP Workspace/1 Grail safe entry: distinct guarantees, no implicit authority."""
+"""RAPP Workspace/1 safe entry: distinct guarantees, no implicit authority."""
 
 import argparse
 from pathlib import Path
 import subprocess
 import sys
 
-REFERENCE = Path(__file__).resolve().parents[1] / "protocols/rapp-workspace/grail-1.0/reference"
+REFERENCE = Path(__file__).resolve().parents[1] / "protocols/rapp-workspace/1/reference"
 
 
 def main():

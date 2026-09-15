@@ -1,14 +1,14 @@
 ---
 name: autonomous-rapp-estate-manager
-description: "Operate RAPP Workspace/1 Grail only through the minimal safe kernel and external authority controller. Separate five guarantees, preserve native sources/subjects, and refuse unproved estate automation, migration or effects."
+description: "Operate RAPP Workspace/1 only through the minimal safe kernel and external authority controller. Separate five guarantees, preserve native sources/subjects, and refuse unproved estate automation, migration or effects."
 ---
 
 # Safe estate management boundary
 
-Use the unique `rapp-workspace/grail-1.0` contract at
-`protocols/rapp-workspace/grail-1.0/SPEC.md`, its blocking safety matrix,
-schemas and byte manifest. The brand is **RAPP Workspace/1 Grail**.
-Historical 1.0/1.1/2.0 IDs and pins retain their meaning and cannot be rebound.
+Use the unique `rapp-workspace/1` contract at
+`protocols/rapp-workspace/1/SPEC.md`, its blocking safety matrix,
+schemas and byte manifest. The brand is **RAPP Workspace/1**.
+All earlier workspace protocol lines are prototype history and cannot be rebound.
 RAPP/1 remains the unchanged frame/identity/hash/signature/egg/registry authority.
 
 **RAPP-valid != accurately observed != semantically faithful != currently
@@ -58,8 +58,8 @@ Frame Chains mechanisms are above the kernel. Merge needs correspondence and
 coverage (zero overlap is unmeasured); reattach needs complete context; O(delta)
 needs fresh baselines, full coverage and generated-output exclusion. Live
 variants, behavior-preserving migration and general learned-semantic claims
-remain disabled until proven. The opt-in withdrawn experiments are not safe
-first-Grail authority, even when their regression tests pass.
+remain disabled until proven. The archived prototype implementations are not Workspace/1 core authority,
+even when their regression tests pass.
 
 Return exact evidence per guarantee, source preservation scope, active
 refusals and owner blockers. Do not invent approvals, signed registries,
