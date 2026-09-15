@@ -86,7 +86,8 @@ Current-authorization receipts are historical snapshots, not bearer grants.
     indexes external and digest-bound, and open only focused outcome subsets.
 15. Wrap verified workspace pointers into controller-produced composites.
     Preserve every child identity/world, copy no content, reject duplicate
-    membership or cycles, and allow the composite to be wrapped again.
+    membership or cycles, and allow the composite to be wrapped again. Mark
+    non-Git local workspaces branch-not-applicable; never fabricate a repo.
 
 ## One-command demonstration
 

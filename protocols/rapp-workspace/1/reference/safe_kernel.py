@@ -70,9 +70,10 @@ def catalog_document(core, raw):
             and len(value["snapshot_sha256"]) == 64
             and all(char in "0123456789abcdef" for char in value["snapshot_sha256"]),
             "invalid-catalog-snapshot")
-    require(value["branch_scope"] == "default-branch-only"
-            and value["branch_evidence_status"] == "external-host-observation-unproven"
-            and type(value["recursive"]) is bool,
+    require((value["branch_scope"], value["branch_evidence_status"]) in (
+                ("default-branch-only", "external-host-observation-unproven"),
+                ("not-applicable", "not-applicable"),
+            ) and type(value["recursive"]) is bool,
             "unsupported-catalog-scope")
     entries = value["entries"]
     require(type(entries) is list and 1 <= len(entries) <= 256, "catalog-entry-bound")

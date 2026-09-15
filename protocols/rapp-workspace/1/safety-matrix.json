@@ -30,6 +30,6 @@
     {"id": "P1-OUTCOME", "gate": "outcome-first-organization-quality-and-no-progress", "status": "implemented-structural-semantic-unproven", "vectors": ["broad-bucket-refinement", "improved-successor", "repeated-no-progress", "outcome-not-authority"]},
     {"id": "P1-HIVE", "gate": "explicit-private-hive-subscription-proposal", "status": "proposal-only-publication-disabled", "vectors": ["public-proposable", "private-withheld", "explicit-private-selection-still-not-publication", "excluded-withheld"]},
     {"id": "P1-SCALE", "gate": "hierarchical-external-indexes-and-tiled-organization", "status": "implemented-bounded-metadata-only", "vectors": ["multi-tile-organization", "missing-tile-refusal", "mixed-snapshot-refusal", "focused-view-not-whole-tree", "external-index-digest-binding"]},
-    {"id": "P1-COMPOSE", "gate": "recursive-pointer-only-workspace-composites", "status": "implemented-local-controller-dag", "vectors": ["child-identity-preserved", "child-world-preserved", "repeatable-wrapping", "duplicate-member-refusal", "data-shaped-composite-refusal", "idempotency-conflict"]}
+    {"id": "P1-COMPOSE", "gate": "recursive-pointer-only-workspace-composites", "status": "implemented-local-controller-dag", "vectors": ["child-identity-preserved", "child-world-preserved", "non-git-branch-not-applicable", "repeatable-wrapping", "duplicate-member-refusal", "data-shaped-composite-refusal", "idempotency-conflict"]}
   ]
 }
