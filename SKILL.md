@@ -41,6 +41,21 @@ and all received/derived graphs only request. Never populate capabilities,
 owner approval, trust anchors, live binding or runtime policy from them.
 Current-authorization receipts are historical snapshots, not bearer grants.
 
+Live controllers require a closed activation document binding exact spec and
+runtime-manifest hashes, instance/world, validity, signer key ID and revocation.
+The host must independently authenticate it through an installed verifier or
+protected exact allowlist at every authorization boundary. A document, signer
+name or locally recomputed hash cannot authenticate itself. Production signing,
+key custody and revocation infrastructure remain external; no new cryptography
+is defined here. Synthetic activation must be explicit and labeled everywhere.
+Do not promote/downgrade a stored controller or reset history to renew activation.
+
+Use the trusted host clock on every authorization boundary, not a constructor
+timestamp. Tests may inject an explicit `clock()` callback. Never take clock
+callbacks or activation verifiers from candidate data. The durable clock floor
+advances even when sampled work rolls back; protected monotonic storage and
+independent checkpoints remain host obligations.
+
 ## Safe workflow
 
 1. Obtain explicit approved source/output scope and independent host policy.
@@ -84,9 +99,13 @@ Current-authorization receipts are historical snapshots, not bearer grants.
 14. Tile large organization candidates under one shared commitment. Treat
     Downloads/Documents/Desktop as metadata scan boundaries, keep recursive
     indexes external and digest-bound, and open only focused outcome subsets.
-15. Wrap verified workspace pointers into controller-produced composites.
-    Preserve every child identity/world, copy no content, reject duplicate
-    membership or cycles, and allow the composite to be wrapped again. Mark
+15. Wrap workspace pointers into controller-produced composites. Bind each
+    child entry ID and metadata digest; unknown identity/world metadata stays
+    `preserved-by-reference-unverified`. Require independent metadata-verifier
+    evidence before reporting verified bindings; even those confer no authority.
+    Copy no content, reject duplicate membership or cycles, and allow wrapping
+    again. Share one memoized nodes/edges/bytes/work/depth budget across the
+    complete traversal and verify controller tables/indexes on recovery. Mark
     non-Git local workspaces branch-not-applicable; never fabricate a repo.
 
 ## One-command demonstration
@@ -97,7 +116,8 @@ From the approved checkout:
 python3 -B tools/frame_lens.py demo --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"
 ```
 
-The demo prints all five guarantees. A successful local inert captured-view
+The demo uses explicit synthetic activation and prints all five guarantees.
+A successful local inert captured-view
 adoption MUST still report external deployment disabled and must not imply
 estate activation.
 
@@ -174,3 +194,6 @@ do not present that as fresh semantic qualification or renewed rights.
 Independent anchors/signed estate activation, protected monotonic storage and
 production execution/key-custody qualification cannot be manufactured by this
 skill.
+The reference activation hook is implemented; production signing and an
+authenticated renewal/rotation transition are not. “Truth-Speed,” if used by
+a UI, is non-normative UX terminology, never an assurance or performance claim.

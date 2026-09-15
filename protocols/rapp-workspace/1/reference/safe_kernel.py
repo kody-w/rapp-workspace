@@ -3,7 +3,7 @@
 import base64
 from contextlib import contextmanager
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 import fcntl
 import json
 import os
@@ -12,10 +12,16 @@ import sqlite3
 import types
 
 from common import Refusal, ROOT, address, directory, domain, read_file, require, sha, wave, write_file
+from composite_work import CompositeWork
 from pins import encode, manifest
 from schema_source import GUARANTEES, PROFILE, RIGHTS
 
 MAX_OCTETS = 65536
+COMPOSITE_LIMITS = {
+    "max_composite_nodes": 512, "max_composite_edges": 4096,
+    "max_composite_bytes": 16 * 1024 * 1024, "max_composite_work": 1000000,
+    "max_composite_depth": 32,
+}
 DISABLED = frozenset({
     "model_submission", "redistribution", "execution", "network", "loopback", "imports", "host_tool",
     "external_effect", "partitioned_effect", "native_rebinding", "live_migration", "timed_erasure",
@@ -32,6 +38,10 @@ def unb64(value):
     raw = base64.b64decode(value, validate=True)
     require(b64(raw) == value, "noncanonical base64")
     return raw
+
+
+def host_utc_now():
+    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
 def _bounded_text(value, maximum, reason):
@@ -240,6 +250,11 @@ class ExternalPolicy:
     max_total_octets: int = 1024 * 1024
     physical_deletion_required: bool = False
     partitioned: bool = False
+    max_composite_nodes: int = 512
+    max_composite_edges: int = 4096
+    max_composite_bytes: int = 16 * 1024 * 1024
+    max_composite_work: int = 1000000
+    max_composite_depth: int = 32
 
 
 class EvaluatorImage:
@@ -264,20 +279,26 @@ class EvaluatorImage:
 class Controller:
     """One trusted local writer. SQLite commit is the adoption linearization point."""
 
-    def __init__(self, core, directory_path, policy, *, now, checkpoint=None):
-        require(type(policy) is ExternalPolicy, "external controller policy required")
-        require(core.r.utc_valid(now), "explicit trusted host time required")
-        require(core.r.rappid_valid(policy.instance_rappid), "canonical live-instance RAPPID required")
-        require(not policy.physical_deletion_required, "timed-erasure-unproven-disabled-before-access")
-        require(not policy.partitioned, "partitioned-effects-disabled-before-access")
-        require(all(type(v) is int for v in (policy.sequence, policy.max_attempts, policy.max_depth,
-                                             policy.max_frames, policy.max_total_octets)) and policy.sequence >= 1,
-                "exact integer policy budgets required")
-        require(1 <= policy.max_attempts <= 128 and 0 <= policy.max_depth <= 32
-                and 8 <= policy.max_frames <= 512 and 1 <= policy.max_total_octets <= 64 * 1024 * 1024,
-                "root-owned budget bounds")
-        require(set(policy.rights) <= set(RIGHTS), "unknown capability")
-        self.core, self.policy, self.path, self.now = core, policy, Path(directory_path), now
+    def __init__(self, core, directory_path, policy, *, clock=None, activation_mode="live",
+                 activation=None, verify_activation=None, verify_workspace_binding=None, checkpoint=None):
+        self.core, self.policy, self.path = core, policy, Path(directory_path)
+        self._validate_policy(policy)
+        self._clock = host_utc_now if clock is None else clock
+        require(callable(self._clock), "trusted-host-clock-callback-required")
+        require(activation_mode in ("live", "synthetic"), "explicit-controller-activation-mode-required")
+        require(verify_workspace_binding is None or callable(verify_workspace_binding),
+                "workspace-binding-verifier-required")
+        self._binding_verifier = verify_workspace_binding
+        self._activation_verifier = verify_activation
+        if activation_mode == "synthetic":
+            require(activation is None and verify_activation is None,
+                    "synthetic-activation-must-not-ignore-live-document")
+        else:
+            require(type(activation) is dict and callable(verify_activation),
+                    "live-controller-requires-authenticated-activation")
+            core.schemas.validate(activation, "activation-document.schema.json")
+        self._activation_raw = core.octets({"mode": activation_mode, "document": activation})
+        self._last_time = None
         self._scope_map = {self.subject_key(s.subject()): s for s in policy.scopes}
         require(len(self._scope_map) == len(policy.scopes) and self._scope_map, "ambiguous external native subjects")
         self.qualify()
@@ -294,6 +315,84 @@ class Controller:
         except BaseException:
             self.close()
             raise
+
+    def _validate_policy(self, policy):
+        require(type(policy) is ExternalPolicy, "external controller policy required")
+        require(self.core.r.rappid_valid(policy.instance_rappid), "canonical live-instance RAPPID required")
+        require(self.core.r.utc_valid(policy.expires_utc), "trusted-clock-domain-required")
+        require(not policy.physical_deletion_required, "timed-erasure-unproven-disabled-before-access")
+        require(not policy.partitioned, "partitioned-effects-disabled-before-access")
+        require(all(type(v) is int for v in (policy.sequence, policy.max_attempts, policy.max_depth,
+                                             policy.max_frames, policy.max_total_octets)) and policy.sequence >= 1,
+                "exact integer policy budgets required")
+        require(1 <= policy.max_attempts <= 128 and 0 <= policy.max_depth <= 32
+                and 8 <= policy.max_frames <= 512 and 1 <= policy.max_total_octets <= 64 * 1024 * 1024,
+                "root-owned budget bounds")
+        require(set(policy.rights) <= set(RIGHTS), "unknown capability")
+        require(all(type(getattr(policy, key)) is int
+                    and (0 if key == "max_composite_depth" else 1) <= getattr(policy, key) <= limit
+                    for key, limit in COMPOSITE_LIMITS.items()), "composite-policy-budget-bounds")
+
+    @property
+    def now(self):
+        """Last trusted sample, not a caller-settable authorization clock."""
+        return self._last_time
+
+    @property
+    def activation_mode(self):
+        return self.core.parse(self._activation_raw)["mode"]
+
+    def _activation_value(self):
+        return self.core.parse(self._activation_raw)
+
+    def _sample_time(self):
+        try:
+            now = self._clock()
+        except Exception as exc:
+            raise Refusal("trusted-host-clock-unavailable") from exc
+        require(self.core.r.utc_valid(now), "trusted-clock-domain-required")
+        require(self._last_time is None or now >= self._last_time, "controller-clock-rollback")
+        if getattr(self, "db", None) is not None:
+            floor = self._get("clock_floor")
+            require(self.core.r.utc_valid(floor), "controller-clock-recovery-quarantine")
+            require(now >= floor, "controller-clock-rollback")
+            self._last_time = now
+            if now > floor:
+                self._put("clock_floor", now)
+        self._last_time = now
+        return now
+
+    def _verify_activation(self, now):
+        activation = self._activation_value()
+        if activation["mode"] == "synthetic":
+            return
+        document = activation["document"]
+        self.core.schemas.validate(document, "activation-document.schema.json")
+        require((document["spec_id"], document["spec_sha256"], document["runtime_sha256"],
+                 document["instance_rappid"], document["world_id"])
+                == (PROFILE, self.policy.spec_sha256, self.policy.runtime_sha256,
+                    self.policy.instance_rappid, self.policy.world_id),
+                "activation-exact-binding-mismatch")
+        require(self.core.r.utc_valid(document["not_before_utc"])
+                and self.core.r.utc_valid(document["expires_utc"])
+                and document["not_before_utc"] <= now < document["expires_utc"],
+                "activation-not-current")
+        require(document["revocation_status"] == "active", "activation-revoked")
+        try:
+            verified = self._activation_verifier(document, now)
+        except Exception as exc:
+            raise Refusal("activation-verifier-refused") from exc
+        require(verified is True, "activation-not-independently-authenticated")
+
+    def _authorize_host(self):
+        now = self._sample_time()
+        require(now < self.policy.expires_utc, "current-authorization-expired")
+        self._verify_activation(now)
+        if getattr(self, "db", None) is not None:
+            require(self._get("activation") == self._activation_value(),
+                    "controller-activation-recovery-quarantine")
+            require(self._get("policy") == self._policy_value(self.policy), "stale-external-policy")
+            require(not self.db.execute("SELECT 1 FROM faults LIMIT 1").fetchone(), "fork-latched")
 
     def _initialize_database(self, checkpoint):
         policy, now = self.policy, self.now
@@ -314,12 +413,21 @@ class Controller:
             CREATE TABLE IF NOT EXISTS faults(hash TEXT PRIMARY KEY, raw BLOB);
             CREATE TABLE IF NOT EXISTS assessments(hash TEXT PRIMARY KEY);
             CREATE TABLE IF NOT EXISTS composites(hash TEXT PRIMARY KEY, composite_id TEXT UNIQUE NOT NULL);
+            CREATE TABLE IF NOT EXISTS workspace_bindings(
+                hash TEXT PRIMARY KEY, assessment TEXT NOT NULL, entry_id TEXT NOT NULL,
+                metadata_sha256 TEXT NOT NULL, UNIQUE(assessment, entry_id));
         """)
         binding = self._policy_value(policy)
         old = self._get("policy")
         if old is None:
+            require(not self.db.execute("SELECT 1 FROM frames LIMIT 1").fetchone(),
+                    "controller-policy-recovery-quarantine")
             with self.transaction():
                 self._put("policy", binding)
+                self._put("activation", self._activation_value())
+                self._put("binding_records", [])
+                self._put("composite_records", [])
+                self._put("assessment_records", [])
                 self._put("sequence", 0)
                 self._put("attempts", 0)
                 self._put("root", None)
@@ -333,6 +441,9 @@ class Controller:
                 self._put("contracts", [])
         else:
             require(old == binding, "external-policy/configuration-substitution")
+            require(self._get("activation") == self._activation_value(),
+                    "controller-activation-recovery-quarantine")
+            require(self.core.r.utc_valid(self._get("clock_floor")), "controller-clock-recovery-quarantine")
             require(now >= self._get("clock_floor"), "controller-clock-rollback")
         self.verify_history()
         if checkpoint is not None:
@@ -358,9 +469,12 @@ class Controller:
             "scopes": [{"subject": s.subject(), "path": s.path} for s in policy.scopes],
             "max_attempts": policy.max_attempts, "max_depth": policy.max_depth, "max_frames": policy.max_frames,
             "max_total_octets": policy.max_total_octets,
+            "physical_deletion_required": policy.physical_deletion_required, "partitioned": policy.partitioned,
+            **{key: getattr(policy, key) for key in COMPOSITE_LIMITS},
         }
 
     def qualify(self):
+        self._authorize_host()
         require(self.policy.spec_sha256 == sha(read_file(ROOT / "SPEC.md")), "wrong-validator-or-spec-pin")
         raw = read_file(ROOT / "manifest.json")
         require(sha(raw) == self.policy.runtime_sha256 and raw == encode(manifest()), "runtime-qualification-required")
@@ -374,30 +488,22 @@ class Controller:
                 "deletion": "no-guaranteed-recall", "retention": "append-only-local",
                 "audience": list(self.policy.audience)}
 
-    def propagate(self, restrictions):
-        values = [self.restrictions(), *restrictions]
+    def propagate(self, restrictions, *, current=True):
+        values = [self.restrictions(), *restrictions] if current else list(restrictions)
+        require(values, "restriction-evidence-required")
         rights = {name: all(r["rights"][name] for r in values) for name in RIGHTS}
         audience = sorted(set.intersection(*(set(r["audience"]) for r in values)))
         require(audience, "restriction-audience-intersection-empty")
-        return {**self.restrictions(), "rights": rights, "audience": audience}
+        return {**values[0], "rights": rights, "audience": audience}
 
     def guard(self, subject, action, inherited=None):
+        self._authorize_host()
         require(action not in DISABLED, "disabled-workspace1-core:" + action)
-        require(self.core.r.utc_valid(self.now) and self.core.r.utc_valid(self.policy.expires_utc),
-                "trusted-clock-domain-required")
-        require(self.now < self.policy.expires_utc, "current-authorization-expired")
         require(action in self.policy.rights, "external-capability-denied:" + action)
         require(self.subject_key(subject) in self._scope_map, "outside-explicit-observation-scope")
         if inherited is not None:
             require(inherited["rights"].get(action) is True, "inherited-restriction-denied:" + action)
             require(set(self.policy.audience) & set(inherited["audience"]), "inherited-audience-denied")
-        if getattr(self, "db", None) is not None:
-            floor = self._get("clock_floor")
-            require(self.now >= floor, "controller-clock-rollback")
-            require(not self.db.execute("SELECT 1 FROM faults LIMIT 1").fetchone(), "fork-latched")
-            require(self._get("policy") == self._policy_value(self.policy), "stale-external-policy")
-            if self.now > floor:
-                self._put("clock_floor", self.now)
 
     @contextmanager
     def transaction(self):
@@ -408,6 +514,11 @@ class Controller:
         except BaseException:
             self.db.execute("ROLLBACK")
             raise
+        finally:
+            # A rolled-back write must not roll back time already observed by this host.
+            floor = self._get("clock_floor")
+            if floor is not None and self.now is not None and self.now > floor:
+                self._put("clock_floor", self.now)
 
     def _get(self, key):
         row = self.db.execute("SELECT value FROM meta WHERE key=?", (key,)).fetchone()
@@ -418,6 +529,7 @@ class Controller:
 
     def _payload(self, name, native_subject, restrictions=None, **fields):
         return {"schema": PROFILE + "/" + name, "instance_rappid": self.policy.instance_rappid,
+                "activation_mode": self.activation_mode, "activation": self.core.particle(self._activation_value()),
                 "world_id": self.policy.world_id, "native_subject": native_subject,
                 "restrictions": restrictions or self.restrictions(), **fields}
 
@@ -425,8 +537,14 @@ class Controller:
         row = self.db.execute("SELECT raw FROM frames ORDER BY seq DESC LIMIT 1").fetchone()
         return self.core.parse(row[0]) if row else None
 
-    def _emit(self, payload, *, stop=False):
+    def _emit(self, payload, *, stop=False, work=None):
+        require(type(payload) is dict and "native_subject" in payload and "restrictions" in payload,
+                "scoped-body-record-required")
+        self.guard(payload["native_subject"], "retention", payload["restrictions"])
         self.core.schemas.validate(payload)
+        require(payload["activation_mode"] == self.activation_mode
+                and payload["activation"] == self.core.particle(self._activation_value()),
+                "controller-record-activation-substitution")
         require("retention" in self.policy.rights and payload["restrictions"]["rights"]["retention"],
                 "retention-denied-before-persistence")
         head = self._head()
@@ -436,8 +554,11 @@ class Controller:
                                         payload, head["payload_hash"] if head else None)
         ok, step, why = self.core.r.verify_frame(frame, head=head, stream_id_of_record=self.policy.instance_rappid)
         require(ok, f"RAPP/1 refusal {step}: {why}")
+        raw = self.core.octets(frame)
+        if work is not None:
+            work.charge_bytes(len(raw))
         self.db.execute("INSERT INTO frames VALUES (?,?,?)",
-                        (number, frame["frame_hash"], self.core.octets(frame)))
+                        (number, frame["frame_hash"], raw))
         self._put("sequence", self._get("sequence") + 1)
         return wave(frame)
 
@@ -490,6 +611,8 @@ class Controller:
                               (address(reference),)).fetchone()
         require(row is not None and row[0] == guarantee and row[1] == address(subject_frame),
                 "data-shaped-receipt-has-no-controller-authority")
+        require(row[2] == p["scope"], "receipt-ledger-recovery-quarantine")
+        self._owned_payload(p, p["native_subject"])
         require(p["subject"] == subject_frame and p["status"] == "verified", "guarantee-not-verified")
         require(scope is None or p["scope"] == scope, "receipt-coverage-scope-mismatch")
         if current:
@@ -543,16 +666,17 @@ class Controller:
         raw = read_file(path, min(MAX_OCTETS, remaining))
         return self.capture_octets(subject, raw, consistency="stable-descriptor-not-coherent")
 
-    def _observation_octets(self, reference, expected_subject):
-        source = self.body(reference)
+    def _observation_octets(self, reference, expected_subject, work=None):
+        source = work.body(reference) if work is not None else self.body(reference)
         require(source["schema"] == PROFILE + "/observation",
                 "catalog-or-tree-source-must-be-observation")
         require(source["native_subject"] == expected_subject
                 and source["world_id"] == self.policy.world_id
                 and source["instance_rappid"] == self.policy.instance_rappid,
                 "catalog-source-subject-or-world-substitution")
-        self.guard(expected_subject, "local_synthesis", source["restrictions"])
-        self.guard(expected_subject, "retention", source["restrictions"])
+        if work is None or not work.historical:
+            self.guard(expected_subject, "local_synthesis", source["restrictions"])
+            self.guard(expected_subject, "retention", source["restrictions"])
         return source, self._decode_source(source)
 
     def register_catalog_shard(self, subject, source):
@@ -574,25 +698,30 @@ class Controller:
                 entry_count=len(document["entries"]), source_sha256=sha(raw),
                 grants_authority=False))
 
-    def _catalog_entries(self, expected_subject, shard_references):
+    def _catalog_entries(self, expected_subject, shard_references, work=None):
         require(type(shard_references) is list and 1 <= len(shard_references) <= 32,
                 "catalog-shard-reference-bound")
         addresses = [address(reference) for reference in shard_references]
         require(len(addresses) == len(set(addresses)), "catalog-shard-reference-bound")
+        cache_key = (self.subject_key(expected_subject), tuple(addresses))
+        if work is not None:
+            work.charge(len(addresses))
+            if cache_key in work.catalogs:
+                return work.catalogs[cache_key]
         documents, restrictions = [], []
         catalog_id, root_id, shard_count = None, None, None
         snapshot_sha256, branch_scope, branch_evidence_status, recursive = None, None, None, None
         entries = {}
         indexes = set()
         for reference in shard_references:
-            shard = self.body(reference)
+            shard = work.body(reference) if work is not None else self.body(reference)
             require(shard["schema"] == PROFILE + "/catalog-shard",
                     "catalog-shard-record-required")
             require(shard["native_subject"] == expected_subject
                     and shard["world_id"] == self.policy.world_id
                     and shard["instance_rappid"] == self.policy.instance_rappid,
                     "catalog-shard-subject-or-world-substitution")
-            observed, raw = self._observation_octets(shard["source"], expected_subject)
+            observed, raw = self._observation_octets(shard["source"], expected_subject, work)
             document = catalog_document(self.core, raw)
             require(shard["native_subject"] == observed["native_subject"]
                     and shard["catalog_id"] == document["catalog_id"]
@@ -607,7 +736,7 @@ class Controller:
                     and shard["entry_count"] == len(document["entries"])
                     and shard["source_sha256"] == sha(raw),
                     "catalog-shard-substitution")
-            maximum = self.propagate([observed["restrictions"]])
+            maximum = self.propagate([observed["restrictions"]], current=work is None or not work.historical)
             require(all(not shard["restrictions"]["rights"][right] or maximum["rights"][right]
                         for right in RIGHTS)
                     and set(shard["restrictions"]["audience"]) <= set(maximum["audience"]),
@@ -626,6 +755,8 @@ class Controller:
                     "catalog-shard-family-mismatch")
             require(document["shard_index"] not in indexes, "duplicate-catalog-shard-index")
             indexes.add(document["shard_index"])
+            if work is not None:
+                work.charge(len(document["entries"]))
             for entry in document["entries"]:
                 require(entry["id"] not in entries, "duplicate-catalog-entry-across-shards")
                 entries[entry["id"]] = entry
@@ -633,6 +764,8 @@ class Controller:
             restrictions.append(shard["restrictions"])
         require(len(documents) == shard_count and indexes == set(range(shard_count)),
                 "incomplete-catalog-shards")
+        if work is not None:
+            work.charge(len(entries) * (len(entries).bit_length() + 1))
         snapshot = [
             {
                 "id": entry["id"], "kind": entry["kind"], "parent": entry["parent"],
@@ -649,6 +782,8 @@ class Controller:
                     "catalog-parent-outside-complete-shards")
             visited, current, depth = set(), entry_id, 0
             while entries[current]["parent"] in entries:
+                if work is not None:
+                    work.charge(1)
                 require(current not in visited, "catalog-parent-cycle")
                 visited.add(current)
                 current = entries[current]["parent"]
@@ -657,7 +792,10 @@ class Controller:
             if not recursive:
                 require(entry["parent"] in (None, root_id),
                         "nonrecursive-catalog-has-descendants")
-        return catalog_id, root_id, snapshot_sha256, entries, restrictions
+        result = catalog_id, root_id, snapshot_sha256, entries, restrictions
+        if work is not None:
+            work.catalogs[cache_key] = result
+        return result
 
     def assess_organization(self, subject, catalog_shards, tree_source, *,
                             max_bucket, allowed_depth, refinement_round=0,
@@ -748,6 +886,7 @@ class Controller:
                 refinement_round=refinement_round, previous=previous,
                 status=status, progress=progress, grants_authority=False))
             self.db.execute("INSERT INTO assessments VALUES (?)", (address(assessment),))
+            self._put("assessment_records", self._get("assessment_records") + [address(assessment)])
             return assessment
 
     def candidate_outcome(self, subject, assessment, query, selected_ids):
@@ -840,44 +979,249 @@ class Controller:
                 external_owner_approval_required=True,
                 publication_authorized=False, grants_authority=False))
 
-    def _composite_members(self, subject, reference, active=None):
-        active = set() if active is None else active
+    def _controller_records(self, table, work):
+        definitions = {
+            "assessments": ("assessment_records", "hash"),
+            "composites": ("composite_records", "hash,composite_id"),
+            "workspace_bindings": ("binding_records", "hash,assessment,entry_id,metadata_sha256"),
+        }
+        require(table in definitions, "unknown-controller-ledger")
+        if table not in work.ledgers:
+            registry, columns = definitions[table]
+            size = self.db.execute("SELECT length(value) FROM meta WHERE key=?", (registry,)).fetchone()
+            require(size is not None, "controller-record-ledger-recovery-quarantine")
+            work.charge_bytes(size[0])
+            recorded = self._get(registry)
+            count = self.db.execute("SELECT COUNT(*) FROM " + table).fetchone()[0]
+            require(type(recorded) is list and count == len(recorded) <= 512
+                    and all(type(key) is str for key in recorded)
+                    and len(set(recorded)) == len(recorded),
+                    "controller-record-ledger-recovery-quarantine")
+            work.charge(count + 1)
+            rows = list(self.db.execute("SELECT " + columns + " FROM " + table + " ORDER BY hash"))
+            require([row[0] for row in rows] == sorted(recorded),
+                    "controller-record-ledger-recovery-quarantine")
+            work.ledgers[table] = {row[0]: row[1:] for row in rows}
+        return work.ledgers[table]
+
+    def _owned_payload(self, payload, subject):
+        require(payload["native_subject"] == subject
+                and payload["world_id"] == self.policy.world_id
+                and payload["instance_rappid"] == self.policy.instance_rappid
+                and payload["activation_mode"] == self.activation_mode
+                and payload["activation"] == self.core.particle(self._activation_value()),
+                "controller-record-subject-world-or-activation-substitution")
+
+    def _assessment_catalog(self, subject, reference, work):
         key = address(reference)
-        require(key not in active, "workspace-composite-cycle")
-        active.add(key)
+        if key not in work.assessments:
+            require(key in self._controller_records("assessments", work),
+                    "workspace-composite-requires-verified-organization")
+            evaluated = work.body(reference)
+            require(evaluated["schema"] == PROFILE + "/organization-assessment"
+                    and evaluated["status"] == "verified",
+                    "workspace-composite-requires-verified-organization")
+            self._owned_payload(evaluated, subject)
+            if not work.historical:
+                self.guard(subject, "local_synthesis", evaluated["restrictions"])
+                self.guard(subject, "retention", evaluated["restrictions"])
+            _, _, digest, entries, inherited = self._catalog_entries(
+                subject, evaluated["catalog_shards"], work)
+            require(evaluated["snapshot_sha256"] == digest and evaluated["entry_count"] == len(entries),
+                    "workspace-composite-catalog-substitution")
+            work.assessments[key] = (evaluated, entries, inherited)
+        result = work.assessments[key]
+        self._owned_payload(result[0], subject)
+        return result
+
+    def _binding_record(self, subject, reference, work):
+        key = address(reference)
+        if key not in work.bindings:
+            rows = self._controller_records("workspace_bindings", work)
+            require(key in rows, "workspace-binding-controller-record-required")
+            payload = work.body(reference)
+            require(payload["schema"] == PROFILE + "/workspace-binding",
+                    "workspace-binding-ledger-recovery-quarantine")
+            self._owned_payload(payload, subject)
+            evaluated, entries, inherited = self._assessment_catalog(subject, payload["assessment"], work)
+            claim = {name: payload[name] for name in (
+                "entry_id", "child_rappid", "child_world_id", "source_metadata_sha256")}
+            require(rows[key] == (address(payload["assessment"]), payload["entry_id"],
+                                  payload["source_metadata_sha256"])
+                    and payload["entry_id"] in entries
+                    and "workspace" in entries[payload["entry_id"]]["labels"]
+                    and entries[payload["entry_id"]]["metadata_sha256"] == payload["source_metadata_sha256"]
+                    and payload["evidence"] == self.core.particle(claim),
+                    "workspace-binding-ledger-recovery-quarantine")
+            maximum = self.propagate([evaluated["restrictions"], *inherited], current=not work.historical)
+            self._check_restrictions(payload["restrictions"], maximum)
+            if not work.historical:
+                self.guard(subject, "local_synthesis", payload["restrictions"])
+                self.guard(subject, "retention", payload["restrictions"])
+            work.bindings[key] = payload
+        payload = work.bindings[key]
+        self._owned_payload(payload, subject)
+        return payload
+
+    def register_workspace_binding(self, subject, assessment, entry_id, *,
+                                   child_rappid, child_world_id, metadata):
+        """Host-only evidence hook. Even a verified binding grants no child capabilities."""
+        self.guard(subject, "capture")
+        self.guard(subject, "local_synthesis")
+        self.guard(subject, "retention")
+        require(callable(self._binding_verifier), "workspace-binding-verifier-required")
+        work = CompositeWork(self)
+        evaluated, entries, inherited = self._assessment_catalog(subject, assessment, work)
+        _bounded_text(entry_id, 512, "invalid-workspace-binding-entry")
+        require(entry_id in entries and "workspace" in entries[entry_id]["labels"],
+                "workspace-binding-outside-catalog")
+        restrictions = self.propagate([evaluated["restrictions"], *inherited])
+        self.guard(subject, "capture", restrictions)
+        self.guard(subject, "local_synthesis", restrictions)
+        require(type(metadata) is bytes and len(metadata) <= MAX_OCTETS, "finite-bounded-metadata-required")
+        require(sha(metadata) == entries[entry_id]["metadata_sha256"], "workspace-binding-metadata-mismatch")
+        claim = {"entry_id": entry_id, "child_rappid": child_rappid, "child_world_id": child_world_id,
+                 "source_metadata_sha256": sha(metadata)}
+        payload = self._payload(
+            "workspace-binding", subject, restrictions, assessment=assessment, **claim,
+            verification_status="verified-external-binding", verification_method="external-host-metadata-verifier",
+            evidence=self.core.particle(claim), grants_authority=False)
+        self.core.schemas.validate(payload)
         try:
-            composite = self.body(reference)
+            verified = self._binding_verifier(dict(claim), metadata)
+        except Exception as exc:
+            raise Refusal("workspace-binding-verifier-refused") from exc
+        require(verified is True, "workspace-binding-not-independently-verified")
+        self.guard(subject, "local_synthesis", restrictions)
+        with self.transaction():
+            existing = self.db.execute(
+                "SELECT hash FROM workspace_bindings WHERE assessment=? AND entry_id=?",
+                (address(assessment), entry_id)).fetchone()
+            if existing:
+                reference = {"space": "rapp/1:wave", "hash": existing[0]}
+                require(self._binding_record(subject, reference, work) == payload,
+                        "workspace-binding-idempotency-conflict")
+                return reference
+            reference = self._emit(payload, work=work)
+            self.db.execute("INSERT INTO workspace_bindings VALUES (?,?,?,?)",
+                            (address(reference), address(assessment), entry_id, claim["source_metadata_sha256"]))
+            self._put("binding_records", self._get("binding_records") + [address(reference)])
+            return reference
+
+    def _workspace_bindings(self, subject, assessment, selected, entries, work):
+        index = {(row[0], row[1]): key
+                 for key, row in self._controller_records("workspace_bindings", work).items()}
+        work.charge(len(index) + len(selected))
+        values = []
+        for entry_id in selected:
+            value = {"entry_id": entry_id, "child_rappid": None, "child_world_id": None,
+                     "source_metadata_sha256": entries[entry_id]["metadata_sha256"],
+                     "verification_status": "preserved-by-reference-unverified",
+                     "evidence": None, "grants_authority": False}
+            key = index.get((address(assessment), entry_id))
+            if key is not None:
+                reference = {"space": "rapp/1:wave", "hash": key}
+                record = self._binding_record(subject, reference, work)
+                value.update(child_rappid=record["child_rappid"], child_world_id=record["child_world_id"],
+                             verification_status="verified-external-binding", evidence=reference)
+            values.append(value)
+        return values
+
+    def _check_restrictions(self, restrictions, maximum):
+        require(all(not restrictions["rights"][right] or maximum["rights"][right] for right in RIGHTS)
+                and set(restrictions["audience"]) <= set(maximum["audience"]),
+                "controller-record-restrictions-widened")
+
+    def _composite_summary(self, bindings, depth, work):
+        work.charge(len(bindings) * (2 * len(bindings).bit_length() + 1))
+        ordered = sorted(bindings)
+        verified = sum(value["verification_status"] == "verified-external-binding" for value in bindings.values())
+        status = "verified-external-bindings" if verified == len(bindings) else "preserved-by-reference-unverified"
+        return {
+            "member_count": len(bindings), "members_sha256": _canonical_sha256(ordered), "depth": depth,
+            "bindings_sha256": _canonical_sha256([bindings[key] for key in ordered]),
+            "verified_binding_count": verified, "unverified_binding_count": len(bindings) - verified,
+            "child_identity_status": status, "child_world_status": status,
+        }
+
+    def _composite_children(self, subject, composite_id, bindings, children, work, level):
+        ids, inherited, depth = {composite_id}, [], 0
+        for child in children:
+            _, child_bindings, child_ids, restrictions, child_depth = self._composite_members(
+                subject, child, work=work, level=level + 1)
+            work.charge(len(bindings) + len(child_bindings) + len(child_ids))
+            require(composite_id not in child_ids, "workspace-composite-cycle")
+            require(not bindings.keys() & child_bindings.keys(), "workspace-composite-duplicate-member")
+            require(len(bindings) + len(child_bindings) <= 10000, "workspace-composite-bound")
+            bindings.update(child_bindings)
+            ids.update(child_ids)
+            inherited.extend(restrictions)
+            depth = max(depth, child_depth + 1)
+        require(bindings, "workspace-composite-empty-or-cycle")
+        return ids, inherited, depth
+
+    def _composite_members(self, subject, reference, *, work=None, level=0):
+        work = CompositeWork(self) if work is None else work
+        key = address(reference)
+        require(key not in work.active, "workspace-composite-cycle")
+        work.reserve([key], level)
+        if key in work.memo:
+            result = work.memo[key]
+            self._owned_payload(result[0], subject)
+            require(level + result[4] <= self.policy.max_composite_depth, "workspace-composite-depth-budget")
+            work.depth = max(work.depth, level + result[4])
+            return result
+        work.active.add(key)
+        try:
+            rows = self._controller_records("composites", work)
+            require(key in rows, "workspace-composite-controller-record-required")
+            composite = work.body(reference)
             require(composite["schema"] == PROFILE + "/workspace-composite"
-                    and composite["native_subject"] == subject
-                    and composite["world_id"] == self.policy.world_id
-                    and composite["instance_rappid"] == self.policy.instance_rappid
-                    and self.db.execute(
-                        "SELECT 1 FROM composites WHERE hash=?", (key,)
-                    ).fetchone(),
-                    "workspace-composite-controller-record-required")
-            self.guard(subject, "local_synthesis", composite["restrictions"])
-            self.guard(subject, "retention", composite["restrictions"])
-            members = set(composite["selected_ids"])
-            composite_ids = {composite["composite_id"]}
-            restrictions = [composite["restrictions"]]
-            depth = 0
-            for child in composite["child_composites"]:
-                child_body, child_members, child_ids, child_restrictions, child_depth = (
-                    self._composite_members(subject, child, active)
-                )
-                require(not members & child_members,
-                        "workspace-composite-duplicate-member")
-                members.update(child_members)
-                composite_ids.update(child_ids)
-                restrictions.extend(child_restrictions)
-                depth = max(depth, child_depth + 1)
-            require(composite["member_count"] == len(members)
-                    and composite["members_sha256"] == _canonical_sha256(sorted(members))
-                    and composite["depth"] == depth,
-                    "workspace-composite-member-substitution")
-            return composite, members, composite_ids, restrictions, depth
+                    and rows[key] == (composite["composite_id"],),
+                    "workspace-composite-ledger-recovery-quarantine")
+            require(level + composite["depth"] <= self.policy.max_composite_depth,
+                    "workspace-composite-depth-budget")
+            self._owned_payload(composite, subject)
+            if not work.historical:
+                self.guard(subject, "local_synthesis", composite["restrictions"])
+                self.guard(subject, "retention", composite["restrictions"])
+            work.children(composite["child_composites"], level)
+            evaluated, entries, inherited = self._assessment_catalog(subject, composite["assessment"], work)
+            selected = composite["selected_ids"]
+            require(selected == sorted(selected) and set(selected) <= set(entries)
+                    and all("workspace" in entries[entry_id]["labels"] for entry_id in selected)
+                    and [value["entry_id"] for value in composite["workspace_bindings"]] == selected,
+                    "workspace-composite-selection-outside-catalog")
+            work.charge(len(selected))
+            bindings, binding_restrictions = {}, []
+            for value in composite["workspace_bindings"]:
+                entry_id = value["entry_id"]
+                require(value["source_metadata_sha256"] == entries[entry_id]["metadata_sha256"],
+                        "workspace-composite-binding-substitution")
+                if value["verification_status"] == "preserved-by-reference-unverified":
+                    require(value["child_rappid"] is None and value["child_world_id"] is None
+                            and value["evidence"] is None, "unverified-binding-must-not-claim-identity")
+                else:
+                    record = self._binding_record(subject, value["evidence"], work)
+                    require(record["assessment"] == composite["assessment"]
+                            and all(record[field] == value[field] for field in (
+                                "entry_id", "child_rappid", "child_world_id", "source_metadata_sha256")),
+                            "workspace-composite-binding-substitution")
+                    binding_restrictions.append(record["restrictions"])
+                bindings[entry_id] = value
+            ids, child_restrictions, depth = self._composite_children(
+                subject, composite["composite_id"], bindings, composite["child_composites"], work, level)
+            require(all(composite[field] == value for field, value in self._composite_summary(bindings, depth, work).items()),
+                    "workspace-composite-member-or-evidence-substitution")
+            maximum = self.propagate(
+                [evaluated["restrictions"], *inherited, *binding_restrictions, *child_restrictions],
+                current=not work.historical)
+            self._check_restrictions(composite["restrictions"], maximum)
+            result = composite, bindings, ids, [composite["restrictions"]], depth
+            work.memo[key] = result
+            return result
         finally:
-            active.remove(key)
+            work.active.remove(key)
 
     def compose_workspace(self, subject, assessment, composite_id, selected_ids,
                           child_composites=()):
@@ -898,72 +1242,51 @@ class Controller:
         child_addresses = [address(reference) for reference in child_refs]
         require(len(child_addresses) == len(set(child_addresses)),
                 "invalid-workspace-composite-children")
-        evaluated = self.body(assessment)
-        require(evaluated["schema"] == PROFILE + "/organization-assessment"
-                and evaluated["native_subject"] == subject
-                and self.db.execute(
-                    "SELECT 1 FROM assessments WHERE hash=?", (address(assessment),)
-                ).fetchone()
-                and evaluated["status"] == "verified",
-                "workspace-composite-requires-verified-organization")
-        _, _, snapshot_sha256, entries, inherited = self._catalog_entries(
-            subject, evaluated["catalog_shards"])
-        require(evaluated["snapshot_sha256"] == snapshot_sha256
-                and set(selected_ids) <= set(entries)
-                and all("workspace" in entries[entry_id]["labels"]
-                        for entry_id in selected_ids),
-                "workspace-composite-selection-outside-catalog")
         selected = sorted(selected_ids)
         children = [
             reference for _, reference in sorted(zip(child_addresses, child_refs))
         ]
-        members = set(selected)
-        composite_ids = set()
-        child_restrictions = []
-        depth = 0
-        for child in children:
-            child_body, child_members, child_ids, restrictions, child_depth = (
-                self._composite_members(subject, child)
-            )
-            require(composite_id not in child_ids, "workspace-composite-cycle")
-            require(not members & child_members,
-                    "workspace-composite-duplicate-member")
-            members.update(child_members)
-            composite_ids.update(child_ids)
-            child_restrictions.extend(restrictions)
-            depth = max(depth, child_depth + 1)
-        require(composite_id not in composite_ids and members,
-                "workspace-composite-empty-or-cycle")
-        require(len(members) <= 10000 and depth <= 32,
-                "workspace-composite-bound")
-        restrictions = self.propagate([
-            evaluated["restrictions"], *inherited, *child_restrictions,
-        ])
-        with self.transaction():
-            existing = self.db.execute(
-                "SELECT hash FROM composites WHERE composite_id=?", (composite_id,)
-            ).fetchone()
-            if existing:
-                reference = {"space": "rapp/1:wave", "hash": existing[0]}
-                prior = self.body(reference)
-                require(prior["assessment"] == assessment
-                        and prior["selected_ids"] == selected
-                        and prior["child_composites"] == children,
-                        "workspace-composite-idempotency-conflict")
+        work = CompositeWork(self)
+        for key, row in self._controller_records("composites", work).items():
+            if row == (composite_id,):
+                reference = {"space": "rapp/1:wave", "hash": key}
+                prior = work.body(reference)
+                require(prior["assessment"] == assessment and prior["selected_ids"] == selected
+                        and prior["child_composites"] == children, "workspace-composite-idempotency-conflict")
+                self._composite_members(subject, reference, work=work)
+                self.guard(subject, "local_synthesis", prior["restrictions"])
                 return reference
+        work.reserve(["pending:" + composite_id], 0)
+        work.children(children, 0)
+        evaluated, entries, inherited = self._assessment_catalog(subject, assessment, work)
+        require(set(selected) <= set(entries)
+                and all("workspace" in entries[entry_id]["labels"] for entry_id in selected),
+                "workspace-composite-selection-outside-catalog")
+        values = self._workspace_bindings(subject, assessment, selected, entries, work)
+        bindings = {value["entry_id"]: value for value in values}
+        binding_restrictions = [
+            self._binding_record(subject, value["evidence"], work)["restrictions"]
+            for value in values if value["evidence"] is not None
+        ]
+        _, child_restrictions, depth = self._composite_children(
+            subject, composite_id, bindings, children, work, 0)
+        restrictions = self.propagate([
+            evaluated["restrictions"], *inherited, *binding_restrictions, *child_restrictions,
+        ])
+        summary = self._composite_summary(bindings, depth, work)
+        self.guard(subject, "local_synthesis", restrictions)
+        with self.transaction():
             composite = self._emit(self._payload(
                 "workspace-composite", subject, restrictions,
                 assessment=assessment, composite_id=composite_id,
                 selected_ids=selected, child_composites=children,
-                member_count=len(members),
-                members_sha256=_canonical_sha256(sorted(members)),
-                depth=depth, recursive=True, routing_only=True,
-                child_identities_preserved=True, child_worlds_preserved=True,
-                content_copied=False, grants_authority=False))
+                **summary, workspace_bindings=values, recursive=True, routing_only=True,
+                content_copied=False, grants_authority=False), work=work)
             self.db.execute(
                 "INSERT INTO composites VALUES (?,?)",
                 (address(composite), composite_id),
             )
+            self._put("composite_records", self._get("composite_records") + [address(composite)])
             return composite
 
     def synthesize(self, subject, source, operation="identity-octets", field=""):
@@ -1001,8 +1324,12 @@ class Controller:
     def verify_derivation(self, reference):
         p = self.body(reference)
         require(p["schema"] == PROFILE + "/derivation", "derivation required")
+        self.guard(p["native_subject"], "local_synthesis", p["restrictions"])
+        self.guard(p["native_subject"], "retention", p["restrictions"])
         lens_meta, source = self._read_source_meta(p["native_subject"], p["lens"])
         require(lens_meta["runtime_sha256"] == self.policy.runtime_sha256, "lens-runtime-pin-mismatch")
+        self.guard(p["native_subject"], "local_synthesis", lens_meta["restrictions"])
+        self.guard(p["native_subject"], "local_synthesis", source["restrictions"])
         raw = self._decode_source(source)
         lens = lens_meta
         require(p["sources"] == [lens["source"]], "derivation ancestry substitution")
@@ -1066,6 +1393,7 @@ class Controller:
                     if p["field"] not in parsed:
                         negative = [{"kind": "negative", "selector": p["field"],
                                      "expected": self.core.particle({"absent": p["field"]})["hash"]}]
+                self.guard(subject, "local_synthesis", restrictions)
                 value = image.evaluate(p["operation"], parsed, p["field"])
                 result = value if type(value) is bytes else self.core.octets(value)
                 require(len(result) <= MAX_OCTETS, "result byte budget")
@@ -1128,6 +1456,7 @@ class Controller:
 
     def approve_contract(self, contract):
         """Explicit host action. A model/lens cannot call or populate this authority."""
+        self._authorize_host()
         require(type(contract) is dict and set(contract) == {"operation", "field", "coverage", "inverse"},
                 "closed mapping contract required")
         require(contract["operation"] in ("identity-octets", "json-field") and contract["coverage"] in
@@ -1173,6 +1502,7 @@ class Controller:
         suppressed = [r[0] for r in self.db.execute("SELECT key FROM suppressions ORDER BY key")]
         head = self._head()
         return {"instance_rappid": self.policy.instance_rappid, "world_id": self.policy.world_id,
+                "activation_mode": self.activation_mode, "activation": self.core.particle(self._activation_value()),
                 "policy": self.core.particle(self._get("policy")), "graph_head": wave(head) if head else None,
                 "adoption_head": self._get("adoption_head"), "routing_head": self._get("routing_head"),
                 "suppressions": self.core.particle(suppressed), "source_bindings": self.core.particle(subjects),
@@ -1241,6 +1571,7 @@ class Controller:
             self._put("adoption_head", adopted)
             if fault:
                 fault("before-commit")
+            self.guard(subject, "adoption", candidate["restrictions"])
         if fault:
             fault("after-commit")
         return adopted
@@ -1254,6 +1585,8 @@ class Controller:
             self._put("routing_head", marker)
 
     def update_policy(self, replacement):
+        self._authorize_host()
+        self._validate_policy(replacement)
         require(type(replacement) is ExternalPolicy and replacement.sequence > self.policy.sequence,
                 "policy rollback or same-sequence fork")
         require(replacement.instance_rappid == self.policy.instance_rappid and replacement.world_id == self.policy.world_id,
@@ -1265,7 +1598,8 @@ class Controller:
                 and replacement.max_attempts <= self.policy.max_attempts
                 and replacement.max_depth <= self.policy.max_depth
                 and replacement.max_frames <= self.policy.max_frames
-                and replacement.max_total_octets <= self.policy.max_total_octets,
+                and replacement.max_total_octets <= self.policy.max_total_octets
+                and all(getattr(replacement, key) <= getattr(self.policy, key) for key in COMPOSITE_LIMITS),
                 "root-budget-reset-or-unsupported-policy")
         with self.transaction():
             self._put("policy", self._policy_value(replacement))
@@ -1286,7 +1620,8 @@ class Controller:
                 continue
             values.append({"operation": operation, "candidate": candidate, "record": record,
                            "native_subject": p["native_subject"], "result_b64": p["result_b64"]})
-        return {"spec_id": PROFILE, "authority": False, "data_only": True, "native_rebinding": False, "entries": values}
+        return {"spec_id": PROFILE, "authority": False, "activation_mode": self.activation_mode,
+                "data_only": True, "native_rebinding": False, "entries": values}
 
     def materialize(self, subject):
         self.guard(subject, "materialization")
@@ -1296,6 +1631,8 @@ class Controller:
             self.guard(p["native_subject"], "materialization", p["restrictions"])
         # The only output is canonical inert JSON under the controller, never HTML, Markdown, skills or source paths.
         raw = self.core.octets(self.projection())
+        self.guard(subject, "materialization")
+        self.guard(subject, "retention")
         write_file(self.path / "view.json", raw)
         return self.path / "view.json"
 
@@ -1304,13 +1641,26 @@ class Controller:
         raise Refusal("unqualified-effect-disabled")
 
     def verify_history(self):
+        require(self._get("policy") == self._policy_value(self.policy), "controller-policy-recovery-quarantine")
+        require(self._get("activation") == self._activation_value(), "controller-activation-recovery-quarantine")
+        floor = self._get("clock_floor")
+        require(self.core.r.utc_valid(floor), "controller-clock-recovery-quarantine")
+        count, size = self.db.execute("SELECT COUNT(*),COALESCE(SUM(length(raw)),0) FROM frames").fetchone()
+        require(count <= 512 and size <= 64 * 1024 * 1024, "controller-history-work-budget")
         head = None
+        verified_frames = {}
         for seq, key, raw in self.db.execute("SELECT seq,hash,raw FROM frames ORDER BY seq"):
             frame = self.core.parse(raw)
             ok, step, reason = self.core.r.verify_frame(frame, head=head, stream_id_of_record=self.policy.instance_rappid)
             require(ok and frame["seq"] == seq and frame["frame_hash"] == key, f"history integrity refusal: {step}: {reason}")
             require(frame["payload"].get("schema", "").startswith(PROFILE + "/"), "wrong-validator historical frame")
             self.core.schemas.validate(frame["payload"])
+            require(frame["utc"] <= floor, "controller-clock-recovery-quarantine")
+            require(frame["payload"]["activation_mode"] == self.activation_mode
+                    and frame["payload"]["activation"] == self.core.particle(self._activation_value()),
+                    "controller-activation-history-quarantine")
+            verified_frames[("hash", key)] = (frame, len(raw))
+            verified_frames[("seq", seq)] = (frame, len(raw))
             head = frame
         committed = list(self.db.execute("SELECT operation,request,candidate,record FROM adoptions ORDER BY operation"))
         records = []
@@ -1328,19 +1678,27 @@ class Controller:
         require((not records and adopted_head is None)
                 or (adopted_head is not None and address(adopted_head) in records),
                 "controller-ledger-recovery-quarantine")
-        for (assessment_hash,) in self.db.execute("SELECT hash FROM assessments ORDER BY hash"):
-            assessment = self.body({"space": "rapp/1:wave", "hash": assessment_hash})
+        work = CompositeWork(self, historical=True, verified_frames=verified_frames)
+        for assessment_hash in self._controller_records("assessments", work):
+            assessment = work.body({"space": "rapp/1:wave", "hash": assessment_hash})
             require(assessment["schema"] == PROFILE + "/organization-assessment",
                     "assessment-ledger-recovery-quarantine")
-        for composite_hash, composite_id in self.db.execute(
-                "SELECT hash,composite_id FROM composites ORDER BY composite_id"):
+            self._owned_payload(assessment, assessment["native_subject"])
+        for binding_hash in self._controller_records("workspace_bindings", work):
+            reference = {"space": "rapp/1:wave", "hash": binding_hash}
+            self._binding_record(work.body(reference)["native_subject"], reference, work)
+        composites = self._controller_records("composites", work)
+        work.reserve(list(composites), 0)
+        for composite_hash, (composite_id,) in composites.items():
             reference = {"space": "rapp/1:wave", "hash": composite_hash}
             composite, _, _, _, _ = self._composite_members(
-                self.body(reference)["native_subject"], reference)
+                work.body(reference)["native_subject"], reference, work=work)
             require(composite["composite_id"] == composite_id,
                     "workspace-composite-ledger-recovery-quarantine")
         # Historical receipts remain scoped evidence even if their former evaluator is unavailable.
         return {"rapp_integrity": "verified", "frames": 0 if head is None else head["seq"] + 1,
+                "activation_mode": self.activation_mode, "activation": "historical-host-binding-only",
+                "workspace_bindings": "historical-evidence-only", "composite_work": work.stats(),
                 "semantic_fidelity": "historical-receipts-only", "current_authorization": "not-inferred",
                 "safe_deployment": "disabled"}
 
@@ -1358,21 +1716,31 @@ class Controller:
 
     def checkpoint(self):
         return {"instance_rappid": self.policy.instance_rappid, "world_id": self.policy.world_id,
+                "activation": self.core.particle(self._activation_value()), "clock_floor": self._get("clock_floor"),
                 "frames": [{"seq": row[0], "hash": row[1]} for row in self.db.execute("SELECT seq,hash FROM frames ORDER BY seq")],
                 "frontier": self.frontier(), "faults": [r[0] for r in self.db.execute("SELECT hash FROM faults ORDER BY hash")],
                 "suppressions": [r[0] for r in self.db.execute("SELECT key FROM suppressions ORDER BY key")],
-                "adoptions": [list(r) for r in self.db.execute("SELECT operation,request,candidate,record FROM adoptions ORDER BY operation")]}
+                "adoptions": [list(r) for r in self.db.execute("SELECT operation,request,candidate,record FROM adoptions ORDER BY operation")],
+                "workspace_bindings": [list(r) for r in self.db.execute(
+                    "SELECT hash,assessment,entry_id,metadata_sha256 FROM workspace_bindings ORDER BY hash")],
+                "composites": [list(r) for r in self.db.execute("SELECT hash,composite_id FROM composites ORDER BY hash")],
+                "assessments": [r[0] for r in self.db.execute("SELECT hash FROM assessments ORDER BY hash")]}
 
     def check_checkpoint(self, checkpoint):
         require(checkpoint["instance_rappid"] == self.policy.instance_rappid
                 and checkpoint["world_id"] == self.policy.world_id, "checkpoint identity substitution")
         current = self.checkpoint()
+        require(current["activation"] == checkpoint["activation"]
+                and current["clock_floor"] >= checkpoint["clock_floor"], "activation-or-clock-checkpoint-rollback")
         require(current["frames"][:len(checkpoint["frames"])] == checkpoint["frames"], "history rollback/fork")
         require(current["frontier"]["sequence"] >= checkpoint["frontier"]["sequence"]
                 and set(checkpoint["faults"]) <= set(current["faults"]), "controller frontier rollback")
         require(set(checkpoint["suppressions"]) <= set(current["suppressions"]), "suppression rollback")
         require({tuple(r) for r in checkpoint["adoptions"]} <= {tuple(r) for r in current["adoptions"]},
                 "adoption-ledger rollback")
+        for table in ("workspace_bindings", "composites", "assessments"):
+            require({tuple(r) for r in checkpoint[table]} <= {tuple(r) for r in current[table]},
+                    "controller-record-checkpoint-rollback")
         if current["frontier"]["sequence"] == checkpoint["frontier"]["sequence"]:
             require(current["frontier"] == checkpoint["frontier"], "same-sequence controller frontier fork")
 
@@ -1387,9 +1755,15 @@ class Controller:
         for (raw,) in self.db.execute("SELECT raw FROM frames"):
             p = self.core.parse(raw)["payload"]
             self.guard(p["native_subject"], "materialization", p["restrictions"])
-        write_file(destination / "rappid.json", self.core.octets({"schema": "rapp/1", "rappid": self.policy.instance_rappid}),
-                   immutable=True)
+        identity = self.core.octets({"schema": "rapp/1", "rappid": self.policy.instance_rappid})
+        for scope in self.policy.scopes:
+            self.guard(scope.subject(), "materialization")
+            self.guard(scope.subject(), "retention")
+        write_file(destination / "rappid.json", identity, immutable=True)
         for seq, raw in self.db.execute("SELECT seq,raw FROM frames ORDER BY seq"):
+            p = self.core.parse(raw)["payload"]
+            self.guard(p["native_subject"], "materialization", p["restrictions"])
+            self.guard(p["native_subject"], "retention", p["restrictions"])
             write_file(destination / "frames" / f"{seq}.json", raw, immutable=True)
 
 

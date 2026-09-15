@@ -23,8 +23,7 @@ def main():
     require(initial == encode(manifest()) and check_index(), "Workspace/1 core validator/runtime pin drift")
     os.environ["RAPP1_PATH"] = str(args.rapp1_path.absolute())
     sys.path.insert(0, str(REPO / "tests"))
-    import test_safe_kernel
-    suite = unittest.defaultTestLoader.loadTestsFromTestCase(test_safe_kernel.SafeKernelTests)
+    suite = unittest.defaultTestLoader.discover(str(REPO / "tests"), pattern="test_*.py")
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     require(result.wasSuccessful() and result.testsRun > 0 and not result.skipped,
             "blocking Workspace/1 core vectors failed")
@@ -37,6 +36,7 @@ def main():
         "guarantees": demo.get("guarantees", {}), "rapp_frames_verified": demo["rapp_frames_verified"],
         "scanner_scope": "RAPP-integrity-only", "protocol_authority": True,
         "signed_activation": False, "safely_deployable": False,
+        "activation_mode": "synthetic", "activation_authenticated": False,
         "external_effects": "disabled", "prototype_results_are_not_acceptance": True,
     }
     write_file(args.output / "conformance-results.json", encode(report))

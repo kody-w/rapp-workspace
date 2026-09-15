@@ -21,6 +21,15 @@ cannot grant or renew authority. Capture, synthesis, model submission,
 retention, redistribution, adoption, materialization and execution are separate
 rights. Check them before access/egress; loopback and private URLs prove nothing.
 
+Live activation requires an independently authenticated exact spec/runtime-
+manifest/instance/world/validity/signer/revocation document through a trusted
+host verification hook. Local hash recomputation and activation-shaped data
+are insufficient. Sample a trusted host clock at every authorization boundary;
+constructor time cannot authorize a long-lived controller. Deterministic clocks
+and synthetic activation must be explicitly injected and labeled. Production
+key custody and authenticated activation renewal/rotation remain external or
+disabled; never reset history to bypass those gates.
+
 Observe only explicitly approved bounded sources. No inferred profiles, chats,
 credentials, home search, source migration or native repair. Opaque bytes may
 remain unknown. Stable descriptor reads are not coherent native snapshots.
@@ -49,7 +58,7 @@ python3 -B tools/frame_lens.py demo --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"
 python3 -B tools/frame_lens.py conformance --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"
 ```
 
-The safe demo prints five guarantees and never claims signed activation or
+The explicitly synthetic safe demo prints five guarantees and never claims signed activation or
 safe external deployment. A supplied file additionally needs explicit capture
 and retention flags; see the verified README/help from the same checkout.
 No companion skill installation is required.
@@ -76,10 +85,16 @@ credentials/native stores/generated outputs and open only outcome-focused
 views.
 
 Use recursive workspace composites when one workspace should contain other
-workspaces. The wrapper is routing-only: retain child RAPPIDs, worlds, source
-roots and authority; never move/copy children or merge their identities.
+workspaces. The wrapper is routing-only: bind child entry IDs and metadata
+digests without claiming unknown RAPPIDs/worlds were verified. Unknown metadata
+stays `preserved-by-reference-unverified`; an independently verified binding is
+scoped historical evidence, never child authority or proof of live preservation.
+Never move/copy children or merge their identities.
 Controller-produced composites may be wrapped again, but duplicate membership,
-cycles and changed reuse of one composite ID refuse.
+cycles and changed reuse of one composite ID refuse. Enforce one shared
+memoized node/edge/serialized-byte/work/depth budget and recover authority
+tables together with their indexes. “Truth-Speed” is, at most, non-normative
+UX terminology, not a truth, authority or performance guarantee.
 
 Return exact evidence per guarantee, source preservation scope, active
 refusals and owner blockers. Do not invent approvals, signed registries,

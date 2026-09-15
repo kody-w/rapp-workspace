@@ -33,13 +33,18 @@ def manifest():
         "normative": [record(ROOT, name) for name in normative],
         "reference": [record(ROOT, name) for name in reference],
         "repository_evidence": [record(REPO, name) for name in [
-            "README.md", "SPEC.md", "SKILL.md", "tools/frame_lens.py", "tests/test_safe_kernel.py",
+            "README.md", "SPEC.md", "SKILL.md", "tools/frame_lens.py",
+            "tests/test_safe_kernel.py", "tests/test_p0_hardening.py",
+            "protocols/rapp-workspace/1/reference/README.md",
             "protocols/rapp-workspace/prototypes/README.md",
             "protocols/README.md", ".github/skills/rapp-workspace/SKILL.md",
             ".github/skills/autonomous-rapp-estate-manager/SKILL.md"]],
         "provenance": record(ROOT, "provenance.json"),
         "prototype_catalog": record(REPO, "protocols/rapp-workspace/prototypes/index.json"),
         "authority_boundary": "capability/adoption controller is external to all learned/received data",
+        "live_activation": "exact-document-external-verifier-required",
+        "production_key_custody": "external-unqualified",
+        "synthetic_activation": "explicit-labeled-fixtures-only",
     }
 
 
@@ -55,6 +60,8 @@ def index_profile():
         "provenance_bytes": provenance["bytes"], "schemas_path": base + "schemas",
         "conformance": base + "reference/conformance.py", "demo": base + "reference/safe_demo.py",
         "learned_semantic_capability": "disabled-unproven", "external_effects": "disabled",
+        "live_activation": "exact-document-external-verifier-required",
+        "production_key_custody": "external-unqualified",
     }
 
 

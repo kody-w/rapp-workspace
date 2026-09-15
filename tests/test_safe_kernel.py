@@ -71,7 +71,17 @@ def organization_tiles(catalog_id, groups, assignments, *, tree_id="organization
     ]
 
 
-class SafeKernelTests(unittest.TestCase):
+class FixtureClock:
+    def __init__(self, value=NOW):
+        self.value = value
+        self.calls = 0
+
+    def __call__(self):
+        self.calls += 1
+        return self.value
+
+
+class KernelFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.core = Parent(os.environ.get("RAPP1_PATH"))
@@ -90,7 +100,9 @@ class SafeKernelTests(unittest.TestCase):
             sha(read_file(REFERENCE.parent / "manifest.json")),
             frozenset({"capture", "local_synthesis", "retention", "adoption", "materialization"}),
             (self.scope,), max_attempts=16, max_frames=256)
-        self.c = Controller(self.core, self.root / "controller", self.policy, now=NOW)
+        self.clock = FixtureClock()
+        self.c = Controller(self.core, self.root / "controller", self.policy,
+                            clock=self.clock, activation_mode="synthetic")
         self.addCleanup(self.c.close)
         self.c.seed(self.scope.subject())
 
@@ -111,6 +123,9 @@ class SafeKernelTests(unittest.TestCase):
             integrity=result["rapp_integrity"], observation=cap["observation"])
         return cap, result, fidelity, request, frontier
 
+
+class SafeKernelTests(KernelFixture):
+
     def test_unique_validator_and_exact_manifest_do_not_reuse_historical_ids(self):
         self.assertEqual(PROFILE, "rapp-workspace/1")
         self.assertTrue(check_index())
@@ -122,7 +137,8 @@ class SafeKernelTests(unittest.TestCase):
         with self.assertRaisesRegex(Refusal, "unsupported"):
             self.core.schemas.validate(p)
         with self.assertRaisesRegex(Refusal, "wrong-validator-or-spec-pin"):
-            Controller(self.core, self.root / "wrong-pin", replace(self.policy, spec_sha256="0" * 64), now=NOW)
+            Controller(self.core, self.root / "wrong-pin", replace(self.policy, spec_sha256="0" * 64),
+                       clock=self.clock, activation_mode="synthetic")
         self.assertFalse((self.root / "wrong-pin").exists())
 
     def test_guarantees_are_distinct_and_replay_does_not_imply_fidelity_or_deployment(self):
@@ -176,7 +192,7 @@ class SafeKernelTests(unittest.TestCase):
         with patch("safe_kernel.read_file", side_effect=AssertionError("source accessed")):
             with self.assertRaisesRegex(Refusal, "outside-explicit"):
                 self.c.capture_file(foreign.subject(), self.source)
-            self.c.now = self.policy.expires_utc
+            self.clock.value = self.policy.expires_utc
             with self.assertRaisesRegex(Refusal, "expired"):
                 self.c.capture_file(self.scope.subject(), self.source)
 
@@ -218,7 +234,8 @@ class SafeKernelTests(unittest.TestCase):
 
     def test_unprovable_physical_deletion_is_disabled_before_capture(self):
         with self.assertRaisesRegex(Refusal, "erasure"):
-            Controller(self.core, self.root / "must-not-exist", replace(self.policy, physical_deletion_required=True), now=NOW)
+            Controller(self.core, self.root / "must-not-exist", replace(self.policy, physical_deletion_required=True),
+                       clock=self.clock, activation_mode="synthetic")
         self.assertFalse((self.root / "must-not-exist").exists())
 
     def test_exact_mapping_contract_and_inverse_required_for_fidelity(self):
@@ -287,7 +304,8 @@ class SafeKernelTests(unittest.TestCase):
         self.c.capture_octets(self.scope.subject(), b"new rendition, same native subject")
         checkpoint = self.c.checkpoint()
         self.c.close()
-        self.c = Controller(self.core, self.root / "controller", self.policy, now=NOW, checkpoint=checkpoint)
+        self.c = Controller(self.core, self.root / "controller", self.policy,
+                            clock=self.clock, activation_mode="synthetic", checkpoint=checkpoint)
         self.addCleanup(self.c.close)
         _, _, _, request, frontier = self.ready()
         with self.assertRaisesRegex(Refusal, "suppression"):
@@ -382,9 +400,10 @@ class SafeKernelTests(unittest.TestCase):
 
     def test_single_writer_partition_refusal_and_fork_latch(self):
         with self.assertRaisesRegex(Refusal, "single-writer"):
-            Controller(self.core, self.root / "controller", self.policy, now=NOW)
+            Controller(self.core, self.root / "controller", self.policy, clock=self.clock, activation_mode="synthetic")
         with self.assertRaisesRegex(Refusal, "partition"):
-            Controller(self.core, self.root / "partition", replace(self.policy, partitioned=True), now=NOW)
+            Controller(self.core, self.root / "partition", replace(self.policy, partitioned=True),
+                       clock=self.clock, activation_mode="synthetic")
         original = self.c._head()
         payload = dict(original["payload"])
         payload["world_id"] = "rival-data"
@@ -393,7 +412,8 @@ class SafeKernelTests(unittest.TestCase):
             self.c.observe_owned_fork(self.core.octets(rival))
         checkpoint = self.c.checkpoint()
         self.c.close()
-        self.c = Controller(self.core, self.root / "controller", self.policy, now=NOW, checkpoint=checkpoint)
+        self.c = Controller(self.core, self.root / "controller", self.policy,
+                            clock=self.clock, activation_mode="synthetic", checkpoint=checkpoint)
         self.addCleanup(self.c.close)
         with self.assertRaisesRegex(Refusal, "fork-latched"):
             self.c.capture_octets(self.scope.subject(), b"no new authorization")
@@ -565,7 +585,7 @@ policy = ExternalPolicy(p['instance_rappid'], p['world_id'], p['spec_sha256'], p
     frozenset(p['rights']), tuple(Scope(x['subject']['namespace'],x['subject']['native_key'],x['path']) for x in p['scopes']),
     sequence=p['sequence'],expires_utc=p['expires_utc'],audience=tuple(p['audience']),
     max_attempts=p['max_attempts'],max_depth=p['max_depth'],max_frames=p['max_frames'],max_total_octets=p['max_total_octets'])
-c = Controller(core, sys.argv[3], policy, now="2026-09-15T03:12:29.000Z")
+c = Controller(core, sys.argv[3], policy, clock=lambda: "2026-09-15T03:12:29.000Z", activation_mode="synthetic")
 c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
         fault=lambda stage: os._exit(93) if stage == 'before-commit' else None)
 """
@@ -573,17 +593,18 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
                                     str(self.root / "controller"), str(policy_file), str(args_file)],
                                    capture_output=True, timeout=60)
         self.assertEqual(completed.returncode, 93, completed.stderr.decode())
-        self.c = Controller(self.core, self.root / "controller", self.policy, now=NOW)
+        self.c = Controller(self.core, self.root / "controller", self.policy,
+                            clock=self.clock, activation_mode="synthetic")
         self.addCleanup(self.c.close)
         self.assertEqual(self.c.checkpoint(), before)
         self.c.adopt(self.scope.subject(), request, frontier)
         self.assertEqual(len(self.c.projection()["entries"]), 1)
 
     def test_controller_clock_rollback_and_partial_ledger_loss_refuse(self):
-        self.c.now = "2026-01-01T00:00:00.000Z"
+        self.clock.value = "2026-01-01T00:00:00.000Z"
         with self.assertRaisesRegex(Refusal, "clock-rollback"):
             self.c.capture_octets(self.scope.subject(), b"must not read")
-        self.c.now = NOW
+        self.clock.value = NOW
         _, _, _, request, frontier = self.ready()
         self.c.adopt(self.scope.subject(), request, frontier)
         self.c.db.execute("DELETE FROM adoptions")
@@ -599,6 +620,8 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
         ], cwd=REPO, capture_output=True, text=True, timeout=60)
         self.assertEqual(completed.returncode, 0, completed.stderr)
         report = json.loads((REPO / output / "report.json").read_bytes())
+        self.assertEqual(report["activation_mode"], "synthetic")
+        self.assertFalse(report["activation_authenticated"])
         self.assertEqual(report["synthesis"], "not-authorized")
         self.assertFalse((REPO / output / "controller/evidence").exists())
         self.assertFalse((REPO / output / "controller/view.json").exists())
@@ -713,8 +736,8 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
         root_body = self.c.body(root)
         self.assertEqual(root_body["member_count"], 4)
         self.assertEqual(root_body["depth"], 1)
-        self.assertTrue(root_body["child_identities_preserved"])
-        self.assertTrue(root_body["child_worlds_preserved"])
+        self.assertEqual(root_body["child_identity_status"], "preserved-by-reference-unverified")
+        self.assertEqual(root_body["child_world_status"], "preserved-by-reference-unverified")
         self.assertFalse(root_body["content_copied"])
         wrapped = self.c.compose_workspace(
             self.scope.subject(), refined, "workspace-of-workspaces", [], [root])
@@ -948,7 +971,7 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
             max_frames=128,
         )
         controller = Controller(
-            self.core, self.root / "recursive-controller", policy, now=NOW)
+            self.core, self.root / "recursive-controller", policy, clock=self.clock, activation_mode="synthetic")
         self.addCleanup(controller.close)
         controller.seed(first_scope.subject())
         entry = {"id": "repo:a", "kind": "git-repository", "parent": "github:kody-w",
@@ -1009,7 +1032,7 @@ c.adopt(policy.scopes[0].subject(), a['request'], a['frontier'],
             max_total_octets=4 * 1024 * 1024,
         )
         controller = Controller(
-            self.core, self.root / "tiled-controller", policy, now=NOW)
+            self.core, self.root / "tiled-controller", policy, clock=self.clock, activation_mode="synthetic")
         self.addCleanup(controller.close)
         controller.seed(self.scope.subject())
         entries = [

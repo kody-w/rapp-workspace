@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1/schemas/lens-request.schema.json",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1/schemas/workspace-binding.schema.json",
   "type": "object",
   "properties": {
     "schema": {
-      "const": "rapp-workspace/1/lens-request"
+      "const": "rapp-workspace/1/workspace-binding"
     },
     "instance_rappid": {
       "$ref": "common.schema.json#/$defs/rappid"
@@ -30,41 +30,35 @@
     "restrictions": {
       "$ref": "common.schema.json#/$defs/restrictions"
     },
-    "source": {
+    "assessment": {
       "$ref": "common.schema.json#/$defs/wave"
     },
-    "operation": {
-      "enum": [
-        "identity-octets",
-        "json-field"
-      ]
-    },
-    "field": {
+    "entry_id": {
       "type": "string",
-      "minLength": 0,
-      "maxLength": 256,
+      "minLength": 1,
+      "maxLength": 512,
       "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
     },
-    "runtime_sha256": {
+    "child_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "child_world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "source_metadata_sha256": {
       "$ref": "common.schema.json#/$defs/hash"
     },
-    "synthesis_reads": {
-      "type": "array",
-      "items": {
-        "$ref": "common.schema.json#/$defs/read"
-      },
-      "minItems": 0,
-      "maxItems": 64,
-      "uniqueItems": true
+    "verification_status": {
+      "const": "verified-external-binding"
     },
-    "necessary_reads": {
-      "type": "array",
-      "items": {
-        "$ref": "common.schema.json#/$defs/read"
-      },
-      "minItems": 0,
-      "maxItems": 64,
-      "uniqueItems": true
+    "verification_method": {
+      "const": "external-host-metadata-verifier"
+    },
+    "evidence": {
+      "$ref": "common.schema.json#/$defs/particle"
     },
     "grants_authority": {
       "const": false
@@ -78,12 +72,14 @@
     "activation",
     "native_subject",
     "restrictions",
-    "source",
-    "operation",
-    "field",
-    "runtime_sha256",
-    "synthesis_reads",
-    "necessary_reads",
+    "assessment",
+    "entry_id",
+    "child_rappid",
+    "child_world_id",
+    "source_metadata_sha256",
+    "verification_status",
+    "verification_method",
+    "evidence",
     "grants_authority"
   ],
   "additionalProperties": false
