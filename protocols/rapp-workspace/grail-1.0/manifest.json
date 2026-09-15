@@ -1,0 +1,194 @@
+{
+  "schema": "rapp-workspace-file-manifest/1",
+  "profile": "rapp-workspace/grail-1.0",
+  "brand": "RAPP Workspace/1 Grail",
+  "parent": "rapp/1",
+  "authority": false,
+  "status": "minimal-safe-kernel-candidate",
+  "signed_grail_activation": false,
+  "assurances": [
+    "rapp_integrity",
+    "observation",
+    "semantic_fidelity",
+    "current_authorization",
+    "safe_deployment"
+  ],
+  "normative": [
+    {
+      "path": "SPEC.md",
+      "sha256": "3da45fabcfedb94c67a032ebb12fc02716b44b32822933d43c998825c632935f",
+      "bytes": 18383
+    },
+    {
+      "path": "safety-matrix.json",
+      "sha256": "6bf80714f29360342d452ca5b6e6d2298493c1e0fc3244349f7553cdf16fe014",
+      "bytes": 4606
+    },
+    {
+      "path": "schemas/adoption-record.schema.json",
+      "sha256": "d5b23fa79a0e17257cbb84621fff6147e2bc262c197908af553c98c5e368ff6e",
+      "bytes": 1593
+    },
+    {
+      "path": "schemas/adoption-request.schema.json",
+      "sha256": "58e06f2391cae0ee326d3c8d67fd3f343e0d27855e24ea180d4ef79998fc36a5",
+      "bytes": 1674
+    },
+    {
+      "path": "schemas/common.schema.json",
+      "sha256": "be01e9f8a512a54a96a447e42278f683a13c565b08112ee5d5e4222264d8d297",
+      "bytes": 9149
+    },
+    {
+      "path": "schemas/current_authorization-receipt.schema.json",
+      "sha256": "5f075bc99aa508513308f14acd3eb71b1c66d0d2af90a19f6b778c1d9d51d31b",
+      "bytes": 2042
+    },
+    {
+      "path": "schemas/derivation.schema.json",
+      "sha256": "bcb619ea7c7848959c8c54e26c005a98f2417e520971da782c1d98ebb314bf5a",
+      "bytes": 3004
+    },
+    {
+      "path": "schemas/lens-request.schema.json",
+      "sha256": "66f65abfb61ce62ee482d3b977f38773fa5b1d7f026136f4022034ad0ba769a1",
+      "bytes": 1849
+    },
+    {
+      "path": "schemas/observation-receipt.schema.json",
+      "sha256": "5018056fae08adcdae9c7a41c036675e132b8b288494ccfe40c3b6351357243f",
+      "bytes": 2012
+    },
+    {
+      "path": "schemas/observation.schema.json",
+      "sha256": "1c8afde518116b594b83ff901e887ce7027d5eceaf8deb7fc6f2ccfc0eedfd01",
+      "bytes": 1850
+    },
+    {
+      "path": "schemas/rapp_integrity-receipt.schema.json",
+      "sha256": "f4f09503123932242f4126439b1641ff69f12236fb59ed1d597b5db36bc55f4c",
+      "bytes": 2021
+    },
+    {
+      "path": "schemas/refusal.schema.json",
+      "sha256": "f5419fda9254ff3093e3a92ef2fe9fc6a59b84d8cddb1e9c1887c70f239b99ae",
+      "bytes": 1548
+    },
+    {
+      "path": "schemas/safe_deployment-receipt.schema.json",
+      "sha256": "45a03f0a654b44f1e6db9bf5071c7abddfdc6c55beeeaacae4d490ccde72e071",
+      "bytes": 2024
+    },
+    {
+      "path": "schemas/scheduler-exhaust.schema.json",
+      "sha256": "20762cf69a510006321e2504a7d921c6ebaa04e8723c4637728ea6d6cb846270",
+      "bytes": 1941
+    },
+    {
+      "path": "schemas/seed.schema.json",
+      "sha256": "be9f2565b32dfec2759855e03914f25594147b1e7de489ac3264510ddbf9a702",
+      "bytes": 1199
+    },
+    {
+      "path": "schemas/semantic_fidelity-receipt.schema.json",
+      "sha256": "ec453628cde862d7412a1718e4ce47241d87df1d6b6378a4c52f6c688b945d98",
+      "bytes": 2030
+    }
+  ],
+  "reference": [
+    {
+      "path": "reference/common.py",
+      "sha256": "93535b9ed69f55919fa0bc74c855112db52cdf65cc483ce9f188b08aab314f10",
+      "bytes": 10696
+    },
+    {
+      "path": "reference/conformance.py",
+      "sha256": "3d068fc7a825dad9227a8a1c687e0f655853809a214e4b3672a7eeb6f3431c68",
+      "bytes": 2294
+    },
+    {
+      "path": "reference/pins.py",
+      "sha256": "45f5e1947950a7ed8810c277f60a95953cb60806deafc889d1df158c1666ec11",
+      "bytes": 4600
+    },
+    {
+      "path": "reference/safe_demo.py",
+      "sha256": "019fa87f06b2a93b18a1e7aace8ff49b44953297a3e79679238451b495d5ba05",
+      "bytes": 8982
+    },
+    {
+      "path": "reference/safe_kernel.py",
+      "sha256": "393343103b705760331adf9f4741fbb3d4a9862229802501793002eb0da2cd76",
+      "bytes": 50685
+    },
+    {
+      "path": "reference/schema_source.py",
+      "sha256": "b21800bc5cd94336283006b56cbf178d8b6ae0f925c6c531a892bac83ecbfec4",
+      "bytes": 7432
+    },
+    {
+      "path": "reference/total_eval.py",
+      "sha256": "08027edd61f663309d0447c31425723815c2a10742e472ee92b829cb1bf63da2",
+      "bytes": 651
+    }
+  ],
+  "repository_evidence": [
+    {
+      "path": "README.md",
+      "sha256": "0e427bcdc228f3e538c02709303144c02d68840996d6182d3007ed0936fef1d8",
+      "bytes": 6712
+    },
+    {
+      "path": "SPEC.md",
+      "sha256": "4dd02dd9201682c7e9fcc556d33e37ab39bdc1038ee2906184995f137b1690ba",
+      "bytes": 1663
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "bb3bb02cf08b5b58b3f881a912b6df4b711fab75c2125562125b890fa6ec5ba3",
+      "bytes": 8388
+    },
+    {
+      "path": "tools/frame_lens.py",
+      "sha256": "3d06c4c4ba8c84edf835916f79b36d12d71284a4deabd8b103a70c46d8f2d1ba",
+      "bytes": 1016
+    },
+    {
+      "path": "tests/test_safe_kernel.py",
+      "sha256": "61534d9e6165e32c82188a767b46d2714520588379f28ce434a56f0ca4c70083",
+      "bytes": 34011
+    },
+    {
+      "path": "protocols/rapp-workspace/historical/pre-grail/README.md",
+      "sha256": "e4a17c0b3bf1bf43a970f5a0bc129a2df4ef0740eb2ce192c5332b4375ee781c",
+      "bytes": 1822
+    },
+    {
+      "path": "protocols/README.md",
+      "sha256": "6c96f5ecf9cced4f69453a1b95b4b8630ac32a0f296a3b7fe75d1ee28033cc2f",
+      "bytes": 2937
+    },
+    {
+      "path": ".github/skills/rapp-workspace/SKILL.md",
+      "sha256": "bb3bb02cf08b5b58b3f881a912b6df4b711fab75c2125562125b890fa6ec5ba3",
+      "bytes": 8388
+    },
+    {
+      "path": ".github/skills/autonomous-rapp-estate-manager/SKILL.md",
+      "sha256": "2f811f27d2a62a5b8c077d4a5236bc1179cf4f2868bce7edfb283b63e87c8e90",
+      "bytes": 3754
+    }
+  ],
+  "provenance": {
+    "path": "provenance.json",
+    "sha256": "c3db29b2ad61fdfd38e9bd899de60b3cc351cf85181267fd71d762449ada1583",
+    "bytes": 4356
+  },
+  "historical_catalog": {
+    "path": "protocols/rapp-workspace/historical/pre-grail/index.json",
+    "sha256": "749906f94bb1f51b1e8b52368e522c619343a089a903960778e260434bda6833",
+    "bytes": 4145
+  },
+  "withdrawn_experiment": "experimental/README.md; not normative, not imported by the safe kernel",
+  "authority_boundary": "capability/adoption controller is external to all learned/received data"
+}

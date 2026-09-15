@@ -1,0 +1,93 @@
+{
+  "schema": "rapp-workspace-historical-files/1",
+  "authority": false,
+  "status": "pre-grail-experimental-migration-inputs",
+  "files": [
+    {
+      "label": "rapp-workspace/1.1",
+      "classification": "pre-grail-experimental-migration-input",
+      "source_repo": "https://github.com/kody-w/rapp-workspace",
+      "source_commit": "1f97928b397e93c8d0a45be73e141da1f5ad63cd",
+      "source_path": "SPEC.md",
+      "path": "protocols/rapp-workspace/historical/pre-grail/1.1/revisions/f222130dbef42ac9cd10e15f69f7f125cfadfc326108ef6015110b1a05008a16.md",
+      "sha256": "f222130dbef42ac9cd10e15f69f7f125cfadfc326108ef6015110b1a05008a16",
+      "bytes": 10032
+    },
+    {
+      "label": "rapp-workspace/1.1",
+      "classification": "pre-grail-experimental-migration-input",
+      "source_repo": "https://github.com/kody-w/rapp-workspace",
+      "source_commit": "4e194d90cdd34d7ba050b24781fddff971cdb7b5",
+      "source_path": "SPEC.md",
+      "path": "protocols/rapp-workspace/historical/pre-grail/1.1/SPEC.md",
+      "sha256": "869d34e77a909365c844d239d6c8cdd0e70476a0fa4d828f7d58ec9b65c0e1a8",
+      "bytes": 10464
+    },
+    {
+      "label": "rapp-workspace/2.0",
+      "classification": "pre-grail-experimental-migration-input",
+      "source_repo": "https://github.com/kody-w/rapp-workspace",
+      "source_commit": "29680567b67a2c43fb1774cfe20f55a980ecc219",
+      "source_path": "SPEC.md",
+      "path": "protocols/rapp-workspace/historical/pre-grail/2.0/revisions/c969c9fda6b022d0129a27962220fc2512a0680c1518fe6582130e3167210f6e.md",
+      "sha256": "c969c9fda6b022d0129a27962220fc2512a0680c1518fe6582130e3167210f6e",
+      "bytes": 9815
+    },
+    {
+      "label": "rapp-workspace/2.0",
+      "classification": "pre-grail-experimental-migration-input",
+      "source_repo": "https://github.com/kody-w/rapp-workspace",
+      "source_commit": "642951db016e833f28ae0c67f9944c75f1a4bfb7",
+      "source_path": "SPEC.md",
+      "path": "protocols/rapp-workspace/historical/pre-grail/2.0/SPEC.md",
+      "sha256": "86fe0ec4085e4f7bf33fe622519342bfed9f754ee4bdf45f41288129bf6e256c",
+      "bytes": 10596
+    },
+    {
+      "label": "rapp-workspace/1.1",
+      "classification": "pre-grail-experimental-migration-input",
+      "source_repo": "https://github.com/kody-w/rapp-workspace",
+      "source_commit": "b9230128e1e7a085f06730c0232fdbebf2fcbffe",
+      "source_path": "README.md",
+      "path": "protocols/rapp-workspace/historical/pre-grail/1.1/README.md",
+      "sha256": "19f4a41b9a6580a0ab66aefad586539f7a899aa7dcb80425eef78be7c0cda754",
+      "bytes": 4766
+    },
+    {
+      "label": "rapp-workspace/1.1",
+      "classification": "pre-grail-experimental-migration-input",
+      "source_repo": "https://github.com/kody-w/rapp-workspace",
+      "source_commit": "b9230128e1e7a085f06730c0232fdbebf2fcbffe",
+      "source_path": "SKILL.md",
+      "path": "protocols/rapp-workspace/historical/pre-grail/1.1/SKILL.md",
+      "sha256": "40d113fe0ff50fc9f1f98a77b2e882deb02d3c04d566c8fb06be70f6ce268a6b",
+      "bytes": 13236
+    },
+    {
+      "label": "rapp-workspace/2.0",
+      "classification": "pre-grail-experimental-migration-input",
+      "source_repo": "https://github.com/kody-w/rapp-workspace",
+      "source_commit": "456251de66e88bc1f2d8de481328a9391409bc6f",
+      "source_path": "README.md",
+      "path": "protocols/rapp-workspace/historical/pre-grail/2.0/README.md",
+      "sha256": "3a09a49e483e2dff67dd9d4677ccbe4b74d00c5f8929bae1daff3e2c31d62f59",
+      "bytes": 4881
+    },
+    {
+      "label": "rapp-workspace/2.0",
+      "classification": "pre-grail-experimental-migration-input",
+      "source_repo": "https://github.com/kody-w/rapp-workspace",
+      "source_commit": "456251de66e88bc1f2d8de481328a9391409bc6f",
+      "source_path": "SKILL.md",
+      "path": "protocols/rapp-workspace/historical/pre-grail/2.0/SKILL.md",
+      "sha256": "6504f08b247528b30a61a12318f1a59e560cf661496761a1cdae1519576036a3",
+      "bytes": 1297
+    }
+  ],
+  "unavailable": [
+    {
+      "label": "rapp-workspace/1.0",
+      "reason": "No published 1.0 SPEC.md found in this repository history; no bytes fabricated."
+    }
+  ]
+}

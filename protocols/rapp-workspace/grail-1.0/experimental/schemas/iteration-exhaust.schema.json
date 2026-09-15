@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/iteration-exhaust.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/iteration-exhaust"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "loop": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "root": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "request": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "parents": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "result": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "receipt": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "equivalence": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "classification": {
+      "enum": [
+        "verified",
+        "unresolved",
+        "partial",
+        "contradiction",
+        "failed-test",
+        "refusal"
+      ]
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "missing_fields": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256,
+        "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 16,
+      "uniqueItems": true
+    },
+    "contradictions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_sha256": {
+            "$ref": "common.schema.json#/$defs/hash"
+          },
+          "context_sha256": {
+            "$ref": "common.schema.json#/$defs/hash"
+          }
+        },
+        "required": [
+          "source_sha256",
+          "context_sha256"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "semantic_result": {
+      "$ref": "common.schema.json#/$defs/particle"
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "loop",
+    "root",
+    "request",
+    "parents",
+    "result",
+    "receipt",
+    "equivalence",
+    "classification",
+    "code",
+    "missing_fields",
+    "contradictions",
+    "semantic_result"
+  ],
+  "additionalProperties": false
+}

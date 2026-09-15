@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create and operate a pointer-only local RAPP Workspace manager."""
+"""Pre-Grail experimental 2.0 pointer manager; not the Workspace Grail/1 projection."""
 
 import argparse
 import json
@@ -76,6 +76,7 @@ def manager_identity(workspace):
         identity = json.loads(identity_path.read_text(encoding="utf-8"))
     except FileNotFoundError:
         raise SystemExit(f"not a manager workspace: missing {identity_path}")
+    refuse_adaptive_manager(workspace, identity)
     if (
         identity.get("schema") != "rapp/1"
         or identity.get("kind") != "workspace"
@@ -83,6 +84,17 @@ def manager_identity(workspace):
     ):
         raise SystemExit(f"not a RAPP Workspace manager: {identity_path}")
     return identity
+
+
+def refuse_adaptive_manager(workspace, identity=None):
+    if (
+        os.path.lexists(Path(workspace) / ".workspace-grail")
+        or (identity or {}).get("workspace_generation") == "grail"
+    ):
+        raise SystemExit(
+            "Workspace Grail/1 uses adopted frame history, not this legacy registry writer; "
+            "use the verified Grail projection/migration adapter."
+        )
 
 
 def discover_git_workspaces(root):
@@ -179,8 +191,9 @@ python3 tools/workspace_manager.py list --workspace .
 python3 tools/workspace_manager.py open --workspace . --name <workspace-name>
 ```
 
-`registry.json` is the routing authority for this manager. It stores metadata
-and local paths only; source files remain inside their own world boundaries.
+`registry.json` is the local routing store for this pre-Grail experimental 2.0
+manager, not a RAPP/1 signed registry. Workspace Grail/1 instead rebuilds manager
+state from adopted frame history. Source files remain in their own worlds.
 """
 
 
@@ -191,6 +204,7 @@ def write_home(workspace, identity, registry):
 
 def init_manager(args):
     workspace = Path(args.workspace).expanduser().resolve()
+    refuse_adaptive_manager(workspace)
     identity_path = workspace / "rappid.json"
     if identity_path.exists():
         raise SystemExit(f"refusing to re-mint existing identity: {identity_path}")
@@ -209,6 +223,7 @@ def init_manager(args):
         "name": args.slug,
         "mode": "solo",
         "world_id": args.world_id,
+        "workspace_spec": "rapp-workspace/2.0",
     }
     atomic_json(identity_path, identity)
 
@@ -233,7 +248,7 @@ this manager unless they are required for routing.
 """,
         "where-everything-lives.md": """# Where everything lives
 
-- `registry.json` — pointer-only routing authority.
+- `registry.json` — legacy 2.0 pointer-only local routing store, not RAPP/1 authority.
 - `HOME.md` — generated dashboard projection.
 - `rappid.json` — mint-once RAPP identity.
 - `rapp-projects/` — append-only RAPP/1 project frame authority.

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/seed-genesis.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/seed-genesis"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "type": "null"
+    },
+    "owner_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "origin": {
+      "enum": [
+        "new",
+        "migration"
+      ]
+    },
+    "inherited_heads": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "local_only": {
+      "const": true
+    },
+    "source_writes": {
+      "const": false
+    },
+    "fixed_taxonomy": {
+      "const": false
+    },
+    "candidate_self_authorization": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "owner_rappid",
+    "origin",
+    "inherited_heads",
+    "local_only",
+    "source_writes",
+    "fixed_taxonomy",
+    "candidate_self_authorization"
+  ],
+  "additionalProperties": false
+}

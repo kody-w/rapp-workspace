@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/equivalence-evidence.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/equivalence-evidence"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "receipt": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "replays": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/particle"
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": false
+    },
+    "negatives": {
+      "const": [
+        "incomplete-reads",
+        "read-substitution",
+        "source-tamper",
+        "context-substitution",
+        "world-substitution",
+        "result-substitution"
+      ]
+    },
+    "evaluator": {
+      "const": "bounded-ir-replay"
+    },
+    "claim": {
+      "const": "equivalent-on-declared-inputs-not-universal"
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "receipt",
+    "replays",
+    "negatives",
+    "evaluator",
+    "claim"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/declared-reads.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/declared-reads"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "lens": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "contexts": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "complete": {
+      "type": "boolean"
+    },
+    "reads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+          },
+          "frame": {
+            "$ref": "common.schema.json#/$defs/wave"
+          },
+          "pointer": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 512,
+            "pattern": "^(?:/(?:[^~/\\u0000-\\u001f\\u007f]|~[01])*)*$(?![\\s\\S])"
+          },
+          "value": {
+            "$ref": "common.schema.json#/$defs/particle"
+          }
+        },
+        "required": [
+          "name",
+          "frame",
+          "pointer",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "lens",
+    "sources",
+    "contexts",
+    "complete",
+    "reads"
+  ],
+  "additionalProperties": false
+}

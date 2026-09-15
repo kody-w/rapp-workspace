@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/deterministic-reattach.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/deterministic-reattach"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "stranded": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "declared_reads": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "ladder": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/comparison"
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "selected": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "candidate",
+        "dry-hole"
+      ]
+    },
+    "grafted_from": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "activates_routing": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "stranded",
+    "declared_reads",
+    "ladder",
+    "comparisons",
+    "selected",
+    "status",
+    "grafted_from",
+    "activates_routing"
+  ],
+  "additionalProperties": false
+}

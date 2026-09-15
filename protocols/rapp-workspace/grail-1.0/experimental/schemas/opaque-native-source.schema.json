@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/opaque-native-source.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/opaque-native-source"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "$ref": "common.schema.json#/$defs/path"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4096
+          },
+          "sha256": {
+            "$ref": "common.schema.json#/$defs/hash"
+          },
+          "octets_b64": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 5464,
+            "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$(?![\\s\\S])"
+          }
+        },
+        "required": [
+          "path",
+          "bytes",
+          "sha256",
+          "octets_b64"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true
+    },
+    "inventory": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "native_identity": {
+      "type": "null"
+    },
+    "read_scope": {
+      "const": "explicit-synthetic-fixture-files"
+    },
+    "native_compliance": {
+      "const": "unclaimed"
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "subject",
+    "files",
+    "inventory",
+    "native_identity",
+    "read_scope",
+    "native_compliance"
+  ],
+  "additionalProperties": false
+}

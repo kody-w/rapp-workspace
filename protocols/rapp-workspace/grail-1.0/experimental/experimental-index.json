@@ -1,0 +1,77 @@
+{
+  "profiles": [
+    {
+      "name": "rapp-workspace/1.0",
+      "protocol_family": "rapp-workspace/1",
+      "human_name": "RAPP Workspace Grail/1",
+      "generation": "grail",
+      "parent": "rapp/1",
+      "status": "first-grail-authority-candidate",
+      "signed_grail_activation": false,
+      "spec_path": "protocols/rapp-workspace/grail-1.0/experimental/SPEC.md",
+      "spec_sha256": "fe43ed477c39110a762482615bd0606baa1761e8dde0aa86ea9545c77c5d4382",
+      "spec_bytes": 47219,
+      "manifest_path": "protocols/rapp-workspace/grail-1.0/experimental/manifest.json",
+      "manifest_sha256": "b91b743e2660cf0269a00d89b9f63858360c953b815522ed132c2d2c0ac75cce",
+      "manifest_bytes": 12625,
+      "provenance_path": "protocols/rapp-workspace/grail-1.0/experimental/provenance.json",
+      "provenance_sha256": "1019013c163767f9745a15bf6a153715ccfc44d78de82a28c28c84b0f34e4123",
+      "provenance_bytes": 4361,
+      "schemas_path": "protocols/rapp-workspace/grail-1.0/experimental/schemas",
+      "conformance": "protocols/rapp-workspace/grail-1.0/experimental/reference/conformance.py",
+      "demo": "protocols/rapp-workspace/grail-1.0/experimental/reference/frame_anything.py",
+      "headline_scenario": "frame-anything-iterative",
+      "concept": "Frame Anything",
+      "workspace_adoption": "conditional",
+      "bounded_iteration": true,
+      "scheduler": "protocols/rapp-workspace/grail-1.0/experimental/reference/iteration.py"
+    }
+  ],
+  "authority": false,
+  "workspace_latest": "rapp-workspace/1.0",
+  "workspace_family": "rapp-workspace/1",
+  "legacy_workspace_inputs": [
+    {
+      "source_generation": "pre-grail",
+      "source_spec": "rapp-workspace/1.1",
+      "spec_path": "protocols/rapp-workspace/historical/pre-grail/1.1/revisions/f222130dbef42ac9cd10e15f69f7f125cfadfc326108ef6015110b1a05008a16.md",
+      "spec_sha256": "f222130dbef42ac9cd10e15f69f7f125cfadfc326108ef6015110b1a05008a16",
+      "spec_bytes": 10032,
+      "authority": false
+    },
+    {
+      "source_generation": "pre-grail",
+      "source_spec": "rapp-workspace/1.1",
+      "spec_path": "protocols/rapp-workspace/historical/pre-grail/1.1/SPEC.md",
+      "spec_sha256": "869d34e77a909365c844d239d6c8cdd0e70476a0fa4d828f7d58ec9b65c0e1a8",
+      "spec_bytes": 10464,
+      "authority": false
+    },
+    {
+      "source_generation": "pre-grail",
+      "source_spec": "rapp-workspace/2.0",
+      "spec_path": "protocols/rapp-workspace/historical/pre-grail/2.0/revisions/c969c9fda6b022d0129a27962220fc2512a0680c1518fe6582130e3167210f6e.md",
+      "spec_sha256": "c969c9fda6b022d0129a27962220fc2512a0680c1518fe6582130e3167210f6e",
+      "spec_bytes": 9815,
+      "authority": false
+    },
+    {
+      "source_generation": "pre-grail",
+      "source_spec": "rapp-workspace/2.0",
+      "spec_path": "protocols/rapp-workspace/historical/pre-grail/2.0/SPEC.md",
+      "spec_sha256": "86fe0ec4085e4f7bf33fe622519342bfed9f754ee4bdf45f41288129bf6e256c",
+      "spec_bytes": 10596,
+      "authority": false
+    },
+    {
+      "source_generation": "pre-grail",
+      "source_spec": "rapp-workspace/1.0",
+      "spec_path": null,
+      "spec_sha256": null,
+      "spec_bytes": null,
+      "authority": false,
+      "status": "unavailable-spec-explicit-owner-approved-baseline-only"
+    }
+  ],
+  "generated_utc": "2026-09-15T00:50:09.540Z"
+}

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/grail-1.0/schemas/current_authorization-receipt.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/grail-1.0/current_authorization-receipt"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "native_subject": {
+      "$ref": "common.schema.json#/$defs/subject"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "guarantee": {
+      "const": "current_authorization"
+    },
+    "subject": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "status": {
+      "enum": [
+        "verified",
+        "unproven",
+        "refused",
+        "expired",
+        "historical"
+      ]
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "method": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "validator_spec": {
+      "const": "rapp-workspace/grail-1.0"
+    },
+    "validator_pin": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "runtime_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "evidence": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "authorizes_other_guarantees": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "native_subject",
+    "restrictions",
+    "guarantee",
+    "subject",
+    "status",
+    "scope",
+    "method",
+    "validator_spec",
+    "validator_pin",
+    "runtime_sha256",
+    "evidence",
+    "authorizes_other_guarantees"
+  ],
+  "additionalProperties": false
+}

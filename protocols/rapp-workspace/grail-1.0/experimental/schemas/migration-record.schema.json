@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/migration-record.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/migration-record"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "source_generation": {
+      "const": "pre-grail"
+    },
+    "source_spec": {
+      "enum": [
+        "rapp-workspace/1.0",
+        "rapp-workspace/1.1",
+        "rapp-workspace/2.0"
+      ]
+    },
+    "source_spec_sha256": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source_identity_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "authorized_by": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "prior_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "prior_world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "prior_heads": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "baseline": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/file"
+      },
+      "minItems": 1,
+      "maxItems": 4096,
+      "uniqueItems": true
+    },
+    "legacy_registry_sha256": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "writes": {
+      "const": [
+        ".workspace-grail"
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "source_generation",
+    "source_spec",
+    "source_spec_sha256",
+    "source_identity_sha256",
+    "authorized_by",
+    "prior_rappid",
+    "prior_world_id",
+    "prior_heads",
+    "baseline",
+    "legacy_registry_sha256",
+    "writes"
+  ],
+  "additionalProperties": false
+}

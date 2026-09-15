@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/iteration-attempt.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/iteration-attempt"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "loop": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "root": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "request": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "parents": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 33
+    },
+    "work_key": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "exhaust": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "execution": {
+      "enum": [
+        "executed",
+        "deduplicated"
+      ]
+    },
+    "duplicate_of": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "information": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/particle"
+      },
+      "minItems": 0,
+      "maxItems": 512,
+      "uniqueItems": true
+    },
+    "new_information": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/particle"
+      },
+      "minItems": 0,
+      "maxItems": 512,
+      "uniqueItems": true
+    },
+    "state": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "repeated_state": {
+      "type": "boolean"
+    },
+    "no_progress": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 128
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "loop",
+    "root",
+    "request",
+    "parents",
+    "ordinal",
+    "depth",
+    "work_key",
+    "exhaust",
+    "execution",
+    "duplicate_of",
+    "information",
+    "new_information",
+    "state",
+    "repeated_state",
+    "no_progress"
+  ],
+  "additionalProperties": false
+}

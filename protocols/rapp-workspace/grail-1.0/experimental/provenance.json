@@ -1,0 +1,121 @@
+{
+  "schema": "rapp-workspace-source-provenance/1",
+  "authority": false,
+  "inspected_utc": "2026-09-15T00:50:09.540Z",
+  "workspace_versioning": {
+    "selection": "owner-directed-first-grail-numbering",
+    "requested_utc": "2026-09-15T00:35:23.808Z",
+    "protocol_family": "rapp-workspace/1",
+    "spec_id": "rapp-workspace/1.0",
+    "generation": "grail",
+    "status": "first-grail-authority-candidate",
+    "pre_grail_materials": "experimental-migration-inputs-not-normative-predecessors",
+    "signed_grail_activation": false
+  },
+  "rapp1": {
+    "role": "canonical-parent-authority-inspection-not-estate-activation",
+    "repository": "https://github.com/kody-w/rapp-1",
+    "observed_ref": "refs/heads/main",
+    "commit": "dda32d741c7218f41443a5bd17eebfe0eae82cb7",
+    "anchor_stream": "rappid:@kody-w/rapp-1-anchor:a4298c417789ecff68b7be3df4d8b90d397c43f972eaf839977db16dbe02acc6",
+    "selected_head": {
+      "space": "rapp/1:wave",
+      "hash": "83ca275f35cca96e43d75c99d338326c1a39b2240eabf57eb7c29ac96cc90818"
+    },
+    "authority_selection": "owner-accepted-canonical-main-per-RAPP1-12.2",
+    "authenticated_estate_registry": null,
+    "files": [
+      {
+        "path": "SPEC.md",
+        "sha256": "348e7d5baa94aaf2ce4c5354f3cb261f389298a04af65e271a686d3b62f7c384",
+        "bytes": 79692
+      },
+      {
+        "path": "rapp.py",
+        "sha256": "1a04362b02f14c1e37b70c6b4f72d79e92df1cc9c2b5b394e8e1b141fc0b6050",
+        "bytes": 39186
+      },
+      {
+        "path": "rapp_check.py",
+        "sha256": "a8dbc2dc242b2faabc959a917c23c37db3bd3d28b95dc57891cc8f623698b7c2",
+        "bytes": 7702
+      },
+      {
+        "path": "anchor/chain.jsonl",
+        "sha256": "4d9b0e389395bfb2a61ff907e58efd12241c78e167ffd9be0f7f1452cd05b523",
+        "bytes": 290463
+      },
+      {
+        "path": "anchor/bootstrap/index.json",
+        "sha256": "6237f88d91c5932f761159ed052b0c058f58e29a6ef9b166e2f927a5280c1881",
+        "bytes": 434
+      },
+      {
+        "path": "anchor/bootstrap_verify.py",
+        "sha256": "4a4c19912063d5ce15cec69b1aca0cebf5df122fb1c481f357f1cf21bc0a07ff",
+        "bytes": 15802
+      }
+    ]
+  },
+  "frame_chains": {
+    "role": "non-authority-orchestration-provenance",
+    "repository": "https://github.com/kody-w/frame-chains",
+    "observed_ref": "refs/heads/main",
+    "commit": "0aeb8332f4bb20bc689aba217a704b463ba20105",
+    "files": [
+      {
+        "path": "README.md",
+        "sha256": "a0884f08fd61a63625cbcc8a761e7bdaeb35c5d0fb6fcb860ef54c997e696a3f",
+        "bytes": 6665
+      },
+      {
+        "path": "paper.html",
+        "sha256": "312fad73d5c05270e80194a6abe58c753d00b2bf2b881694c214b9c89ef5d2f5",
+        "bytes": 52420
+      },
+      {
+        "path": "evidence/README.md",
+        "sha256": "ada1e9c6615dcab593a3e077531e5c8b42ae3e2dac69e80bd6d7f144c58b74a2",
+        "bytes": 2126
+      },
+      {
+        "path": "evidence/verify.mjs",
+        "sha256": "7562a41ce12256bc0aaf4155b123a940cd7ae2cc8998b11d9e75de4369717afe",
+        "bytes": 12673
+      },
+      {
+        "path": "evidence/v1/data/scan-heal.json",
+        "sha256": "1083c4c08c9c3e13ba689c35aa8d34d29803688fd47bfc0bc5ce0ae1a03c3913",
+        "bytes": 2812
+      },
+      {
+        "path": "evidence/v1/data/reattach.json",
+        "sha256": "01d953760881ddedb674b1b245e0b4f97e77fdba666afb0bb4c1577ce1d2af10",
+        "bytes": 6214
+      },
+      {
+        "path": "evidence/v1/data/membrane.json",
+        "sha256": "2c84e6883e1c7f54e7338077781361b3d9e5876cf5bd945524b96fe591b588fb",
+        "bytes": 2536
+      },
+      {
+        "path": "evidence/v1/data/merge-fidelity.json",
+        "sha256": "5e14c82e46ffc098f0e22c3a028fd6ba1290f83b436f4a4240d5459ff1a655ef",
+        "bytes": 2982
+      }
+    ],
+    "mechanisms": {
+      "scan_tiles": "paper section 3.1",
+      "exhaust_delta_and_baseline": "paper section 3.2",
+      "stable_ticks": "paper section 3.3",
+      "recursive_dimensions": "paper section 3.4",
+      "resume_and_one_way_membrane": "paper section 3.6",
+      "deterministic_reattach": "paper section 3.7",
+      "chain_as_clock": "paper section 3.8",
+      "merge_fidelity": "paper section 3.9",
+      "limitations": "paper section 6"
+    },
+    "copied_production_substrate": false,
+    "teaching_sample": "samples/frame_chain.py is not imported, vendored, or used for RAPP conformance"
+  }
+}
