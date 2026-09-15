@@ -25,6 +25,9 @@
     {"id": "P1-INERT", "gate": "fixed-inert-json-materializer", "status": "implemented", "vectors": ["html-image-controls-inert", "instruction-file-refusal", "materialization-rights"]},
     {"id": "P1-CLOSURE", "gate": "captured-verified-total-evaluator-image", "status": "bounded-evaluator-only-full-deployment-disabled", "vectors": ["path-substitution-after-verification", "modified-evaluator-refusal", "ambient-import-refusal"]},
     {"id": "P1-PORTABILITY", "gate": "portable-data-not-native-rebinding", "status": "local-inspection-only", "vectors": ["external-export-refusal", "native-rebinding-refusal"]},
-    {"id": "P1-LEARNING", "gate": "actual-synthesis-and-unseen-transfer-evidence", "status": "learned-semantic-claims-disabled", "vectors": ["fixture-only-learning-claim-refusal"]}
+    {"id": "P1-LEARNING", "gate": "actual-synthesis-and-unseen-transfer-evidence", "status": "learned-semantic-claims-disabled", "vectors": ["fixture-only-learning-claim-refusal"]},
+    {"id": "P1-CATALOG", "gate": "complete-default-branch-recursive-catalog-shards", "status": "implemented-structure-provider-default-truth-unproven", "vectors": ["incomplete-shards", "snapshot-mismatch", "duplicate-entry", "parent-cycle", "branch-history-disabled", "provider-default-claim-unproven"]},
+    {"id": "P1-OUTCOME", "gate": "outcome-first-organization-quality-and-no-progress", "status": "implemented-structural-semantic-unproven", "vectors": ["broad-bucket-refinement", "improved-successor", "repeated-no-progress", "outcome-not-authority"]},
+    {"id": "P1-HIVE", "gate": "explicit-private-hive-subscription-proposal", "status": "proposal-only-publication-disabled", "vectors": ["public-proposable", "private-withheld", "explicit-private-selection-still-not-publication", "excluded-withheld"]}
   ]
 }

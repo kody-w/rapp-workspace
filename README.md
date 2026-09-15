@@ -68,8 +68,9 @@ Use a fresh output directory; controller state is never reset to rerun a demo.
 Remote model submission, loopback/network access, ambient imports/host tools,
 arbitrary code, external or partitioned effects, public redistribution,
 native rebinding, live migration, live O(delta) monitoring, authoritative
-merge, timed physical erasure and learned semantic-capability claims are
-**disabled** until their required proofs exist.
+merge, timed physical erasure, repository cloning, non-default branch history,
+actual Hive publication and learned semantic-capability claims are **disabled**
+until their required proofs exist.
 
 Replay proves reproducibility, not semantics. A selected JSON field is partial
 coverage, not full behavior preservation. Zero-overlap merge is unmeasured,
@@ -80,6 +81,24 @@ erase immutable history or prior copies.
 The exact effect-free evaluator image is verified through consumption.
 Full production interpreter/OS/key-custody/deployment qualification is not
 claimed; the deployment receipt stays refused.
+
+## Recursive estates without folder management
+
+Workspace/1 can frame complete, bounded catalog shards for an authorized
+repository estate while retaining recursive default-branch maps in private
+manager-owned storage. It refuses missing shards, duplicate entries, parent
+cycles and branch-history expansion. The provider-default claim remains
+explicitly unproven until a separately qualified provider receipt exists.
+
+Organization is iterative: the controller measures unassigned/duplicate
+entries, depth and largest bucket. Broad trees produce `needs-refinement`;
+repeated non-improvement produces `no-progress`. Outcome queries resolve to
+candidate catalog IDs without granting file access or claiming semantic
+fidelity.
+
+Private Hive output is proposal-only. Public-source entries may be proposed;
+private entries remain withheld without exact external owner approval, and
+even an approved proposal cannot publish or mutate the signed NAS authority.
 
 ## Prototype history is not Workspace/1 core authority
 

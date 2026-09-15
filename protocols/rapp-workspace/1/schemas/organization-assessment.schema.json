@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1/schemas/organization-assessment.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1/organization-assessment"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "native_subject": {
+      "$ref": "common.schema.json#/$defs/subject"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "tree_source": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "catalog_shards": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "catalog_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "snapshot_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "root_group": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "entry_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "assigned_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "group_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 512
+    },
+    "max_depth": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 32
+    },
+    "largest_bucket": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "max_bucket": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "allowed_depth": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32
+    },
+    "unassigned": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "duplicate_assignments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "unknown_assignments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "refinement_round": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 32
+    },
+    "previous": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "verified",
+        "needs-refinement",
+        "no-progress"
+      ]
+    },
+    "progress": {
+      "type": "boolean"
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "native_subject",
+    "restrictions",
+    "tree_source",
+    "catalog_shards",
+    "catalog_id",
+    "snapshot_sha256",
+    "root_group",
+    "entry_count",
+    "assigned_count",
+    "group_count",
+    "max_depth",
+    "largest_bucket",
+    "max_bucket",
+    "allowed_depth",
+    "unassigned",
+    "duplicate_assignments",
+    "unknown_assignments",
+    "refinement_round",
+    "previous",
+    "status",
+    "progress",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

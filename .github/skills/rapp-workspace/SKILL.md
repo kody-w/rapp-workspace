@@ -72,6 +72,15 @@ Current-authorization receipts are historical snapshots, not bearer grants.
 10. Keep root-owned transitive attempt/depth/frame budgets and reserved stop
     capacity. Children, no-ops and ping-pong cannot reset budgets. Preserve
     durable continuation, source identity and historical evidence.
+11. For a recursive repository estate, frame complete default-branch-only
+    catalog shards. Keep full tree metadata private and bind its exact digest;
+    never auto-clone repositories or expand branch history.
+12. Assess organization quality against explicit bucket/depth bounds. Feed
+    `needs-refinement` back through another lens and stop on `no-progress`.
+    Outcome selections remain semantically unproven and grant no file access.
+13. Produce Private Hive subscription proposals only. Withhold private entries
+    without exact owner approval; no proposal may publish or mutate Hive
+    authority.
 
 ## One-command demonstration
 
@@ -102,7 +111,8 @@ controller state or identity to make a demo pass.
 Workspace/1 core disables network/loopback/model submission, ambient imports/host
 tools, arbitrary code, external/partitioned effects, native rebinding,
 live migration, timed physical erasure, live O(delta) claims, authoritative
-merge and learned semantic-capability claims.
+merge, repository cloning, non-default branch history, Hive publication and
+learned semantic-capability claims.
 
 Do not work around refusals with browser automation, another runtime, a private
 URL, a cached owner flag, legacy tools or a model's assertions. The old

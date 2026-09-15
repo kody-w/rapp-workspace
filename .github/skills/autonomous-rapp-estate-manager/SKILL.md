@@ -61,6 +61,14 @@ variants, behavior-preserving migration and general learned-semantic claims
 remain disabled until proven. The archived prototype implementations are not Workspace/1 core authority,
 even when their regression tests pass.
 
+For large repository estates, ingest only explicit finite default-branch
+catalog shards. Retain recursive file maps privately and bind their digests.
+Measure organization bucket size/depth and rerun the lens until verified or
+`no-progress`; do not make users manage folders. Outcome resolutions are
+candidate routing only. Private Hive sharing is a separate proposal that
+withholds private entries unless the owner approves exact IDs and never
+publishes by itself.
+
 Return exact evidence per guarantee, source preservation scope, active
 refusals and owner blockers. Do not invent approvals, signed registries,
 runtime qualification, deployment, native adapters or a successful migration.
