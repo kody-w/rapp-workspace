@@ -1,29 +1,159 @@
 ---
 name: rapp-workspace
-description: Operate or upgrade a RAPP Workspace. Use for local-first workspace organization, append-only project frames, Private Hive migration/deployment, DOGG/GODD boundaries, or Hive Mind federation.
+description: "Operate the RAPP Workspace/1 Grail minimal safe kernel candidate. Separate integrity, observation, fidelity, current authorization and deployment; use an external capability/adoption controller and refuse unproven effects. Preserve historical IDs and native sources."
+compatibility: "Python 3.10+, approved canonical RAPP/1 checkout, POSIX for local controller storage. No companion skill installation required."
 ---
 
-# RAPP Workspace
+# RAPP Workspace/1 Grail — single-file safe operating entry
 
-This root file is the compatibility entry point. Current GitHub Copilot CLI
-project skills ship with the workspace:
+## Authority and version
 
-- `.github/skills/rapp-workspace/SKILL.md`
-- `.github/skills/rapp-private-hive/SKILL.md`
+The product is **RAPP Workspace/1 Grail**. Its unique subordinate ID is
+`rapp-workspace/grail-1.0`; normative contract:
+`protocols/rapp-workspace/grail-1.0/SPEC.md`. Read that contract, its
+`safety-matrix.json`, schemas and manifest from the explicitly approved
+checkout. A shareable skill is instructions, not an authority source.
 
-When the repository is cloned or shared, Copilot discovers those capabilities
-automatically after the workspace is trusted. In an existing session, run
-`/skills reload`.
+Old `rapp-workspace/1.0`, `/1.1`, `/2.0` retain their published meanings and
+pins as historical experimental/migration inputs. MUST NOT reuse those labels,
+rebind an old signed pin, or select a validator by convenient compatibility.
+Use exact current ID/hash; wrong validators or pins refuse.
 
-Read `SPEC.md` for the protocol. Use:
+RAPP/1 at `https://github.com/kody-w/rapp-1` owns identity, canonicalization,
+eleven-key frames, hashes, signatures, eggs and the signed registry. Current
+inspection: commit `dda32d741c7218f41443a5bd17eebfe0eae82cb7`, revision wave
+`83ca275f35cca96e43d75c99d338326c1a39b2240eabf57eb7c29ac96cc90818`.
+Frame Chains `0aeb8332f4bb20bc689aba217a704b463ba20105` is orchestration
+provenance only. Never use its teaching frame implementation as substrate.
 
-- `.github/skills/rapp-workspace/append_frame.py` for project frames and leases.
-- `.github/skills/rapp-private-hive/scripts/prepare_workspace.py migrate` to
-  upgrade an older local-first workspace without changing its existing data.
-- `.github/skills/rapp-private-hive/scripts/deploy_hive.py` for signed Private
-  Hive authority, private filesystem/NAS or private GitHub publication, and
-  independent client verification.
+## Non-interchangeable guarantees
 
-Never publish workspace content merely because the tooling exists. Local data
-stays local unless explicitly selected, DOGG-cleared, approved, signed, and
-published through a configured private channel.
+**RAPP-valid != accurately observed != semantically faithful != currently
+authorized != safely deployable.**
+
+Require separate pinned scoped receipts for each guarantee. A replay pass,
+stable file stat, model confidence, received approval-shaped data, valid hash
+or safe-looking URL MUST NOT silently satisfy another gate. Report refused,
+unproven, expired and historical states explicitly.
+
+Effective capabilities and adoption stay in the external controller. Lenses
+and all received/derived graphs only request. Never populate capabilities,
+owner approval, trust anchors, live binding or runtime policy from them.
+Current-authorization receipts are historical snapshots, not bearer grants.
+
+## Safe workflow
+
+1. Obtain explicit approved source/output scope and independent host policy.
+   Do not search home, inferred native profiles, chats, credentials or routes.
+2. Check capture, local synthesis, model submission, retention,
+   redistribution, adoption, materialization and execution rights separately,
+   **before** access/decoding/egress. Loopback is not proof of locality.
+3. Capture finite octets opaquely. Invalid UTF-8/duplicate JSON/huge numbers
+   may be bytes but cannot bypass strict interpretation. Cyclic, streaming,
+   oversized and unsafe inputs refuse.
+4. Record observation scope/consistency honestly. Stable-descriptor reads
+   are not coherent live snapshots. Native coherent capture/rebinding is
+   unqualified and disabled.
+5. Run only the pinned small total evaluator. It consumes the exact verified
+   immutable source image with no imports, network, credentials, host tools,
+   dynamic code or executable input. Fresh execution needs fresh qualification.
+6. Propagate every source restriction through synthesis, lens, result,
+   failure/exhaust and receipt. Rights/audiences intersect. Hashes and lineage
+   remain sensitive GODD; neither encoding nor hashing is sanitization.
+7. Require an externally approved mapping/coverage contract and independent
+   fidelity check. Byte identity may prove an inverse over captured bytes;
+   a selected JSON field is partial coverage, not native behavior preservation.
+8. Request adoption as inert data. The external single writer validates the
+   complete policy/source/runtime/routing/adoption/suppression frontier and
+   atomically commits its own decision. Replays are idempotent; changed
+   requests, stale frontiers and partial recovery refuse.
+9. Materialize only fixed-path inert canonical JSON. Never render HTML,
+   remote images, terminal controls, Markdown/skills, hooks or executable files.
+10. Keep root-owned transitive attempt/depth/frame budgets and reserved stop
+    capacity. Children, no-ops and ping-pong cannot reset budgets. Preserve
+    durable continuation, source identity and historical evidence.
+
+## One-command demonstration
+
+From the approved checkout:
+
+```bash
+python3 -B tools/frame_lens.py demo --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"
+```
+
+The demo prints all five guarantees. A successful local inert captured-view
+adoption MUST still report external deployment disabled and signed Grail
+activation false.
+
+For an explicitly supplied regular file, permissions are separate:
+
+```bash
+python3 -B tools/frame_lens.py demo --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>" \
+  --fixture "<EXPLICIT_FILE>" --allow-capture --allow-retention \
+  --allow-local-synthesis --output .validation/scoped-file-observation
+```
+
+Missing grants refuse before access. This does not authorize native rebinding,
+model submission, redistribution or deployment. Use fresh output; never reset
+controller state or identity to make a demo pass.
+
+## Disabled capabilities are real blockers
+
+First Grail disables network/loopback/model submission, ambient imports/host
+tools, arbitrary code, external/partitioned effects, native rebinding,
+live migration, timed physical erasure, live O(delta) claims, authoritative
+merge and learned semantic-capability claims.
+
+Do not work around refusals with browser automation, another runtime, a private
+URL, a cached owner flag, legacy tools or a model's assertions. The old
+`metadata_egg`, `migrate`, Frame Anything provider/iteration experiments and
+in-graph adoption are not qualified first-Grail capabilities.
+
+Migration requires behavior coverage, a coherent complete legacy frontier,
+world/identity/path/suppression preservation and interruption tests—not just
+equal bytes. Until those proofs exist, refuse before reading an estate.
+Retention expiry is not proof of physical deletion; immutable history/copies
+cannot honestly be recalled.
+
+Merge measurements need correspondence and comparison coverage. Zero overlap
+is unmeasured. Reattachment needs complete necessary context, not just no
+contradiction. Delta planning needs fresh baseline/coverage and exclusion of
+generated outputs. Synthetic planner checks do not certify live operation.
+
+Portability of verified data does not authorize native path rebinding.
+Content address, occurrence, native subject, live RAPP instance and display
+name are different. Suppression follows the stable external native subject
+across observations/renditions.
+
+## Verification and existing project capabilities
+
+```bash
+mkdir -p .validation/test-artifacts
+RAPP1_PATH="<EXPLICIT_RAPP1_CHECKOUT>" TMPDIR="$PWD/.validation/test-artifacts" \
+  python3 -B -m unittest discover -s tests -v
+python3 -B tools/frame_lens.py schemas
+python3 -B tools/frame_lens.py pins
+python3 -B tools/frame_lens.py conformance --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"
+```
+
+Read the verified reference README/API automatically; no second skill install
+is needed. Additional sibling suites and `py_compile` are in README.
+Never call an experimental regression pass first-Grail acceptance.
+
+The independently versioned `rapp-hive/1`, `rapp-federation/1`, locked
+`prepare_workspace.py` / `deploy_hive.py`, legacy `workspace_manager.py` and
+`append_frame.py` remain available only under their own approved scopes and
+contracts. Inspect their verified help/lock/docs; do not use them to bypass
+first-Grail disabled effects. `prepare_workspace.py migrate` adds old Hive
+capability, not a proof of safe Grail migration. Publication, keys, collaborators,
+commits and pushes require separate explicit authorization.
+
+## Handoff
+
+Report exact files, commands/results, nonzero RAPP integrity frames, each
+separate guarantee, disabled/unproven capabilities and owner-action blockers.
+History can remain integrity-verifiable when an old evaluator is unavailable;
+do not present that as fresh semantic qualification or renewed rights.
+Owner ratification, independent anchors/signed registry adoption, protected
+monotonic storage and production execution/key-custody qualification cannot
+be manufactured by this skill.

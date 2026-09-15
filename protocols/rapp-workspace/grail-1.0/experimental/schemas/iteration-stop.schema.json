@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/iteration-stop.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/iteration-stop"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "loop": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "root": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "attempts": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "pending": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "information": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/particle"
+      },
+      "minItems": 0,
+      "maxItems": 512,
+      "uniqueItems": true
+    },
+    "candidate": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "enum": [
+        "adopted-verified",
+        "stable-fixed-point",
+        "explicit-contradiction",
+        "explicit-refusal",
+        "attempt-budget",
+        "depth-budget",
+        "missing-owner-authorization"
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "loop",
+    "root",
+    "attempts",
+    "pending",
+    "information",
+    "candidate",
+    "reason"
+  ],
+  "additionalProperties": false
+}

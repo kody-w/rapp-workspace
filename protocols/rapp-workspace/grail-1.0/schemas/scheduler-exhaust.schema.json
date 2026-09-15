@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/grail-1.0/schemas/scheduler-exhaust.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/grail-1.0/scheduler-exhaust"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "native_subject": {
+      "$ref": "common.schema.json#/$defs/subject"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "parents": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "work": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "root": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 32
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 128
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "progress": {
+      "type": "boolean"
+    },
+    "terminal": {
+      "type": "boolean"
+    },
+    "remaining_frames": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 512
+    },
+    "reserved_stop": {
+      "const": true
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "native_subject",
+    "restrictions",
+    "parents",
+    "work",
+    "root",
+    "depth",
+    "attempts",
+    "reason",
+    "progress",
+    "terminal",
+    "remaining_frames",
+    "reserved_stop"
+  ],
+  "additionalProperties": false
+}

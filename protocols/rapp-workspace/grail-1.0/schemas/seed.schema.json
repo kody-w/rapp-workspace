@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/grail-1.0/schemas/seed.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/grail-1.0/seed"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "native_subject": {
+      "$ref": "common.schema.json#/$defs/subject"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "generation": {
+      "const": "first-grail"
+    },
+    "spec_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "immutable_invariants": {
+      "const": true
+    },
+    "effect_authority": {
+      "const": "external-controller-only"
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "native_subject",
+    "restrictions",
+    "generation",
+    "spec_sha256",
+    "immutable_invariants",
+    "effect_authority"
+  ],
+  "additionalProperties": false
+}

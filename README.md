@@ -1,113 +1,134 @@
-# RAPP Workspace
+# RAPP Workspace/1 Grail
 
-**A local-first workspace that carries its own AI capabilities and can grow into
-a sovereign Private Hive without losing local data.**
+**RAPP-valid ≠ accurately observed ≠ semantically faithful ≠ currently
+authorized ≠ safely deployable.**
 
-RAPP Workspace is the workspace layer of the RAPP/1 family. Clone or share the
-repository and GitHub Copilot CLI discovers its project skills automatically
-from `.github/skills/`.
+The unique subordinate protocol identifier is
+[`rapp-workspace/grail-1.0`](protocols/rapp-workspace/grail-1.0/SPEC.md).
+“Workspace/1 Grail” is the product name, not permission to reuse historical
+`rapp-workspace/1.0` or `/1.1` identifiers with different bytes. RAPP/1 still
+owns the unchanged eleven-key frame, identities, hashes, signatures, eggs and
+signed estate registry.
 
-## The model
+## First Grail: the minimal safe kernel candidate
 
-- **Local workspace:** the complete on-device workspace. Everything is
-  local-only unless its owner explicitly selects it for sharing.
-- **Private Hive:** the access-restricted, off-device portion of a workspace.
-  Members—humans, AIs, agents, and services—organize their own areas and shared
-  projects under the same RAPPID-based rules.
-- **DOGG:** globally safe data. DOGG never contains PII.
-- **GODD:** private data. Selected GODD may be shared inside sealed Hive rooms;
-  the most sensitive GODD remains local.
-- **Mother Hive:** one Private Hive's signed authority and canonical head.
-- **Hive dimensions:** local devices, branches, and storage projections that
-  converge back into their Mother Hive through Dream Catcher.
-- **Hive Mind:** the universal singleton logical federation of sovereign
-  Private Hives. It is one interoperable graph, not one owner, key, server,
-  database, or globally writable head.
+The first-Grail reference deliberately narrows the previous experiments:
 
-## Capabilities included with the workspace
+- Scoped capture is authorized **before** access.
+- Immutable observations and derivations propagate separate capture,
+  synthesis, model-submission, retention, redistribution and action rights.
+- A small total evaluator consumes exact verified immutable code bytes.
+  It has no imports, network, credentials, host tools or executable input.
+- Integrity, observation, fidelity, authorization and deployment have
+  separate pinned, scoped receipts; none silently satisfies another.
+- Effective capability grants and adoption live in an **external single-writer
+  controller**, not the learned graph.
+- Adoption checks the complete policy/source/routing/adoption/suppression/
+  runtime frontier and commits atomically with crash recovery/idempotence.
+- A root-owned bounded scheduler reserves stop capacity and persists its
+  counters and repeated-state/no-progress evidence.
+- The only materializer writes deterministic inert `view.json` under the
+  controller. No HTML, remote images, terminal controls, instructions or code
+  are activated.
 
-| Project skill | Purpose |
-|---|---|
-| `.github/skills/autonomous-rapp-estate-manager` | Establish, consolidate, test, and maintain a full pointer-only local AI estate from one autonomous workflow. |
-| `.github/skills/rapp-workspace` | Operate append-only project frames, leases, handoffs, verification, and fork recovery. |
-| `.github/skills/rapp-private-hive` | Migrate older workspaces without data loss, prepare selections, create signed authority, publish to qualified filesystems/NAS or private GitHub, and independently verify/pull the Hive. |
+[Normative safety matrix](protocols/rapp-workspace/grail-1.0/safety-matrix.json)
+maps every red-team P0/P1 requirement to an implemented gate or an explicit
+refusal. Passing fixtures cannot turn an unproven capability on.
 
-Copilot CLI loads project skills after the repository is trusted. In an
-already-running session, use `/skills reload`.
+## One-command five-guarantee demo
 
-## Update an older workspace
-
-Run the migration script from a trusted clone of this repository:
-
-```bash
-python3 /path/to/rapp-workspace/.github/skills/rapp-private-hive/scripts/prepare_workspace.py migrate \
-  --workspace /path/to/existing-workspace \
-  --member-rappid 'rappid:@owner/member:<64hex>' \
-  --hive-name my-private-hive \
-  --world-id my-world
-```
-
-Migration is additive and identity-preserving. It snapshots and rechecks every
-existing file and symlink, adds `.rapp-hive/`, and embeds the exact
-checksum-locked Private Hive project skill at
-`.github/skills/rapp-private-hive`. It refuses conflicting or unsafe existing
-skill content rather than overwriting it.
-
-## Local workspace manager
-
-Create a private manager outside this public protocol repository, scan local
-Git roots, and use its generated dashboard or CLI:
+From this checkout, with the explicitly supplied canonical RAPP/1 checkout:
 
 ```bash
-python3 tools/workspace_manager.py init \
-  --workspace ~/RAPP-Workspace-Manager \
-  --owner <owner-handle> \
-  --rapp1-path ~/src/rapp-1
-python3 tools/workspace_manager.py scan \
-  --workspace ~/RAPP-Workspace-Manager \
-  --root ~/Documents/GitHub \
-  --rapp1-path ~/src/rapp-1
-python3 tools/workspace_manager.py list \
-  --workspace ~/RAPP-Workspace-Manager
+python3 -B tools/frame_lens.py demo --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"
 ```
 
-The registry contains paths and RAPP identity metadata only. It does not copy
-source, notes, or other content out of the routed workspaces. Discovered RAPP
-identities are accepted only after canonical validation; symlinked identity
-files are ignored.
+The demo prints each guarantee separately. It can adopt an **inert captured
+view** after an independent synthetic controller approves an exact complete
+byte-coverage/inverse contract. It still reports **safe deployment refused**
+and **signed Grail activation false**.
 
-## Deploy a Private Hive
-
-After migration:
+To observe a supplied regular file, capture and retention are separate explicit
+grants; local synthesis is another:
 
 ```bash
-cd /path/to/existing-workspace
-python3 .github/skills/rapp-private-hive/scripts/deploy_hive.py --preflight
+python3 -B tools/frame_lens.py demo --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>" \
+  --fixture "<EXPLICIT_FILE>" --allow-capture --allow-retention \
+  --allow-local-synthesis --output .validation/scoped-file-observation
 ```
 
-Follow
-[`DEPLOYMENT.md`](.github/skills/rapp-private-hive/DEPLOYMENT.md) for explicit
-owner-key creation, authority initialization, approval, private filesystem/NAS
-or private GitHub publication, and independent client verification.
+Missing grants refuse before source access. Stable file-descriptor reads are
+not called coherent native snapshots. Supplied files are never automatically
+adopted or rebound to native applications. Output must be outside the source.
+Local frame export/materialization additionally needs `--allow-materialization`;
+capture/retention flags do not grant it implicitly.
+Use a fresh output directory; controller state is never reset to rerun a demo.
 
-The current deployment MVP intentionally refuses SharePoint, automatic GODD
-sealing/key release, federation activation, owner rotation, and topology
-mutation until those capabilities have separate verified adapters.
+## Explicitly disabled in first Grail
 
-## Protocols
+Remote model submission, loopback/network access, ambient imports/host tools,
+arbitrary code, external or partitioned effects, public redistribution,
+native rebinding, live migration, live O(delta) monitoring, authoritative
+merge, timed physical erasure and learned semantic-capability claims are
+**disabled** until their required proofs exist.
 
-- [`SPEC.md`](SPEC.md) — `rapp-workspace/2.0`
-- [`protocols/rapp-hive/1`](protocols/rapp-hive/1/SPEC.md) — sovereign Private
-  Hive authority and Dream Catcher convergence
-- [`protocols/rapp-federation/1`](protocols/rapp-federation/1/SPEC.md) — bounded
-  galactic Hive Mind federation candidate
-- [`docs/rapp-work.md`](docs/rapp-work.md) — RAPP Work business/compliance layer
-- [`tools/append_frame.py`](tools/append_frame.py) — project-frame lease writer
-- [`tools/workspace_manager.py`](tools/workspace_manager.py) — pointer-only
-  manager for local Git and RAPP workspaces
+Replay proves reproducibility, not semantics. A selected JSON field is partial
+coverage, not full behavior preservation. Zero-overlap merge is unmeasured,
+not perfect. Reattachment without complete context remains unresolved.
+Low-entropy hashes and lineage are sensitive GODD. Deleting a view cannot
+erase immutable history or prior copies.
 
-RAPP/1 remains authoritative for identity, canonicalization, frames, hashes,
-signatures, eggs, and registries. RAPP Workspace and RAPP Work add policy
-without changing the eleven-key RAPP/1 frame envelope.
+The exact effect-free evaluator image is verified through consumption.
+Full production interpreter/OS/key-custody/deployment qualification is not
+claimed; the deployment receipt stays refused.
 
-MIT.
+## Experimental history is not first-Grail authority
+
+The prior unpublished seed/lens/iteration implementation is isolated under
+[`experimental/`](protocols/rapp-workspace/grail-1.0/experimental/README.md).
+It is not imported by the safe kernel or CLI, and requires
+`RAPP_ALLOW_UNQUALIFIED_EXPERIMENTS=1` to run its separate regression suite.
+Those tests preserve research evidence; they are **not** first-Grail release
+acceptance and cannot authorize its old in-graph adoption or migration.
+
+The [pre-Grail public archive](protocols/rapp-workspace/historical/pre-grail/README.md)
+preserves eight byte-exact files, including both published 1.1 and both 2.0
+SPEC snapshots. Old IDs and pins retain their meaning. No missing historical
+1.0 bytes are fabricated, and the new validator refuses old IDs/wrong pins.
+
+Existing [`rapp-hive/1`](protocols/rapp-hive/1/SPEC.md),
+[`rapp-federation/1`](protocols/rapp-federation/1/SPEC.md) and their locked
+Private Hive capability remain unchanged independent profiles. They are not
+a workaround for disabled first-Grail effects.
+
+## One shareable skill and checks
+
+[`SKILL.md`](SKILL.md) is the single-file operating entry; normative
+specifications/schemas remain separate. Repository skills under `.github/skills`
+carry the same safety boundary.
+
+```bash
+mkdir -p .validation/test-artifacts
+export TMPDIR="$PWD/.validation/test-artifacts"
+export RAPP1_PATH="<EXPLICIT_RAPP1_CHECKOUT>"
+python3 -B tools/frame_lens.py schemas
+python3 -B tools/frame_lens.py pins
+python3 -B -m unittest discover -s tests -v
+python3 -B tools/frame_lens.py conformance --rapp1-path "$RAPP1_PATH"
+python3 -B -m unittest discover -s .github/skills/rapp-private-hive/tests -v
+python3 -B protocols/rapp-hive/1/reference/hive_conformance.py
+python3 -B protocols/rapp-federation/1/reference/schema_source.py --check
+python3 -B protocols/rapp-federation/1/reference/conformance.py
+RAPP_ALLOW_UNQUALIFIED_EXPERIMENTS=1 python3 -B -m unittest discover -s tests/experimental -v
+python3 -m py_compile tools/*.py protocols/rapp-workspace/grail-1.0/reference/*.py tests/*.py
+```
+
+The first-Grail kernel/conformance is stdlib-only. Existing signed sibling
+tests retain their documented dependencies. Tests use public/synthetic data
+and scan nonzero actual RAPP/1 frames; a zero-artifact pass is insufficient.
+
+Owner publication/ratification, independent anchors and signed profile/genesis
+registration, protected monotonic hosting, qualified native snapshot/migration
+adapters and safe production execution remain separate blockers.
+
+MIT. External source provenance does not relicense papers or confer authority.

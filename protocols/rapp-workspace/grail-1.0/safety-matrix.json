@@ -1,0 +1,30 @@
+{
+  "spec_id": "rapp-workspace/grail-1.0",
+  "brand": "RAPP Workspace/1 Grail",
+  "authority": false,
+  "blocking": true,
+  "guarantees": ["rapp_integrity", "observation", "semantic_fidelity", "current_authorization", "safe_deployment"],
+  "requirements": [
+    {"id": "VERSION", "gate": "unique-validator-and-exact-pins", "status": "implemented", "vectors": ["wrong-validator", "wrong-pin", "historical-label-refusal"]},
+    {"id": "P0-1", "gate": "external-capability-controller", "status": "implemented", "vectors": ["adoption-shaped-data-inert", "receipt-not-a-grant", "cross-guarantee-refusal"]},
+    {"id": "P0-2", "gate": "authorization-before-access-and-effects", "status": "implemented-with-disabled-effects", "vectors": ["denied-capture-zero-reads", "denied-synthesis-zero-decode", "network-loopback-import-host-refusal"]},
+    {"id": "P0-3", "gate": "transitive-restriction-intersection", "status": "implemented-with-disabled-erasure", "vectors": ["source-lens-result-failure-restrictions", "separate-rights", "sensitive-hashes", "timed-erasure-refusal"]},
+    {"id": "P0-4", "gate": "external-complete-frontier-transaction", "status": "implemented-local-single-writer", "vectors": ["routing-suppression-policy-source-runtime-CAS", "crash-before-commit", "lost-ack-retry", "idempotency-conflict", "merge-disabled"]},
+    {"id": "P1-FIDELITY", "gate": "scoped-coverage-contract-and-inverse", "status": "implemented-bounded-structural-only", "vectors": ["replay-not-fidelity", "partial-coverage-not-full", "inverse-check"]},
+    {"id": "P1-DOMAIN", "gate": "opaque-octets-before-strict-interpretation", "status": "implemented", "vectors": ["invalid-utf8", "duplicate-json", "huge-integer", "oversized", "cyclic", "stream-input"]},
+    {"id": "P1-SNAPSHOT", "gate": "explicit-consistency-classes", "status": "native-coherent-snapshots-disabled", "vectors": ["stable-fd-not-coherent", "native-adoption-refusal"]},
+    {"id": "P1-IDENTITY", "gate": "content-occurrence-subject-instance-display-separation", "status": "implemented", "vectors": ["equal-content-different-occurrences", "suppression-survives-rendition", "native-rebinding-refusal"]},
+    {"id": "P1-MERGE", "gate": "correspondence-and-comparison-coverage", "status": "measurement-only-authoritative-merge-disabled", "vectors": ["missing-correspondence", "zero-overlap-unmeasured", "conflict-retention"]},
+    {"id": "P1-READS", "gate": "actual-necessary-synthesis-negative-enumeration-environment", "status": "implemented-bounded-IR", "vectors": ["missing-read", "forged-actual", "negative-field-read", "enumerated-membership", "environment-refusal"]},
+    {"id": "P1-REATTACH", "gate": "necessary-context-coverage", "status": "candidate-only", "vectors": ["noncontradiction-with-missing-context", "conflicting-context"]},
+    {"id": "P1-BUDGET", "gate": "root-owned-budget-and-stop-reserve", "status": "implemented", "vectors": ["attempt-depth", "no-op", "oscillation", "ping-pong", "fanout-budget", "stop-capacity"]},
+    {"id": "P1-HISTORY", "gate": "historical-integrity-versus-fresh-qualification", "status": "implemented", "vectors": ["unavailable-evaluator-history", "fresh-runtime-refusal"]},
+    {"id": "P1-DELTA", "gate": "freshness-coverage-output-exclusion", "status": "synthetic-planner-only-live-delta-disabled", "vectors": ["expired-baseline", "incomplete-coverage", "generated-output-exclusion"]},
+    {"id": "P1-EFFECTS", "gate": "single-writer-and-fault-latch", "status": "local-only-external-partitioned-effects-disabled", "vectors": ["second-writer", "partition-refusal", "fork-latch-restart"]},
+    {"id": "P1-MIGRATION", "gate": "behavior-coverage-and-coherent-frontier", "status": "live-migration-disabled-before-access", "vectors": ["missing-behavior-proof", "missing-world", "interrupted-migration-no-effects"]},
+    {"id": "P1-INERT", "gate": "fixed-inert-json-materializer", "status": "implemented", "vectors": ["html-image-controls-inert", "instruction-file-refusal", "materialization-rights"]},
+    {"id": "P1-CLOSURE", "gate": "captured-verified-total-evaluator-image", "status": "bounded-evaluator-only-full-deployment-disabled", "vectors": ["path-substitution-after-verification", "modified-evaluator-refusal", "ambient-import-refusal"]},
+    {"id": "P1-PORTABILITY", "gate": "portable-data-not-native-rebinding", "status": "local-inspection-only", "vectors": ["external-export-refusal", "native-rebinding-refusal"]},
+    {"id": "P1-LEARNING", "gate": "actual-synthesis-and-unseen-transfer-evidence", "status": "learned-semantic-claims-disabled", "vectors": ["fixture-only-learning-claim-refusal"]}
+  ]
+}

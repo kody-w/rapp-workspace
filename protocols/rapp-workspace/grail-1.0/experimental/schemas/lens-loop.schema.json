@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/lens-loop.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/lens-loop"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "root": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "max_attempts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 128
+    },
+    "max_depth": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 32
+    },
+    "no_progress_window": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "root",
+    "max_attempts",
+    "max_depth",
+    "no_progress_window"
+  ],
+  "additionalProperties": false
+}

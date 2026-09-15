@@ -110,6 +110,23 @@ class WorkspaceManagerTests(unittest.TestCase):
         self.assertIn("/tmp/alpha", home)
         self.assertIn("pointers only", home)
 
+    def test_legacy_writer_refuses_adaptive_projection_and_migration_sidecar(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            identity = {
+                "schema": "rapp/1", "kind": "workspace", "role": "manager",
+                "workspace_spec": "rapp-workspace/1.0", "workspace_generation": "grail",
+            }
+            (root / "rappid.json").write_text(json.dumps(identity))
+            with self.assertRaisesRegex(SystemExit, "adopted frame history"):
+                workspace_manager.manager_identity(root)
+            identity["workspace_spec"] = "rapp-workspace/2.0"
+            identity.pop("workspace_generation")
+            (root / "rappid.json").write_text(json.dumps(identity))
+            (root / ".workspace-grail").mkdir()
+            with self.assertRaisesRegex(SystemExit, "legacy registry"):
+                workspace_manager.manager_identity(root)
+
 
 if __name__ == "__main__":
     unittest.main()

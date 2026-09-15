@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/lens-declaration.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/lens-declaration"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "proposer_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "synthesis": {
+      "enum": [
+        "local-rule",
+        "model-candidate"
+      ]
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "runtime_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "program": {
+      "$ref": "common.schema.json#/$defs/program"
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "label",
+    "proposer_rappid",
+    "synthesis",
+    "observations",
+    "runtime_sha256",
+    "program"
+  ],
+  "additionalProperties": false
+}

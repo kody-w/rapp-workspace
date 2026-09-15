@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/metadata-only-estate-egg.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/metadata-only-estate-egg"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "egg": {
+      "$ref": "common.schema.json#/$defs/egg"
+    },
+    "selected": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/file"
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "data_class": {
+      "const": "godd"
+    },
+    "publication": {
+      "const": "not-authorized"
+    },
+    "native_variant": {
+      "const": "estate"
+    },
+    "import_effect": {
+      "const": "inert-no-routing"
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "egg",
+    "selected",
+    "data_class",
+    "publication",
+    "native_variant",
+    "import_effect"
+  ],
+  "additionalProperties": false
+}

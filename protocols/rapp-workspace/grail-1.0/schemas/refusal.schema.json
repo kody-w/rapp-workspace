@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/grail-1.0/schemas/refusal.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/grail-1.0/refusal"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "native_subject": {
+      "$ref": "common.schema.json#/$defs/subject"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "parents": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "operation": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "safe_to_retry": {
+      "type": "boolean"
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "native_subject",
+    "restrictions",
+    "parents",
+    "operation",
+    "code",
+    "safe_to_retry",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

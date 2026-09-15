@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/iteration-state.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/iteration-state"
+    },
+    "root": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "information": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/particle"
+      },
+      "minItems": 0,
+      "maxItems": 512,
+      "uniqueItems": true
+    },
+    "result": {
+      "$ref": "common.schema.json#/$defs/particle"
+    }
+  },
+  "required": [
+    "schema",
+    "root",
+    "information",
+    "result"
+  ],
+  "additionalProperties": false
+}

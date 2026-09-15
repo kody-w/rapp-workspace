@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/grail-1.0/schemas/adoption-request.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/grail-1.0/adoption-request"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "native_subject": {
+      "$ref": "common.schema.json#/$defs/subject"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "candidate": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "integrity": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "observation": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "fidelity": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "contract": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "frontier": {
+      "$ref": "common.schema.json#/$defs/frontier"
+    },
+    "operation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "native_subject",
+    "restrictions",
+    "candidate",
+    "integrity",
+    "observation",
+    "fidelity",
+    "contract",
+    "frontier",
+    "operation_id",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

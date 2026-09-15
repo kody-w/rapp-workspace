@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/lens-drift.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/lens-drift"
+    },
+    "generation": {
+      "const": "grail"
+    },
+    "estate_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "lens": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "trial": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "replacement": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "enum": [
+        "replay-mismatch",
+        "input-changed",
+        "runtime-changed",
+        "invariant-refusal"
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "estate_rappid",
+    "world_id",
+    "seed",
+    "lens",
+    "trial",
+    "replacement",
+    "reason"
+  ],
+  "additionalProperties": false
+}

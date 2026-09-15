@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-workspace/1.0/schemas/iteration-work-key.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-workspace/1.0/iteration-work-key"
+    },
+    "root": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "lens_program": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "runtime_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/particle"
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "declaration": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/particle"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "root",
+    "lens_program",
+    "runtime_sha256",
+    "inputs",
+    "declaration"
+  ],
+  "additionalProperties": false
+}

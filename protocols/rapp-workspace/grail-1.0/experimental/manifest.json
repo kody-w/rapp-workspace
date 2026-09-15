@@ -1,0 +1,362 @@
+{
+  "schema": "rapp-workspace-file-manifest/1",
+  "profile": "rapp-workspace/1.0",
+  "protocol_family": "rapp-workspace/1",
+  "generation": "grail",
+  "brand": "RAPP Workspace Grail/1",
+  "parent": "rapp/1",
+  "authority": false,
+  "policy_status": "first-grail-authority-candidate",
+  "signed_grail_activation": false,
+  "headline_acceptance": {
+    "concept": "Frame Anything",
+    "scenario": "frame-anything-iterative",
+    "entry": "reference/frame_anything.py",
+    "learner": "reference/framing.py",
+    "scheduler": "reference/iteration.py",
+    "bounded_iteration": true,
+    "workspace_adoption": "conditional-not-implied-by-framing"
+  },
+  "normative": [
+    {
+      "path": "SPEC.md",
+      "sha256": "fe43ed477c39110a762482615bd0606baa1761e8dde0aa86ea9545c77c5d4382",
+      "bytes": 47219
+    },
+    {
+      "path": "schemas/common.schema.json",
+      "sha256": "14ab65aeae7e124db57cc9535060909e38dc9e1bf4b79506b3febf874fc80908",
+      "bytes": 18155
+    },
+    {
+      "path": "schemas/declared-reads.schema.json",
+      "sha256": "ed5d9add91a8e6e8ee1dcf4502235bdd5c1368847b7996f73c67e1b71a092d82",
+      "bytes": 2286
+    },
+    {
+      "path": "schemas/derived-frame.schema.json",
+      "sha256": "5188849fba6fb2dfc4c0651f4dfe2a6acadc8a46844bffd67a2faf30399216d9",
+      "bytes": 1324
+    },
+    {
+      "path": "schemas/deterministic-reattach.schema.json",
+      "sha256": "ff69ec3232b421ca98de03a12ae6a9b86ea0602f7a4d2aae76a6ad7207b7d412",
+      "bytes": 1882
+    },
+    {
+      "path": "schemas/dimension-genesis.schema.json",
+      "sha256": "683e31a5a4e951a25f55c85689a703fb9380450f828a89c935d03b164cebf5d2",
+      "bytes": 1147
+    },
+    {
+      "path": "schemas/dimension-merge.schema.json",
+      "sha256": "e90ebd6f38b943eaaf6eeac7f37ffbc5b07bf33ad9eba47eee2cbbf6547d672a",
+      "bytes": 2612
+    },
+    {
+      "path": "schemas/dream-report.schema.json",
+      "sha256": "e54abdb9725276cc8f8482d1c37b84e305816be891d1b139dc3235ea03a98a5d",
+      "bytes": 1736
+    },
+    {
+      "path": "schemas/equivalence-evidence.schema.json",
+      "sha256": "e26c03413bc266c8eaad369a6d2ab7bea05bdb6019da40183bc36bfebdf790e9",
+      "bytes": 1516
+    },
+    {
+      "path": "schemas/iteration-attempt.schema.json",
+      "sha256": "d5a938429064bb37d91a1e5966e9937fe068d0252c95c8c282a2b3a9dd6edcaa",
+      "bytes": 2657
+    },
+    {
+      "path": "schemas/iteration-exhaust.schema.json",
+      "sha256": "4e60c79cc59abc2706f86cdd1a6a5a1c4e2f5af3bd7fe157783902d1686abee8",
+      "bytes": 3129
+    },
+    {
+      "path": "schemas/iteration-request.schema.json",
+      "sha256": "a37e271903958d954bc7e9328864db078d821ae4222935c289f1b868879e23cd",
+      "bytes": 2360
+    },
+    {
+      "path": "schemas/iteration-state.schema.json",
+      "sha256": "afbf7d2a73d92cba14aad3adb44ae9be09aa3199900c0353cb87cfae8f128f9a",
+      "bytes": 766
+    },
+    {
+      "path": "schemas/iteration-stop.schema.json",
+      "sha256": "0394f6e9ff1f5c6a31b20789970d697f2ee21b262d9f3d90fa06c99898b2f5a8",
+      "bytes": 2041
+    },
+    {
+      "path": "schemas/iteration-work-key.schema.json",
+      "sha256": "6b0b21224bd96590f9a8c0c063027a964c228835342e90e634822551cc34c8ad",
+      "bytes": 1067
+    },
+    {
+      "path": "schemas/learned-projection.schema.json",
+      "sha256": "634640f2404ffb291d8a133ae83175ac780d0b7ab6f4b9373dc49d33d8a6f92a",
+      "bytes": 1200
+    },
+    {
+      "path": "schemas/lens-declaration.schema.json",
+      "sha256": "e318f5b2fa6a2509315b6f67d567d2c6bfe50df6f916c0bcc390e70811a2de3f",
+      "bytes": 1586
+    },
+    {
+      "path": "schemas/lens-drift.schema.json",
+      "sha256": "25a12905fa89b44a78481f50e86d0dacc67dd6c98f8d0e62ffec9ee5d58458ed",
+      "bytes": 1303
+    },
+    {
+      "path": "schemas/lens-loop.schema.json",
+      "sha256": "9f335cc269aa3105b0c33165e992bca3823afe211cee5d7705301003c7251cf1",
+      "bytes": 1210
+    },
+    {
+      "path": "schemas/metadata-only-estate-egg.schema.json",
+      "sha256": "7642883c0236f2534f31d4976db14741186f694b38140e58cc79700cc8f76964",
+      "bytes": 1406
+    },
+    {
+      "path": "schemas/migration-record.schema.json",
+      "sha256": "cc3a69276b772c724ca5e4d920babdbd785637f2ae56d5cfa2d00018f3c49362",
+      "bytes": 2467
+    },
+    {
+      "path": "schemas/mutation-receipt.schema.json",
+      "sha256": "7c2d9f0fa68d53b0cd0fb2d455a5331f66c8025193cd54aff4a3fc6c981e5b76",
+      "bytes": 2455
+    },
+    {
+      "path": "schemas/native-shape-observation.schema.json",
+      "sha256": "080a73d509f199734a59a454db1a1b3f194434e7785a3cef6eec35ac8c093abb",
+      "bytes": 2376
+    },
+    {
+      "path": "schemas/opaque-local-object.schema.json",
+      "sha256": "19fb46e36535404f8afb17ac9e48a6ae3613d3844934db2810dd304a7f1181cf",
+      "bytes": 3818
+    },
+    {
+      "path": "schemas/opaque-native-source.schema.json",
+      "sha256": "1500ce8d507b365e7d19a04cc19d6643f2a14c1785267932e877accd5d418058",
+      "bytes": 2211
+    },
+    {
+      "path": "schemas/registry-projection.schema.json",
+      "sha256": "641945fbea9c889639d856657d431a6e23c270e9d959e9823e2639933ba0bc8f",
+      "bytes": 2126
+    },
+    {
+      "path": "schemas/routing-decision.schema.json",
+      "sha256": "278f4336e668a7c3b258d3181c4717b8d7b2707d64e21a79f5ab566dfafdffc4",
+      "bytes": 1271
+    },
+    {
+      "path": "schemas/scan-tile.schema.json",
+      "sha256": "0f7623e63f3670efd1220525c9b6116aee8690bbba18081ea0bd67a07120c6a6",
+      "bytes": 2519
+    },
+    {
+      "path": "schemas/seed-genesis.schema.json",
+      "sha256": "dafe696c18aad571cd36655b8c384ad338cef88a0dd5f2fd8f0ca1422910e724",
+      "bytes": 1492
+    },
+    {
+      "path": "schemas/verification-adoption.schema.json",
+      "sha256": "ad73a6f89770376f4ca0343042c7f220a78fe0583f45457c180a7f45ca151329",
+      "bytes": 1500
+    },
+    {
+      "path": "schemas/workspace-successor.schema.json",
+      "sha256": "fa4b0754143b34c771eb16b9bd2c7efe43570fe7ddf9f650d3bb3dd8458ab62a",
+      "bytes": 2935
+    },
+    {
+      "path": "schemas/workspace-unresolved.schema.json",
+      "sha256": "284f84d7bb4a4a5378348690ca27a3d2b5cd03d0dc7a8ab2c93a2928298c0ef9",
+      "bytes": 3148
+    }
+  ],
+  "reference": [
+    {
+      "path": "reference/common.py",
+      "sha256": "2e57eefa3cb805a5b8633f6d1cbd3698cf194db86eb56faafbd3751877a81d46",
+      "bytes": 10487
+    },
+    {
+      "path": "reference/conformance.py",
+      "sha256": "bcb81f9145fa04ef70d7b85e689dbd847a67122378971bb3e838eb30200d8d13",
+      "bytes": 4983
+    },
+    {
+      "path": "reference/demo.py",
+      "sha256": "26703a3db62d322cbf254e52e6be022500752400df69fc936a1bdf71033cf340",
+      "bytes": 17648
+    },
+    {
+      "path": "reference/frame_anything.py",
+      "sha256": "be3e524523b4ade3dbb6cf1bba05ae3a3c0abc16480126c89febba975d7612e7",
+      "bytes": 21556
+    },
+    {
+      "path": "reference/framing.py",
+      "sha256": "69b302fa6c28aeb25566939620b1c76f27c7cd8145888d59670f7d7dad063a77",
+      "bytes": 17800
+    },
+    {
+      "path": "reference/iteration.py",
+      "sha256": "043056b4ce6d7c8d945476b4588a6db5e848f59b2f10f00383e2e77b053f2107",
+      "bytes": 20348
+    },
+    {
+      "path": "reference/native_lens.py",
+      "sha256": "644f4dd0901debc1d0146b8bac823b41fafaf8aac648ed21a2515931d2a6e66b",
+      "bytes": 7261
+    },
+    {
+      "path": "reference/pins.py",
+      "sha256": "72a5d2f864fa45a534643b57941829db6cbb480a6f13b499d5a1a20b4c99742d",
+      "bytes": 11193
+    },
+    {
+      "path": "reference/schema_source.py",
+      "sha256": "25795d478d066d1fc45be4148eeb4d884b06ebd1e7292b7f74679074ddcf5825",
+      "bytes": 16084
+    },
+    {
+      "path": "reference/workspace.py",
+      "sha256": "5cc33ac968be701aac6febfe3c47347f1c977fe5e3f6bc71683c803ab3a681fd",
+      "bytes": 49727
+    }
+  ],
+  "repository_evidence": [
+    {
+      "path": "tests/experimental/test_frame_lens.py",
+      "sha256": "bfc59eed45b88766b1e548266b0d143e751f6642f6702ce1035ef66b08385d6d",
+      "bytes": 50179
+    },
+    {
+      "path": "tests/experimental/test_unknown_native.py",
+      "sha256": "5516ae1cff0566dcdfd813b09131f3b12b0f139e5e271c28104245dd5e167654",
+      "bytes": 9850
+    },
+    {
+      "path": "tests/experimental/test_frame_anything.py",
+      "sha256": "e1e6aacf6386696cb116fad39bc0f09c6eb6ddbe4d0dc0ad0b2de404e3f9c50b",
+      "bytes": 10436
+    },
+    {
+      "path": "tests/experimental/test_iteration.py",
+      "sha256": "d6edaff4e91942bdcc83090e3ec3937070a23b118f7405faf027b107af558168",
+      "bytes": 15620
+    },
+    {
+      "path": "tools/frame_lens.py",
+      "sha256": "3d06c4c4ba8c84edf835916f79b36d12d71284a4deabd8b103a70c46d8f2d1ba",
+      "bytes": 1016
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "bb3bb02cf08b5b58b3f881a912b6df4b711fab75c2125562125b890fa6ec5ba3",
+      "bytes": 8388
+    },
+    {
+      "path": "SPEC.md",
+      "sha256": "4dd02dd9201682c7e9fcc556d33e37ab39bdc1038ee2906184995f137b1690ba",
+      "bytes": 1663
+    },
+    {
+      "path": "README.md",
+      "sha256": "0e427bcdc228f3e538c02709303144c02d68840996d6182d3007ed0936fef1d8",
+      "bytes": 6712
+    },
+    {
+      "path": "protocols/README.md",
+      "sha256": "6c96f5ecf9cced4f69453a1b95b4b8630ac32a0f296a3b7fe75d1ee28033cc2f",
+      "bytes": 2937
+    },
+    {
+      "path": "protocols/rapp-workspace/grail-1.0/experimental/reference/README.md",
+      "sha256": "ab37cfdd073e9c78ac3167f0f8af0a34fc0ca57229001b4d6cc2315a845f3789",
+      "bytes": 15209
+    },
+    {
+      "path": ".github/skills/rapp-workspace/SKILL.md",
+      "sha256": "bb3bb02cf08b5b58b3f881a912b6df4b711fab75c2125562125b890fa6ec5ba3",
+      "bytes": 8388
+    },
+    {
+      "path": ".github/skills/autonomous-rapp-estate-manager/SKILL.md",
+      "sha256": "2f811f27d2a62a5b8c077d4a5236bc1179cf4f2868bce7edfb283b63e87c8e90",
+      "bytes": 3754
+    }
+  ],
+  "provenance": {
+    "path": "provenance.json",
+    "sha256": "1019013c163767f9745a15bf6a153715ccfc44d78de82a28c28c84b0f34e4123",
+    "bytes": 4361
+  },
+  "historical": {
+    "status": "pre-grail-experimental-migration-inputs-not-normative-predecessors",
+    "index": {
+      "path": "protocols/rapp-workspace/historical/pre-grail/index.json",
+      "sha256": "749906f94bb1f51b1e8b52368e522c619343a089a903960778e260434bda6833",
+      "bytes": 4145
+    },
+    "guide": {
+      "path": "protocols/rapp-workspace/historical/pre-grail/README.md",
+      "sha256": "e4a17c0b3bf1bf43a970f5a0bc129a2df4ef0740eb2ce192c5332b4375ee781c",
+      "bytes": 1822
+    },
+    "files": [
+      {
+        "path": "protocols/rapp-workspace/historical/pre-grail/1.1/revisions/f222130dbef42ac9cd10e15f69f7f125cfadfc326108ef6015110b1a05008a16.md",
+        "sha256": "f222130dbef42ac9cd10e15f69f7f125cfadfc326108ef6015110b1a05008a16",
+        "bytes": 10032
+      },
+      {
+        "path": "protocols/rapp-workspace/historical/pre-grail/1.1/SPEC.md",
+        "sha256": "869d34e77a909365c844d239d6c8cdd0e70476a0fa4d828f7d58ec9b65c0e1a8",
+        "bytes": 10464
+      },
+      {
+        "path": "protocols/rapp-workspace/historical/pre-grail/2.0/revisions/c969c9fda6b022d0129a27962220fc2512a0680c1518fe6582130e3167210f6e.md",
+        "sha256": "c969c9fda6b022d0129a27962220fc2512a0680c1518fe6582130e3167210f6e",
+        "bytes": 9815
+      },
+      {
+        "path": "protocols/rapp-workspace/historical/pre-grail/2.0/SPEC.md",
+        "sha256": "86fe0ec4085e4f7bf33fe622519342bfed9f754ee4bdf45f41288129bf6e256c",
+        "bytes": 10596
+      },
+      {
+        "path": "protocols/rapp-workspace/historical/pre-grail/1.1/README.md",
+        "sha256": "19f4a41b9a6580a0ab66aefad586539f7a899aa7dcb80425eef78be7c0cda754",
+        "bytes": 4766
+      },
+      {
+        "path": "protocols/rapp-workspace/historical/pre-grail/1.1/SKILL.md",
+        "sha256": "40d113fe0ff50fc9f1f98a77b2e882deb02d3c04d566c8fb06be70f6ce268a6b",
+        "bytes": 13236
+      },
+      {
+        "path": "protocols/rapp-workspace/historical/pre-grail/2.0/README.md",
+        "sha256": "3a09a49e483e2dff67dd9d4677ccbe4b74d00c5f8929bae1daff3e2c31d62f59",
+        "bytes": 4881
+      },
+      {
+        "path": "protocols/rapp-workspace/historical/pre-grail/2.0/SKILL.md",
+        "sha256": "6504f08b247528b30a61a12318f1a59e560cf661496761a1cdae1519576036a3",
+        "bytes": 1297
+      }
+    ]
+  },
+  "authority_boundary": {
+    "rapp1": "canonical identities, addresses, eleven-key envelope, signatures, eggs and estate registry",
+    "frame_chains": "orchestration inspiration only; no protocol or estate authority",
+    "workspace_grail": "first Grail workspace authority candidate; subordinate to RAPP/1; no kernel activation",
+    "this_manifest": "raw file integrity inventory; cannot adopt itself or grant rights"
+  }
+}
