@@ -57,3 +57,26 @@ jobs:
           protocols/rapp-work-organization/1/reference/*.py
           tests/test_work_organization.py
           tests/test_work_organization_p0.py
+
+  hive-profiles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install signed-profile verification dependencies
+        run: python3 -m pip install --disable-pip-version-check --quiet cryptography jsonschema
+      - name: Hive/1 conformance
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -B protocols/rapp-hive/1/reference/hive_conformance.py
+      - name: Hive AutoBest/1 pins and conformance
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 -B protocols/rapp-hive-autobest/1/reference/schema_source.py --check
+          python3 -B protocols/rapp-hive-autobest/1/reference/pins.py --check
+          python3 -B protocols/rapp-hive-autobest/1/reference/conformance.py
+      - name: Compile Hive AutoBest reference
+        run: python3 -m py_compile protocols/rapp-hive-autobest/1/reference/*.py

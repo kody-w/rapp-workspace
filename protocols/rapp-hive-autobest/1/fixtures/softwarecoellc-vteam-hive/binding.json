@@ -1,0 +1,38 @@
+{
+  "schema": "rapp-hive-autobest/1-fixture-binding",
+  "private_fixture": true,
+  "contract": {
+    "path": "HIVE-INTEROPERABILITY.md",
+    "sha256": "4ca6674ee491af0a09b6c333c9f24763face5f22462ce0b454a0ce4c84793932",
+    "bytes": 34226
+  },
+  "source": {
+    "repository": "https://github.com/billwhalenmsft/softwarecoellc-vteam-hive",
+    "commit": "f66da3d879b53a439bc87de764d79f68ceec048a",
+    "verified_frames": 2,
+    "verified_artifacts": 9
+  },
+  "handshake": {
+    "path": "handshake.json",
+    "sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+    "bytes": 5351
+  },
+  "source_lens": {
+    "path": "source-agent.py",
+    "sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+    "bytes": 11302
+  },
+  "target_finalizer": {
+    "path": "target-finalizer.py",
+    "sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+    "bytes": 11461
+  },
+  "static_package": {
+    "manifest_sha256": "ed9a2f69a3c8cce68cb1c253f21c3b783a53a3bc680a7b861e0ea400f4bd5351",
+    "agent_sha256": "46c981ac9660f24a2e02809ce1957e28b3c9497f85cb60a3f4ff4b06c0455a18",
+    "compatibility_frame_sha256": "01cd60a6def2b947793a52d614e3c1ddd433a710efdfd698b2839134a7e8579d",
+    "generation_receipt_sha256": "7dd8de91d3c395f1af93bf99b00bed9a34be0647bd059de3dbdbd031ff0e7ed6",
+    "public_identity_sha256": "6230b3fd8ec7c45bbd75d3c2c626b87f386ba32fa131b4c7d1a5d0c4b0a89f92"
+  },
+  "authority": false
+}

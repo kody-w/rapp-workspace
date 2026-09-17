@@ -24,6 +24,14 @@ can hold any verified RAPP/1 object, share explicitly selected GODD safely,
 carry DOGG without changing its classification, and converge distributed
 dimensions into one Mother Hive through Dream Catcher.
 
+[`rapp-hive-autobest/1`](../protocols/rapp-hive-autobest/1/SPEC.md) is an
+additive compatibility and evolution profile above Hive/1. It allows an
+incomplete but valid RAPP/1 Hive to participate through one pinned
+Compatibility Frame, bounded double-hotload rehearsal and a reusable static
+handshake program. Exact gaps remain partial or unproven. Compatibility
+packages, N-Lens candidates, pull requests and evolution proposals are data
+and evidence, never membership, signing authority or a shared Hive brain.
+
 [`rapp-federation/1`](../protocols/rapp-federation/1/SPEC.md) defines the Hive
 Mind: the one universal logical federation and interoperable graph formed by
 many sovereign Private Hives. Each Hive retains its own owner, registry,

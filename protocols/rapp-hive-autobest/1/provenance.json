@@ -1,0 +1,66 @@
+{
+  "schema": "rapp-hive-autobest-source-provenance/1",
+  "authority": false,
+  "role": "conceptual-prior-art-and-private-conformance-fixture",
+  "rapp1_conformance_inherited": false,
+  "universal_data_connector_ai": {
+    "repository": "https://github.com/kody-w/UniversalDataConnectorAI",
+    "commit": "f2a978b9f85b65b9815b69d99c67e51c56732251",
+    "tree": "dd9163300aeca61d9776d112bc882844ba756519",
+    "conceptual_only": true,
+    "files": [
+      {
+        "path": "agents/connector_learning_orchestrator.py",
+        "git_blob": "1542986362f27598c224327e1372350d81ead56a",
+        "bytes": 27863,
+        "sha256": "9c7846ce21aa83811d82e39b866485202ff7d7c03e199e7e46058d0786a4a6fd"
+      },
+      {
+        "path": "agents/schema_learner_agent.py",
+        "git_blob": "edf4c8bb146c478b77c24f6d1330a07ca79586ba",
+        "bytes": 25730,
+        "sha256": "2e8989f153d3c3c21cbf0266d393ea2c23f8ab0972a5ea6547f9cd01f230efe2"
+      },
+      {
+        "path": "agents/cx_format_synthesis_agent.py",
+        "git_blob": "548b88840321de0a56af9d0ea78b36a44dcb49bd",
+        "bytes": 37745,
+        "sha256": "50169c4cc2a54bc2088beb3b9cc567cf03db5af34e11b015b0e0ace23776cf9d"
+      },
+      {
+        "path": "agents/data_connector_registry_agent.py",
+        "git_blob": "87c99950029ecae3ccc1c5143c9f45efab1f9127",
+        "bytes": 19628,
+        "sha256": "c6afde0d380deb18262fb12c0838e5733f5531bdb574a4eefa2e649b423c52a9"
+      }
+    ],
+    "safe_concepts": [
+      "unknown-source-analysis",
+      "schema-learning",
+      "format-synthesis",
+      "generated-static-agent",
+      "test-before-registration",
+      "capability-catalog"
+    ],
+    "excluded_substrate": [
+      "ambient-azure-storage-or-network",
+      "broad-success-shaped-exception-fallback",
+      "time-random-or-md5-identity",
+      "floating-confidence-or-auto-approval",
+      "simulated-tests",
+      "mutable-in-memory-learning-sessions",
+      "unqualified-generated-code"
+    ]
+  },
+  "first_wild_handshake": {
+    "source_repository": "https://github.com/billwhalenmsft/softwarecoellc-vteam-hive",
+    "source_commit": "f66da3d879b53a439bc87de764d79f68ceec048a",
+    "contract_sha256": "4ca6674ee491af0a09b6c333c9f24763face5f22462ce0b454a0ce4c84793932",
+    "handshake_sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+    "source_lens_sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+    "target_finalizer_sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+    "verified_frames": 2,
+    "verified_artifacts": 9,
+    "authority": false
+  }
+}
