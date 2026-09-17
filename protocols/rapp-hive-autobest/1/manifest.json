@@ -55,8 +55,8 @@
   "reference": [
     {
       "path": "reference/conformance.py",
-      "sha256": "06a8863cec82c493846b0dcd07ad6fb676e983a071fdde60e0286cb7e87d8215",
-      "bytes": 51929
+      "sha256": "1850c3f0b1fc78758f2f7a9a636cb7e136ccd46fd3c9762c6d334a6b180b35ab",
+      "bytes": 50096
     },
     {
       "path": "reference/pins.py",

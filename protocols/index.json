@@ -1,6 +1,6 @@
 {
   "schema": "rapp-estate-protocol-index/1",
-  "generated_utc": "2026-09-17T23:13:40.841Z",
+  "generated_utc": "2026-09-17T21:36:39.234Z",
   "profiles": [
     {
       "name": "rapp-hive/1",
@@ -29,7 +29,7 @@
       "schema_sha256": "b3e66a8980bd9e53ed94bf7bed8cfb1fb252e50bd181d7058acda13ecb7a459b",
       "schema_bytes": 78591,
       "manifest_path": "protocols/rapp-hive-autobest/1/manifest.json",
-      "manifest_sha256": "562d1708135d5e970562c085425204d8e40c791d6f19913bd21ef33e3ee23e90",
+      "manifest_sha256": "7cd32e93fa41242fe1e84897f7a754639cdde9d680a245e2f7ac6d441b4b0535",
       "manifest_bytes": 5953,
       "provenance_path": "protocols/rapp-hive-autobest/1/provenance.json",
       "provenance_sha256": "a9b2fe2fa383f45262f2967faa6e4355d617e36a77bcd3b231bf012d77be1ebf",
@@ -183,7 +183,7 @@
       "spec_sha256": "e86c155decf0a66edccc821703e5f4172dd8dfb64828c1e53f009ff16c63bd7b",
       "spec_bytes": 15757,
       "manifest_path": "protocols/rapp-work-organization/1/manifest.json",
-      "manifest_sha256": "28a3a8b2bdb501dc7607799c3b58b02e64d4023b89ff7b9fc6943c0770ff1cfc",
+      "manifest_sha256": "60649e30bd9f5610dca0d35a7ce58304fd124d50d7790fec3575d93e72caffbe",
       "manifest_bytes": 7039,
       "provenance_path": "protocols/rapp-work-organization/1/provenance.json",
       "provenance_sha256": "3e962bb398343d09d7c81148cc8f18aa88af7b92999eca8f6f05a834d634f02f",
