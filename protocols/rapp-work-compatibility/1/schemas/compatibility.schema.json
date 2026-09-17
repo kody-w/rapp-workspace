@@ -172,6 +172,9 @@
         "host": {
           "const": "global-rapp-brainstem"
         },
+        "orchestrator_capability": {
+          "$ref": "common.schema.json#/$defs/particle"
+        },
         "source_agent": {
           "type": "object",
           "properties": {
@@ -334,6 +337,7 @@
       },
       "required": [
         "host",
+        "orchestrator_capability",
         "source_agent",
         "target_agent",
         "passes",

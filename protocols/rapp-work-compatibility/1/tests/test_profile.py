@@ -16,15 +16,18 @@ from common import PROFILE, ROOT, Parent, Refusal, SchemaSet, read_file, sha, wa
 from schema_source import encoded, schemas
 from validator import (
     compile_static_agent,
+    validate_capability_manifest,
     validate_causal_manifest,
     validate_compatibility,
     validate_exhaust,
     validate_handshake_package,
     validate_learning_trace,
+    validate_seed_capability_binding,
     verify_profile_frame,
 )
 
 FIXTURE = ROOT / "fixtures/softwarecoellc-vteam-hive"
+AUTOBEST_FIXTURE = ROOT / "fixtures/generic-autobest-capability"
 
 
 class CompatibilityProfileTests(unittest.TestCase):
@@ -38,6 +41,15 @@ class CompatibilityProfileTests(unittest.TestCase):
         cls.frame = cls.core.parse(read_file(FIXTURE / "compatibility-frame.json"))
         cls.handshake = json.loads(read_file(FIXTURE / "handshake.json"))
         cls.package = cls.core.parse(read_file(FIXTURE / "package.json"))
+        cls.capability_index = cls.core.parse(read_file(ROOT / "capabilities/index.json"))
+        cls.capability_entry = cls.capability_index["entries"][0]
+        cls.capability = cls.core.parse(read_file(ROOT / cls.capability_entry["path"]))
+        cls.workspace_seed = cls.core.parse(
+            read_file(AUTOBEST_FIXTURE / "workspace-seed.json")
+        )
+        cls.seed_binding_frame = cls.core.parse(
+            read_file(AUTOBEST_FIXTURE / "seed-capability-binding.json")
+        )
 
     def test_generated_schemas_match_checked_files(self) -> None:
         self.assertEqual(
@@ -63,6 +75,10 @@ class CompatibilityProfileTests(unittest.TestCase):
         validated = validate_handshake_package(self.package, self.schemas)
         self.assertEqual(validated["source_profile"], "microsol-project/1")
         self.assertEqual(validated["target_profile"], "microsol-repository-private-hive/1")
+        self.assertEqual(
+            validated["orchestrator_capability"],
+            self.capability_entry["particle"],
+        )
         qualification = self.core.parse(read_file(FIXTURE / "source-qualification.json"))
         self.schemas.validate(qualification, "source-qualification.schema.json")
         self.assertEqual(qualification["verified_frames"], 2)
@@ -73,6 +89,10 @@ class CompatibilityProfileTests(unittest.TestCase):
         self.assertEqual(record["status"], "read-only")
         self.assertFalse(record["grants_authority"])
         self.assertEqual(record["lens"]["passes"], ["source-lens", "target-finalizer"])
+        self.assertEqual(
+            record["lens"]["orchestrator_capability"],
+            self.capability_entry["particle"],
+        )
         self.assertEqual(record["static_program"]["model_calls"], 0)
         self.assertGreater(record["coverage"]["basis_points"], 0)
         self.assertLess(record["coverage"]["basis_points"], 10000)
@@ -294,9 +314,134 @@ class CompatibilityProfileTests(unittest.TestCase):
         with self.assertRaisesRegex(Refusal, "authority"):
             validate_learning_trace(forged, core=self.core)
 
-    def test_profile_does_not_embed_generic_ceo_agent_or_competing_microsol_schema(self) -> None:
-        paths = [path.relative_to(ROOT).as_posix() for path in ROOT.rglob("*") if path.is_file()]
-        self.assertFalse(any("generic-ceo" in path for path in paths))
+    def test_exact_autobest_capability_and_seed_binding_are_inert(self) -> None:
+        capability = validate_capability_manifest(self.capability, self.schemas)
+        self.assertEqual(
+            capability["agent"]["sha256"],
+            "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+        )
+        self.assertEqual(capability["agent"]["bytes"], 430291)
+        self.assertEqual(
+            capability["skill"]["sha256"],
+            "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+        )
+        self.assertEqual(capability["skill"]["bytes"], 39139)
+        self.assertEqual(self.capability_entry["particle"], self.core.particle(capability))
+        self.assertFalse(capability["authority_from_presence"])
+        self.assertFalse(capability["skill_activates"])
+        self.assertFalse(capability["grants_authority"])
+        for role in ("agent", "skill"):
+            artifact = capability[role]
+            raw = read_file(ROOT / artifact["path"])
+            self.assertEqual(sha(raw), artifact["sha256"])
+            self.assertEqual(len(raw), artifact["bytes"])
+
+        ok, step, reason = self.core.r.verify_frame(
+            self.workspace_seed,
+            head=None,
+            stream_id_of_record=self.workspace_seed["stream_id"],
+        )
+        self.assertTrue(ok, f"{step}: {reason}")
+        self.assertEqual(self.workspace_seed["payload"]["schema"], "rapp-workspace/1/seed")
+        binding = verify_profile_frame(self.core, self.seed_binding_frame)
+        validated = validate_seed_capability_binding(
+            binding,
+            capability=capability,
+            core=self.core,
+            schemas=self.schemas,
+        )
+        self.assertEqual(validated["relation"], "ancestor-seed")
+        self.assertFalse(validated["executable"])
+        self.assertFalse(validated["grants_authority"])
+
+    def test_autobest_agent_import_binds_exact_bytes_without_activation(self) -> None:
+        agent_path = ROOT / self.capability["agent"]["path"]
+        script = """
+import importlib.util
+import json
+import sys
+spec = importlib.util.spec_from_file_location("autobest_fixture", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+binding = module.bind_implementation_sha256(sys.argv[2])
+profile = module.profile_config("microsol-ceo")
+print(json.dumps({
+    "capability_id": module.__manifest__["capability_id"],
+    "authority": module.__manifest__["authority"],
+    "runtime": module.__manifest__["runtime"],
+    "binding": binding,
+    "profile_type": type(profile).__name__,
+}, sort_keys=True))
+"""
+        process = subprocess.run(
+            [
+                sys.executable,
+                "-I",
+                "-B",
+                "-c",
+                script,
+                str(agent_path),
+                self.capability["agent"]["sha256"],
+            ],
+            cwd=agent_path.parent,
+            env={
+                "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+                "PYTHONDONTWRITEBYTECODE": "1",
+                "PYTHONHASHSEED": "0",
+                "LANG": "C",
+                "LC_ALL": "C",
+            },
+            capture_output=True,
+            check=False,
+            timeout=60,
+        )
+        self.assertEqual(process.returncode, 0, process.stderr.decode())
+        result = json.loads(process.stdout)
+        self.assertEqual(result["capability_id"], "autobest:generic")
+        self.assertFalse(result["authority"])
+        self.assertFalse(result["runtime"])
+        self.assertEqual(result["profile_type"], "dict")
+        self.assertEqual(
+            result["binding"]["implementation_sha256"],
+            self.capability["agent"]["sha256"],
+        )
+        self.assertFalse(result["binding"]["authority_from_presence"])
+
+    def test_autobest_capability_mutations_and_rebinding_refuse(self) -> None:
+        changed = deepcopy(self.capability)
+        changed["agent"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(Refusal, "hash-addressed"):
+            validate_capability_manifest(changed, self.schemas)
+
+        binding = deepcopy(self.seed_binding_frame["payload"]["record"])
+        binding["capability"] = {"space": "rapp/1:particle", "hash": "0" * 64}
+        with self.assertRaisesRegex(Refusal, "particle mismatch"):
+            validate_seed_capability_binding(
+                binding,
+                capability=self.capability,
+                core=self.core,
+                schemas=self.schemas,
+            )
+
+        descendant = deepcopy(self.seed_binding_frame["payload"]["record"])
+        descendant["relation"] = "descendant-seed"
+        descendant["ancestor_binding"] = wave(self.seed_binding_frame)
+        descendant["parent_binding"] = wave(self.seed_binding_frame)
+        self.assertEqual(
+            validate_seed_capability_binding(
+                descendant,
+                capability=self.capability,
+                core=self.core,
+                schemas=self.schemas,
+            )["relation"],
+            "descendant-seed",
+        )
+        widened = deepcopy(descendant)
+        widened["executable"] = True
+        with self.assertRaises(Refusal):
+            validate_seed_capability_binding(widened, schemas=self.schemas)
+
+    def test_profile_does_not_ship_competing_microsol_generic_schema(self) -> None:
         for path in [ROOT / "SPEC.md", *sorted((ROOT / "schemas").glob("*.json"))]:
             content = read_file(path)
             self.assertNotIn(b"microsol-rapp-compatibility/1", content)

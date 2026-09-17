@@ -169,6 +169,12 @@ def generate(source: Path, rapp1_path: Path) -> None:
     for relative, expected in EXPECTED.items():
         require(sha(read_file(source / relative)) == expected, "approved Bill source pin mismatch: " + relative)
     core = Parent(rapp1_path)
+    capability_index = json.loads(read_file(ROOT / "capabilities/index.json"))
+    require(
+        capability_index["entries"][0]["capability_id"] == "autobest:generic",
+        "generic AutoBest capability index required",
+    )
+    orchestrator_capability = capability_index["entries"][0]["particle"]
     FIXTURE.mkdir(parents=True, exist_ok=True)
     handshake_raw = read_file(source / "handshakes/softwarecoellc-vteam-hive/1.json")
     source_agent_raw = read_file(source / "handshakes/softwarecoellc-vteam-hive/agent.py")
@@ -343,6 +349,7 @@ def generate(source: Path, rapp1_path: Path) -> None:
         },
         "lens": {
             "host": "global-rapp-brainstem",
+            "orchestrator_capability": orchestrator_capability,
             "source_agent": source_agent,
             "target_agent": target_agent,
             "passes": ["source-lens", "target-finalizer"],
@@ -429,6 +436,7 @@ def generate(source: Path, rapp1_path: Path) -> None:
         "status": "owner-approved-private",
         "source_profile": handshake["source_match"]["profile"],
         "target_profile": handshake["target"]["profile"],
+        "orchestrator_capability": orchestrator_capability,
         "handshake": handshake_artifact,
         "source_agent": source_agent,
         "target_agent": target_agent,

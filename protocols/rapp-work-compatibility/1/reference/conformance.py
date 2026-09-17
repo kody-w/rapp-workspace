@@ -14,11 +14,14 @@ from pins import check_index, manifest
 from schema_source import encoded, schemas
 from validator import (
     compile_static_agent,
+    validate_capability_manifest,
     validate_handshake_package,
+    validate_seed_capability_binding,
     verify_profile_frame,
 )
 
 FIXTURE = ROOT / "fixtures/softwarecoellc-vteam-hive"
+AUTOBEST_FIXTURE = ROOT / "fixtures/generic-autobest-capability"
 
 
 def main() -> int:
@@ -74,6 +77,32 @@ def main() -> int:
     require(generated == checked_agent, "static fixture reproduction failed")
     package = core.parse(read_file(FIXTURE / "package.json"))
     validate_handshake_package(package)
+    capability_index = core.parse(read_file(ROOT / "capabilities/index.json"))
+    capability_entry = capability_index["entries"][0]
+    capability = core.parse(read_file(ROOT / capability_entry["path"]))
+    validate_capability_manifest(capability)
+    require(
+        capability_entry["particle"] == core.particle(capability),
+        "generic AutoBest capability particle mismatch",
+    )
+    workspace_seed = core.parse(read_file(AUTOBEST_FIXTURE / "workspace-seed.json"))
+    ok, step, reason = core.r.verify_frame(
+        workspace_seed,
+        head=None,
+        stream_id_of_record=workspace_seed["stream_id"],
+    )
+    require(ok, f"AutoBest Workspace seed refusal: {step}: {reason}")
+    require(
+        workspace_seed["payload"]["schema"] == "rapp-workspace/1/seed",
+        "AutoBest fixture must bind an exact Workspace/1 seed",
+    )
+    verified += 1
+    seed_binding = core.parse(
+        read_file(AUTOBEST_FIXTURE / "seed-capability-binding.json")
+    )
+    binding_record = verify_profile_frame(core, seed_binding)
+    validate_seed_capability_binding(binding_record, capability=capability, core=core)
+    verified += 1
     require(read_file(ROOT / "manifest.json") == initial == expected, "input tree changed")
 
     report = {
@@ -88,6 +117,8 @@ def main() -> int:
         "rapp_frames_verified": verified,
         "source_frames_verified": len(source_frames),
         "compatibility_frames_verified": 1,
+        "workspace_seed_frames_verified": 1,
+        "seed_capability_frames_verified": 1,
         "bill_fixture": {
             "handshake_sha256": package["handshake"]["sha256"],
             "source_agent_sha256": package["source_agent"]["sha256"],
@@ -108,7 +139,16 @@ def main() -> int:
         "authority": False,
         "estate_activation": False,
         "model_calls_during_static_runtime": 0,
-        "generic_ceo_agent": "awaiting-pin",
+        "generic_ceo_agent": {
+            "capability_particle": capability_entry["particle"],
+            "agent_sha256": capability["agent"]["sha256"],
+            "agent_bytes": capability["agent"]["bytes"],
+            "skill_sha256": capability["skill"]["sha256"],
+            "skill_bytes": capability["skill"]["bytes"],
+            "activation": capability["activation"],
+            "mutation": capability["mutation"],
+            "authority_from_presence": capability["authority_from_presence"],
+        },
         "microsol_generic_schema_shipped": False,
     }
     write_file(

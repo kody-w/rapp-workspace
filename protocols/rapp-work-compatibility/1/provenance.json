@@ -37,7 +37,7 @@
   },
   "conceptual_prior_art": {
     "repository": "https://github.com/kody-w/UniversalDataConnectorAI",
-    "commit": "f2a978b",
+    "commit": "f2a978b9f85b65b9815b69d99c67e51c56732251",
     "role": "conceptual-provenance-only",
     "copied_code": false,
     "imported_runtime": false,
@@ -111,8 +111,31 @@
     "competing_generic_microsol_schema": false
   },
   "generic_ceo_agent": {
-    "status": "awaiting-exact-bytes-and-sha256",
-    "included": false,
-    "required_for_this_profile_independent-wave": false
+    "status": "verified-exact-bytes-included",
+    "source_workspace": "microsol-wild-hive-release-20260917",
+    "capability_id": "autobest:generic",
+    "capability_particle": {
+      "space": "rapp/1:particle",
+      "hash": "aca19fb14f2d96d6456bcbaa2c8c5bd542758a699e473eb5490b3c22c1c66401"
+    },
+    "capability_path": "capabilities/rapp-particle/aca19fb14f2d96d6456bcbaa2c8c5bd542758a699e473eb5490b3c22c1c66401/capability.json",
+    "tile_schema": "rapp-work-capability-tile/1",
+    "activation": "external-host-only",
+    "mutation": "successor-only",
+    "authority_from_presence": false,
+    "files": [
+      {
+        "source_path": ".github/skills/microsol-autobest/agent.py",
+        "profile_path": "artifacts/sha256/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/agent.py",
+        "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+        "bytes": 430291
+      },
+      {
+        "source_path": ".github/skills/microsol-autobest/SKILL.md",
+        "profile_path": "artifacts/sha256/5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8/SKILL.md",
+        "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+        "bytes": 39139
+      }
+    ]
   }
 }

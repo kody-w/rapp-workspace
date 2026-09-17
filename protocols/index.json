@@ -105,24 +105,43 @@
       "status": "optional-application-profile",
       "signed_activation": false,
       "spec_path": "protocols/rapp-work-compatibility/1/SPEC.md",
-      "spec_sha256": "29580b3c54b439411ea74ca28b18061de2e6497c729e7937b7d86d4bf17a8d6e",
-      "spec_bytes": 13967,
+      "spec_sha256": "e39f214fa0252b4995a427c227e4c5f976c076a208c9a85cb380126d0cd60bcb",
+      "spec_bytes": 15187,
       "manifest_path": "protocols/rapp-work-compatibility/1/manifest.json",
-      "manifest_sha256": "648f06e6149733f27bc317cb1534f324035afec0ec8452d56a60c37dbc2cde13",
-      "manifest_bytes": 8310,
+      "manifest_sha256": "579f3ad2678873b5e87ba5eeb264df0c87d550245c7b3be67a60eda1f036cb01",
+      "manifest_bytes": 11044,
       "provenance_path": "protocols/rapp-work-compatibility/1/provenance.json",
-      "provenance_sha256": "40308ce16844417dff86bcc42736ecf441337b54f854d22b6bc459687e4dcc6d",
-      "provenance_bytes": 4313,
+      "provenance_sha256": "4ce127909ca3d8d9efb8968ad226c6d3b50dc3e507c7f36656236895d0ed23bc",
+      "provenance_bytes": 5461,
       "schemas_path": "protocols/rapp-work-compatibility/1/schemas",
       "conformance": "protocols/rapp-work-compatibility/1/reference/conformance.py",
       "bill_fixture_package": {
         "path": "protocols/rapp-work-compatibility/1/fixtures/softwarecoellc-vteam-hive/package.json",
-        "sha256": "e1b0bc90e75e7b165063992740d735b8d978b1c696f98deb8d5a80ca2ae6e02d",
-        "bytes": 2384
+        "sha256": "0d3aeb1585f656f3518f5d2c27d8273a7648ae18a9ce892b4fd54f006914c76a",
+        "bytes": 2512
       },
       "execution": "external-host-only",
       "grants_authority": false,
-      "generic_ceo_agent": "awaiting-pin"
+      "generic_ceo_agent": {
+        "capability_index": {
+          "path": "protocols/rapp-work-compatibility/1/capabilities/index.json",
+          "sha256": "dc5e106d5b390f704090a06384d15dd05614022983ccece031f3410e7058b727",
+          "bytes": 802
+        },
+        "agent": {
+          "path": "protocols/rapp-work-compatibility/1/artifacts/sha256/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/agent.py",
+          "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+          "bytes": 430291
+        },
+        "skill": {
+          "path": "protocols/rapp-work-compatibility/1/artifacts/sha256/5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8/SKILL.md",
+          "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+          "bytes": 39139
+        },
+        "activation": "external-host-only",
+        "mutation": "successor-only",
+        "authority_from_presence": false
+      }
     },
     {
       "name": "rapp-work-organization/1",

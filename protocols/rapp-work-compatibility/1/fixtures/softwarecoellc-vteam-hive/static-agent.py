@@ -5,7 +5,7 @@ import hashlib
 import json
 import sys
 
-COMPATIBILITY_FRAME_HASH = "3f7f57caa04103453807a31f71588debafb15e43aaa2285c8d663beb64d04efd"
+COMPATIBILITY_FRAME_HASH = "76cc7a5ec2bdad2509946e1426e368292925a41eaa5145a190136a553ea35782"
 SOURCE_PROFILE = "microsol-project/1"
 TARGET_PROFILE = "microsol-repository-private-hive/1"
 SOURCE_MAPPING = json.loads('{"open":{"authority":{"const":false},"inventory":{"select":"payload.inventory"},"local_operation":{"const":"evidence"},"record":{"select":"payload.record"},"schema":{"const":"microsol-hive-compatible-observation/1"},"source_head":{"select":"head"},"source_operation":{"select":"payload.operation"},"source_profile":{"select":"payload.profile"},"subject":{"select":"payload.project"}},"publish":{"authority":{"const":false},"inventory":{"select":"payload.inventory"},"local_operation":{"const":"handoff"},"record":{"select":"payload.record"},"schema":{"const":"microsol-hive-compatible-observation/1"},"source_head":{"select":"head"},"source_operation":{"select":"payload.operation"},"source_profile":{"select":"payload.profile"},"subject":{"select":"payload.project"}}}')

@@ -36,6 +36,9 @@
       "maxLength": 128,
       "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
     },
+    "orchestrator_capability": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
     "handshake": {
       "type": "object",
       "properties": {
@@ -343,6 +346,7 @@
     "status",
     "source_profile",
     "target_profile",
+    "orchestrator_capability",
     "handshake",
     "source_agent",
     "target_agent",

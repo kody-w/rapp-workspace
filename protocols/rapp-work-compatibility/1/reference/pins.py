@@ -26,6 +26,16 @@ def manifest() -> dict[str, object]:
         for path in sorted((ROOT / "fixtures").rglob("*"))
         if path.is_file()
     ]
+    capabilities = [
+        path.relative_to(ROOT).as_posix()
+        for path in sorted((ROOT / "capabilities").rglob("*"))
+        if path.is_file()
+    ]
+    artifacts = [
+        path.relative_to(ROOT).as_posix()
+        for path in sorted((ROOT / "artifacts").rglob("*"))
+        if path.is_file()
+    ]
     tests = [
         path.relative_to(ROOT).as_posix()
         for path in sorted((ROOT / "tests").glob("test_*.py"))
@@ -43,12 +53,27 @@ def manifest() -> dict[str, object]:
         "reference": [record(ROOT, path) for path in reference],
         "tests": [record(ROOT, path) for path in tests],
         "fixtures": [record(ROOT, path) for path in fixtures],
+        "capabilities": [record(ROOT, path) for path in capabilities],
+        "artifacts": [record(ROOT, path) for path in artifacts],
         "documentation": [record(ROOT, "README.md")],
         "provenance": record(ROOT, "provenance.json"),
         "authority_boundary": "local-validation-and-external-controller-adoption-required",
         "dynamic_execution": "external-global-brainstem-only",
         "static_execution": "captured-byte-isolated-host-qualification-required",
-        "generic_ceo_agent": "awaiting-exact-pin-not-included",
+        "generic_ceo_agent": {
+            "capability_index": record(ROOT, "capabilities/index.json"),
+            "agent": record(
+                ROOT,
+                "artifacts/sha256/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/agent.py",
+            ),
+            "skill": record(
+                ROOT,
+                "artifacts/sha256/5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8/SKILL.md",
+            ),
+            "activation": "external-host-only",
+            "mutation": "successor-only",
+            "authority_from_presence": False,
+        },
         "microsol_schema_boundary": "concrete-live-subscription-profile-only",
     }
 
@@ -61,6 +86,17 @@ def index_profile() -> dict[str, object]:
     package = record(
         REPO,
         prefix + "fixtures/softwarecoellc-vteam-hive/package.json",
+    )
+    capability_index = record(REPO, prefix + "capabilities/index.json")
+    agent = record(
+        REPO,
+        prefix
+        + "artifacts/sha256/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/agent.py",
+    )
+    skill = record(
+        REPO,
+        prefix
+        + "artifacts/sha256/5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8/SKILL.md",
     )
     return {
         "name": PROFILE,
@@ -84,7 +120,14 @@ def index_profile() -> dict[str, object]:
         "bill_fixture_package": package,
         "execution": "external-host-only",
         "grants_authority": False,
-        "generic_ceo_agent": "awaiting-pin",
+        "generic_ceo_agent": {
+            "capability_index": capability_index,
+            "agent": agent,
+            "skill": skill,
+            "activation": "external-host-only",
+            "mutation": "successor-only",
+            "authority_from_presence": False,
+        },
     }
 
 

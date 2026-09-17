@@ -12,6 +12,12 @@ Brainstem.
 The first fixture binds the SoftwareCo V-team Hive/MicroSOL handshake without
 including live private source Frames.
 
+The profile also carries the exact inert generic AutoBest/CEO capability:
+
+- agent SHA-256 `827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c`;
+- Skill SHA-256 `5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8`;
+- external-host-only activation and successor-only mutation.
+
 ```bash
 python3 -B protocols/rapp-work-compatibility/1/reference/schema_source.py --check
 python3 -B protocols/rapp-work-compatibility/1/reference/pins.py

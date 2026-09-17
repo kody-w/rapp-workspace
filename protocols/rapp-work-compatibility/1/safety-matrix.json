@@ -75,6 +75,12 @@
       "gate": "exact-first-wild-handshake-package-pins",
       "status": "implemented-with-synthetic-frame-proof",
       "vectors": ["handshake-pin", "source-agent-pin", "target-agent-pin", "fixture-package-mutation"]
+    },
+    {
+      "id": "C0-AUTOBEST",
+      "gate": "exact-inert-autobest-capability-and-successor-only-seed-binding",
+      "status": "implemented",
+      "vectors": ["agent-pin", "skill-pin", "capability-particle", "presence-not-execution", "descendant-binding", "successor-only-mutation"]
     }
   ]
 }

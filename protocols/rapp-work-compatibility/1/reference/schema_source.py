@@ -182,6 +182,7 @@ def schemas():
         target=obj(profile=token, operations=array(token, 256, 1)),
         lens=obj(
             host=fixed("global-rapp-brainstem"),
+            orchestrator_capability=ref("particle"),
             source_agent=artifact,
             target_agent=artifact,
             passes={
@@ -494,6 +495,57 @@ def schemas():
             authority=fixed(False),
         ),
     }
+    capability_manifest = {
+        "$schema": DRAFT,
+        "$id": URI + "capability-manifest.schema.json",
+        **obj(
+            schema=fixed(PROFILE + "/capability-manifest"),
+            capability_id=fixed("autobest:generic"),
+            version=fixed(1),
+            tile_schema=fixed("rapp-work-capability-tile/1"),
+            tile_subject=fixed("exact-agent.py-bytes"),
+            agent=artifact,
+            skill=artifact,
+            profiles={
+                "type": "array",
+                "items": {"enum": ["generic", "microsol-ceo"]},
+                "minItems": 2,
+                "maxItems": 2,
+                "uniqueItems": True,
+            },
+            invoker=fixed("external-global-brainstem"),
+            activation=fixed("external-host-only"),
+            mutation=fixed("successor-only"),
+            rapp1_role=fixed("core-compatibility-substrate"),
+            authority_from_presence=fixed(False),
+            skill_activates=fixed(False),
+            grants_authority=fixed(False),
+        ),
+    }
+    seed_capability_binding = record(
+        "seed-capability-binding",
+        workspace_seed=ref("wave"),
+        workspace_profile=fixed("rapp-workspace/1"),
+        workspace_spec_sha256=ref("hash"),
+        capability=ref("particle"),
+        agent=ref("particle"),
+        skill=ref("particle"),
+        relation={
+            "enum": [
+                "ancestor-seed",
+                "descendant-seed",
+                "capability-successor",
+            ]
+        },
+        ancestor_binding=nullable(ref("wave")),
+        parent_binding=nullable(ref("wave")),
+        previous_binding=nullable(ref("wave")),
+        inheritance=fixed("reference-only"),
+        executable=fixed(False),
+        host_activation=fixed("external-host-only"),
+        mutation=fixed("successor-only"),
+        grants_authority=fixed(False),
+    )
     handshake_package = {
         "$schema": DRAFT,
         "$id": URI + "handshake-package.schema.json",
@@ -504,6 +556,7 @@ def schemas():
             status={"enum": ["candidate", "owner-approved-private", "retired"]},
             source_profile=token,
             target_profile=token,
+            orchestrator_capability=ref("particle"),
             handshake=artifact,
             source_agent=artifact,
             target_agent=artifact,
@@ -533,6 +586,8 @@ def schemas():
         "evaluation-receipt.schema.json": evaluation,
         "promotion-decision.schema.json": promotion,
         "source-qualification.schema.json": source_qualification,
+        "capability-manifest.schema.json": capability_manifest,
+        "seed-capability-binding.schema.json": seed_capability_binding,
         "handshake-package.schema.json": handshake_package,
     }
     return {

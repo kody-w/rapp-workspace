@@ -189,6 +189,86 @@ def validate_handshake_package(value: object, schemas: SchemaSet | None = None) 
     return package
 
 
+def validate_capability_manifest(
+    value: object,
+    schemas: SchemaSet | None = None,
+) -> dict[str, Any]:
+    schemas = SchemaSet() if schemas is None else schemas
+    capability = schemas.validate(value, "capability-manifest.schema.json")
+    assert isinstance(capability, dict)
+    agent = capability["agent"]
+    skill = capability["skill"]
+    require(
+        agent["role"] == "generic-autobest-agent"
+        and skill["role"] == "generic-autobest-skill",
+        "generic AutoBest artifact roles are exact",
+    )
+    require(
+        agent["path"].startswith("artifacts/sha256/" + agent["sha256"] + "/")
+        and skill["path"].startswith("artifacts/sha256/" + skill["sha256"] + "/"),
+        "generic AutoBest artifacts must use hash-addressed paths",
+    )
+    require(
+        capability["profiles"] == ["generic", "microsol-ceo"]
+        and capability["authority_from_presence"] is False
+        and capability["skill_activates"] is False
+        and capability["grants_authority"] is False,
+        "generic AutoBest capability cannot activate or grant authority",
+    )
+    return capability
+
+
+def validate_seed_capability_binding(
+    value: object,
+    *,
+    capability: dict[str, Any] | None = None,
+    core: Parent | None = None,
+    schemas: SchemaSet | None = None,
+) -> dict[str, Any]:
+    schemas = SchemaSet() if schemas is None else schemas
+    binding = schemas.validate(value, "seed-capability-binding.schema.json")
+    assert isinstance(binding, dict)
+    relation = binding["relation"]
+    refs = (
+        binding["ancestor_binding"],
+        binding["parent_binding"],
+        binding["previous_binding"],
+    )
+    if relation == "ancestor-seed":
+        require(all(item is None for item in refs), "ancestor seed binding cannot name prior bindings")
+    elif relation == "descendant-seed":
+        require(
+            binding["ancestor_binding"] is not None
+            and binding["parent_binding"] is not None
+            and binding["previous_binding"] is None,
+            "descendant seed binding requires ancestor and parent only",
+        )
+    else:
+        require(
+            binding["ancestor_binding"] is not None
+            and binding["previous_binding"] is not None,
+            "capability successor requires ancestor and previous binding",
+        )
+    require(
+        binding["workspace_spec_sha256"]
+        == "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
+        "wrong Workspace/1 seed binding pin",
+    )
+    require(
+        binding["executable"] is False
+        and binding["host_activation"] == "external-host-only"
+        and binding["grants_authority"] is False,
+        "seed capability presence cannot activate execution",
+    )
+    if capability is not None:
+        require(core is not None, "canonical RAPP/1 parent required for capability binding")
+        validated = validate_capability_manifest(capability, schemas)
+        require(binding["capability"] == core.particle(validated), "capability particle mismatch")
+        require(binding["agent"] == validated["agent"]["particle"], "agent particle mismatch")
+        require(binding["skill"] == validated["skill"]["particle"], "Skill particle mismatch")
+    return binding
+
+
 def verify_profile_frame(
     core: Parent,
     frame: dict[str, Any],
@@ -205,13 +285,20 @@ def verify_profile_frame(
     require(
         type(payload) is dict
         and payload.get("profile") == PROFILE
-        and payload.get("operation") in {"compatibility", "compatibility-exhaust"},
+        and payload.get("operation")
+        in {
+            "compatibility",
+            "compatibility-exhaust",
+            "seed-capability-binding",
+        },
         "wrong compatibility frame payload",
     )
     if payload["operation"] == "compatibility":
         validate_compatibility(payload["record"])
-    else:
+    elif payload["operation"] == "compatibility-exhaust":
         validate_exhaust(payload["record"])
+    else:
+        validate_seed_capability_binding(payload["record"])
     return payload["record"]
 
 
