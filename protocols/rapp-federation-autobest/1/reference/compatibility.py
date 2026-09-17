@@ -351,8 +351,24 @@ def validate_compatibility_record(
     require(record["lens"]["target_agent"]["sha256"] == bindings["wild_handshake"]["target_finalizer_sha256"], "target-agent-pin")
     require(
         record["lens"]["generic_ceo_agent"]
-        == {"role": "generic-ceo", "sha256": None, "bytes": None, "status": "pending"},
-        "ceo-pending",
+        == {
+            "role": "generic-ceo",
+            "sha256": bindings["generic_ceo_agent"]["sha256"],
+            "bytes": bindings["generic_ceo_agent"]["bytes"],
+            "status": "verified",
+        },
+        "ceo-agent-pin",
+    )
+    require(
+        record["lens"]["generic_ceo_skill"]
+        == {
+            "sha256": bindings["generic_ceo_agent"]["skill_sha256"],
+            "bytes": bindings["generic_ceo_agent"]["skill_bytes"],
+            "status": "verified",
+            "activation": "external-host-only",
+            "authority_from_presence": False,
+        },
+        "ceo-skill-pin",
     )
     if handshake is not None:
         require(
@@ -395,7 +411,48 @@ def validate_compatibility_record(
 
 def require_ceo_for_mutation(bindings: dict[str, Any]) -> None:
     candidate = bindings["generic_ceo_agent"]
-    require(candidate["status"] == "verified" and candidate["sha256"] is not None, "ceo-agent-pending")
+    require(
+        candidate["status"] == "verified"
+        and candidate["sha256"] is not None
+        and candidate["bytes"] is not None
+        and candidate["activation"] == "external-host-only"
+        and candidate["authority_from_presence"] is False,
+        "ceo-agent-unverified",
+    )
+
+
+def validate_ceo_artifacts(
+    bindings: dict[str, Any],
+    agent: bytes,
+    skill: bytes,
+) -> None:
+    candidate = bindings["generic_ceo_agent"]
+    require_ceo_for_mutation(bindings)
+    require(
+        len(agent) == candidate["bytes"] and digest(agent) == candidate["sha256"],
+        "ceo-agent-pin",
+    )
+    require(
+        len(skill) == candidate["skill_bytes"]
+        and digest(skill) == candidate["skill_sha256"],
+        "ceo-skill-pin",
+    )
+
+
+def validate_implementation_binding(binding: dict[str, Any], implementation_sha256: str) -> None:
+    require(
+        type(binding) is dict
+        and binding.get("schema") == "autobest-implementation-binding/1"
+        and binding.get("algorithm") == "sha256"
+        and binding.get("implementation_sha256") == implementation_sha256
+        and binding.get("subject") == "exact-agent.py-bytes"
+        and binding.get("activation") == "external-host-only"
+        and binding.get("mutation") == "successor-only"
+        and binding.get("authority_from_presence") is False
+        and type(binding.get("binding_head")) is str
+        and HASH.fullmatch(binding["binding_head"]) is not None,
+        "ceo-implementation-binding",
+    )
 
 
 def run_agent(path: Path, request: dict[str, Any]) -> dict[str, Any]:

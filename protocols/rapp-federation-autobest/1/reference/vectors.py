@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import runpy
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +24,8 @@ from compatibility import (
     run_agent,
     spki_bytes,
     strict_file,
+    validate_ceo_artifacts,
+    validate_implementation_binding,
 )
 
 
@@ -33,6 +36,9 @@ SOURCE_AGENT_PATH = FIXTURE / "handshakes" / "softwarecoellc-vteam-hive" / "agen
 TARGET_AGENT_PATH = FIXTURE / "handshakes" / "microsol-target-finalizer" / "agent.py"
 QUALIFICATION_PATH = FIXTURE / "qualification.json"
 BINDINGS_PATH = ROOT / "bindings.json"
+CEO_AGENT_PATH = ROOT / "fixtures" / "generic-ceo" / "agent.py"
+CEO_SKILL_PATH = ROOT / "fixtures" / "generic-ceo" / "SKILL.md"
+CEO_BINDING_PATH = ROOT / "fixtures" / "generic-ceo" / "implementation-binding.json"
 SCHEMA_PACKAGE_PATH = "schemas/rapp-federation-autobest-1.schema.json"
 STATIC_PATH = FIXTURE / "static" / "agent.py"
 GENERATION_PATH = FIXTURE / "static" / "generation-receipt.json"
@@ -257,11 +263,17 @@ def fixture_material() -> dict[str, Any]:
     qualification = object_file(QUALIFICATION_PATH)
     source_agent = strict_file(SOURCE_AGENT_PATH)
     target_agent = strict_file(TARGET_AGENT_PATH)
+    ceo_agent = strict_file(CEO_AGENT_PATH)
+    ceo_skill = strict_file(CEO_SKILL_PATH)
     source_agent_hash = digest(source_agent)
     target_agent_hash = digest(target_agent)
     assert digest(strict_file(HANDSHAKE_PATH)) == bindings["wild_handshake"]["profile_sha256"]
     assert source_agent_hash == bindings["wild_handshake"]["source_agent_sha256"]
     assert target_agent_hash == bindings["wild_handshake"]["target_finalizer_sha256"]
+    validate_ceo_artifacts(bindings, ceo_agent, ceo_skill)
+    ceo_namespace = runpy.run_path(str(CEO_AGENT_PATH), run_name="rapp_autobest_fixture")
+    ceo_binding = ceo_namespace["bind_implementation_sha256"](digest(ceo_agent))
+    validate_implementation_binding(ceo_binding, digest(ceo_agent))
 
     source_key = private_key("softwarecoellc source")
     source_identity = keyed_rappid("fixture-source", "hive", source_key.public_key())
@@ -420,9 +432,16 @@ def fixture_material() -> dict[str, Any]:
             },
             "generic_ceo_agent": {
                 "role": "generic-ceo",
-                "sha256": None,
-                "bytes": None,
-                "status": "pending",
+                "sha256": digest(ceo_agent),
+                "bytes": len(ceo_agent),
+                "status": "verified",
+            },
+            "generic_ceo_skill": {
+                "sha256": digest(ceo_skill),
+                "bytes": len(ceo_skill),
+                "status": "verified",
+                "activation": "external-host-only",
+                "authority_from_presence": False,
             },
             "passes": ["source-lens", "target-finalizer"],
             "hotload_receipts": receipts,
@@ -539,7 +558,7 @@ def fixture_material() -> dict[str, Any]:
         ),
         "coverage": record["coverage"],
         "loss_class": "partial-unproven",
-        "restriction": "generic-ceo-pending",
+        "restriction": "host-activation-required",
         "bounds_consumed": H(
             PROFILE + ":bounds-consumed",
             {"static_model_calls": 0, "jit_model_calls": 0, "attempts": 1},
@@ -571,7 +590,7 @@ def fixture_material() -> dict[str, Any]:
         "model_calls": 0,
         "candidate_tests_are_independent_proof": False,
         "host_tests_passed": 12,
-        "controlled_mutants_killed": 16,
+        "controlled_mutants_killed": 19,
         "controlled_mutants_survived": 0,
         "authority": False,
     }
@@ -592,6 +611,9 @@ def fixture_material() -> dict[str, Any]:
         "controlled_mutants": [
             "coverage-overclaim",
             "ceo-pin-forgery",
+            "ceo-agent-byte-tamper",
+            "ceo-skill-byte-tamper",
+            "ceo-authority-from-presence",
             "authority-true",
             "transitive-access",
             "active-root-finalized",
@@ -687,6 +709,7 @@ def fixture_material() -> dict[str, Any]:
             "source_parents": [
                 source_frames[-1]["frame_hash"],
                 bindings["wild_handshake"]["profile_sha256"],
+                bindings["generic_ceo_agent"]["sha256"],
             ],
             "forward": forward,
             "reverse": reverse,
@@ -732,7 +755,14 @@ def fixture_material() -> dict[str, Any]:
         "schema": PROFILE + "/fixture",
         "warning": "All keys and business data are public synthetic conformance material.",
         "activation": "candidate-not-activated",
-        "generic_ceo_agent": "pending",
+        "generic_ceo_agent": {
+            "status": "verified",
+            "agent_sha256": digest(ceo_agent),
+            "skill_sha256": digest(ceo_skill),
+            "implementation_binding_head": ceo_binding["binding_head"],
+            "activation": "external-host-only",
+            "authority_from_presence": False,
+        },
         "source": {
             "identity": source_identity,
             "public_spki_der_b64": base64.b64encode(spki_bytes(source_key.public_key())).decode("ascii"),
@@ -758,6 +788,7 @@ def fixture_material() -> dict[str, Any]:
             "generation_receipt_sha256": digest(generation_bytes),
             "package_manifest_sha256": digest(package_bytes),
             "mutation_offer_sha256": digest(canonical(offer)),
+            "ceo_implementation_binding_sha256": digest(canonical(ceo_binding)),
         },
         "live_binding": {
             "qualification_sha256": digest(canonical(qualification)),
@@ -775,6 +806,7 @@ def fixture_material() -> dict[str, Any]:
         "mutations": mutation_tests,
         "package": package,
         "offer": offer,
+        "ceo_binding": ceo_binding,
     }
 
 
@@ -791,6 +823,7 @@ def outputs(material: dict[str, Any]) -> dict[Path, bytes]:
         MUTATIONS_PATH: canonical(material["mutations"]),
         PACKAGE_PATH: canonical(material["package"]),
         OFFER_PATH: canonical(material["offer"]),
+        CEO_BINDING_PATH: canonical(material["ceo_binding"]),
     }
 
 

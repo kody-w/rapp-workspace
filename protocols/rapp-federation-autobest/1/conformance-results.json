@@ -1,18 +1,26 @@
 {
-  "activation": "candidate-not-activated-ceo-agent-pending",
+  "activation": "candidate-not-activated-ceo-pinned",
   "changed_inputs": [],
   "errors": 0,
   "failures": 0,
   "input_tree_stable": true,
-  "negative_checks": 17,
+  "negative_checks": 19,
   "negative_vectors": [
     {
       "refusal": "schema",
       "test": "test_candidate_tests_cannot_self_certify"
     },
     {
-      "refusal": "ceo-agent-pending",
-      "test": "test_compatibility_record_is_partial_non_authorizing_and_ceo_pending"
+      "refusal": "ceo-agent-pin",
+      "test": "test_ceo_agent_skill_and_binding_mutations_refuse"
+    },
+    {
+      "refusal": "ceo-skill-pin",
+      "test": "test_ceo_agent_skill_and_binding_mutations_refuse"
+    },
+    {
+      "refusal": "ceo-implementation-binding",
+      "test": "test_ceo_agent_skill_and_binding_mutations_refuse"
     },
     {
       "refusal": "duplicate-json-key",
@@ -78,35 +86,38 @@
   "profile": "rapp-federation-autobest/1",
   "skipped": 0,
   "source_sha256": {
-    "SPEC.md": "5b13745b250444cf90983ad2db189d05be0c2092104423c78928e1e81253d9fb",
-    "bindings.json": "b6011cbf750858137154f79b78b05e34412516ffe2cc2e22ecc50db24a5c274d",
-    "fixtures/softwarecoellc-vteam-hive/compatibility/exhaust.json": "96317972fa839c81e126caf40d8d5f568501e0e11fc8cf2811d5f790006cd651",
-    "fixtures/softwarecoellc-vteam-hive/compatibility/frame.json": "8cb5ad917417023508bf2ed4406fa37aeb8bb47b45cebc0cd6c58cfff2dcc15a",
-    "fixtures/softwarecoellc-vteam-hive/fixture.json": "32a870a7dd30a3cb2c177daa6e76f5ef080b466902b855f953ab9589cec97834",
+    "SPEC.md": "e11bd7aa9423531888a15047eef9ee50898b5081968801d9f7f08130a5bd4b6d",
+    "bindings.json": "1ecb3c1287f4a3b79d5a0e0046291298f71bf3ba7dc7e892edf8422efdd32bbb",
+    "fixtures/generic-ceo/SKILL.md": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "fixtures/generic-ceo/agent.py": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "fixtures/generic-ceo/implementation-binding.json": "3aeda1a4b6d7b7f8c6c5c6dbac9d430dc0f343e1b4a52214dc4e5c6159ff514d",
+    "fixtures/softwarecoellc-vteam-hive/compatibility/exhaust.json": "77cd355d9d17ce1206f6dcf0f497b5730b122cfc57d2e6fb8c6653dbead0e69d",
+    "fixtures/softwarecoellc-vteam-hive/compatibility/frame.json": "d10c73dd0de7ecfb1527e2de136858d8a72d50fe2b7c00b4bfba9d1b318cee40",
+    "fixtures/softwarecoellc-vteam-hive/fixture.json": "1067dfe4bda0194126b0c9efc63d0e49d061aeee31481d67b80f2631f3df53b1",
     "fixtures/softwarecoellc-vteam-hive/handshakes/microsol-target-finalizer/agent.py": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
     "fixtures/softwarecoellc-vteam-hive/handshakes/softwarecoellc-vteam-hive/1.json": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
     "fixtures/softwarecoellc-vteam-hive/handshakes/softwarecoellc-vteam-hive/agent.py": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
     "fixtures/softwarecoellc-vteam-hive/learning-trace.json": "d637e13603239c8b1551d8c85ae48442c532df19426902a21dfafbe743ed78c0",
     "fixtures/softwarecoellc-vteam-hive/lens-search.json": "ecdfa3ae0fcc80225ec45684e43a865ec9e7be0a7b8af171552f99dde4a2a7cc",
-    "fixtures/softwarecoellc-vteam-hive/mutation-offer.json": "f0699a80562891f65ff94c55374acb58c0f67cfcdaad87c222a9cff1899390b6",
-    "fixtures/softwarecoellc-vteam-hive/mutation-tests.json": "6b5a7cfbbc00ed3d230b01ae15f12e7831dd0e4a9586a52cfd5b1fb1a2a824bc",
-    "fixtures/softwarecoellc-vteam-hive/package-manifest.json": "ffb1b8c4d327077677b472e461cfbd195ae1eb160d9777e30273f2147536824d",
+    "fixtures/softwarecoellc-vteam-hive/mutation-offer.json": "58019377201eaeab1f3ab7b462c380de98966d79c58878cb4a23b4a20ef28768",
+    "fixtures/softwarecoellc-vteam-hive/mutation-tests.json": "1293138abc85ff7053920e71caa675c354e223fba603b98bf37ba84a3ef88160",
+    "fixtures/softwarecoellc-vteam-hive/package-manifest.json": "09e7c1419b80e736b1f68e9e62c05bdd81f6d72cc28c7865c4244acaec916389",
     "fixtures/softwarecoellc-vteam-hive/qualification.json": "a165ac5089974801bdf1f67445693824e8887e6a007440cf75f6cdc623480295",
-    "fixtures/softwarecoellc-vteam-hive/schemas/rapp-federation-autobest-1.schema.json": "0874923f01c2e006700a8a562febffd3545cd9a6e436d79e0b89ff21492aab96",
-    "fixtures/softwarecoellc-vteam-hive/static/agent.py": "4ee1ecb811f13d0b63bb5ddf2bdebd1415203d5d0f30099784b7704aab23d45b",
-    "fixtures/softwarecoellc-vteam-hive/static/generation-receipt.json": "ea74b6b95b949523e8d67f1d90a7be7fef1d3c55e5080b0a197cdcc1a6f65329",
-    "manifest.json": "bf9d51027227e3425dc9086dc2e61fa847aad010845b931c6a5ac98c90a7a8f5",
-    "parent-wire-results.json": "56773960db88e19e564d54c1755b1192fc9d1256d13c9ec55f77a847aaebb9a0",
-    "provenance.json": "62b3ef75c28678e1ee40556aaca45dedf4324b293d87b21152dad3210e433b7e",
-    "reference/README.md": "daa5c20c52b47e1661461b7054e26859b761114685b8884435870f39c4cbd951",
-    "reference/compatibility.py": "4870ab4cf214536ac0ecb41651537bdfdd52497423887b729d1207a5e7120f5d",
-    "reference/conformance.py": "79270f74dc81aa28a5082affeb98fe1f55c033f2c29fa5fd08e0554bf82d11b6",
-    "reference/manifest_source.py": "c8d59a27a8a27b0a4a09b4c7d5dc529aa6db0083f0f9edc63a698429e40105bf",
-    "reference/schema_source.py": "de69b9e8504a30b0f6420bdfcd224ba417ded350075201b90186d954a35757fe",
-    "reference/vectors.py": "193f6bd68027410bd5e8cc17990f88ae1cb10c5f247c44ce1ea38ea171e9384c",
-    "safety-matrix.json": "635f7ff39a27bdac468db424e15c96eecde912c200506f8736d4a7267e41f7cc",
-    "schema.json": "0874923f01c2e006700a8a562febffd3545cd9a6e436d79e0b89ff21492aab96"
+    "fixtures/softwarecoellc-vteam-hive/schemas/rapp-federation-autobest-1.schema.json": "8c079c0d224ad330784613018ecef04dfd3a160d4729d2a403df838a8d4784b1",
+    "fixtures/softwarecoellc-vteam-hive/static/agent.py": "6908a9147de6247b639c06784ded2b3789b3501e3ff1c304bb0b4e50c87b34e5",
+    "fixtures/softwarecoellc-vteam-hive/static/generation-receipt.json": "4e75f155a1325ec211a9895b996c57959532d43af4a13a1779914b610eac5e0e",
+    "manifest.json": "0a508b09b242485dc5aaaa83c0464a2d558384d9cac0824da4fd922f03278099",
+    "parent-wire-results.json": "baa38a43465dde58f77ade58a565f01690f0bc81bd859da6ee1e742379c1cfcd",
+    "provenance.json": "502f9620b4c0232575250b08d34161b20bd8740b10ae92a19222aa6a2f52bb7a",
+    "reference/README.md": "19e9e788491dca768af1dcb347b13a3ad49bad6d11f14772a92c723f1674bc14",
+    "reference/compatibility.py": "5da7d9d70a2be8abfd350948516ed8912b8fff1bd34e6d575c1dee2429297793",
+    "reference/conformance.py": "d19b4b4c73eed6d14f4c876d349cf11441dd4e79d7142b7f2b16889d25a81ade",
+    "reference/manifest_source.py": "be3f5987c245baf6f0af27e27d86aaec51abdac90813f217980243c2b59bd812",
+    "reference/schema_source.py": "7564aed4caf6363a65308dadaf91577424b68108735bb9fb28dacab4df48e474",
+    "reference/vectors.py": "7f8f999f41a8035a1b4be50577f2517f10bab327c4e44b0037c21cc726751529",
+    "safety-matrix.json": "7bab0459a5f23757d14b38d780e4664082250aaadbc26d141ea451011e8f655b",
+    "schema.json": "8c079c0d224ad330784613018ecef04dfd3a160d4729d2a403df838a8d4784b1"
   },
-  "tests_run": 26,
+  "tests_run": 27,
   "verified_fixture_frames": 4
 }

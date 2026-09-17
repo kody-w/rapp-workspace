@@ -165,6 +165,36 @@
         }
       }
     },
+    "skillPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sha256",
+        "bytes",
+        "status",
+        "activation",
+        "authority_from_presence"
+      ],
+      "properties": {
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        },
+        "status": {
+          "const": "verified"
+        },
+        "activation": {
+          "const": "external-host-only"
+        },
+        "authority_from_presence": {
+          "const": false
+        }
+      }
+    },
     "artifactRef": {
       "type": "object",
       "additionalProperties": false,
@@ -1214,6 +1244,7 @@
             "source_agent",
             "target_agent",
             "generic_ceo_agent",
+            "generic_ceo_skill",
             "passes",
             "hotload_receipts",
             "native_session_persisted"
@@ -1236,6 +1267,9 @@
             },
             "generic_ceo_agent": {
               "$ref": "#/$defs/agentPin"
+            },
+            "generic_ceo_skill": {
+              "$ref": "#/$defs/skillPin"
             },
             "passes": {
               "const": [

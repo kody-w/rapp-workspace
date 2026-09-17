@@ -112,6 +112,15 @@ def build_schema():
                 "status": enum("verified", "pending"),
             }
         ),
+        "skillPin": obj(
+            {
+                "sha256": ref("hash"),
+                "bytes": integer(1, 1 << 20),
+                "status": const("verified"),
+                "activation": const("external-host-only"),
+                "authority_from_presence": const(False),
+            }
+        ),
         "artifactRef": obj(
             {
                 "space": enum("rapp/1:particle", "rapp/1:wave", "rapp/1:egg-manifest", "sha256"),
@@ -406,6 +415,7 @@ def build_schema():
                     "source_agent": ref("agentPin"),
                     "target_agent": ref("agentPin"),
                     "generic_ceo_agent": ref("agentPin"),
+                    "generic_ceo_skill": ref("skillPin"),
                     "passes": {
                         "const": ["source-lens", "target-finalizer"],
                     },

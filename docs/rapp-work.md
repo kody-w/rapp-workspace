@@ -50,8 +50,8 @@ active-root selection, and external effects remain separate.
 
 Its first checked-in fixture binds the approved SoftwareCo V-team Hive
 handshake and exact source/finalizer agent bytes. No raw private repository
-content is included. The generic CEO agent remains pending, so the profile does
-not claim live dynamic successor generation.
+content is included. The generic CEO/AutoBest agent and Skill are exact-byte
+pinned, while activation, signing, adoption and effects remain external.
 
 Universal and galactic do not mean centralized or globally visible. The Hive
 Mind has no universal owner, signing key, writable head, complete database,

@@ -19,10 +19,13 @@ registers this profile separately or treats its records as inert application
 data.
 
 The checked-in first wild-handshake package is approved private fixture
-material. The generic CEO agent remains unpinned, so dynamic successor mutation
-is disabled. Static validation, double-hotload reproduction, partial
-compatibility, deterministic static-agent generation, exhaust schemas, package
-lineage, mutation offers, and conformance are implemented.
+material. The generic CEO/AutoBest agent and its Skill are now exact-byte
+verified profile artifacts. Dynamic successor mutation remains subject to
+current authority, policy, budget, tests, and external host activation; file
+presence alone activates nothing. Static validation, double-hotload
+reproduction, partial compatibility, deterministic static-agent generation,
+exhaust schemas, package lineage, mutation offers, and conformance are
+implemented.
 
 ## 1. RAPP/1 boundary
 
@@ -98,7 +101,7 @@ One compatibility Frame binds:
 - exact target profile and operations;
 - Workspace, Hive, and Federation pins;
 - source-Lens and target-finalizer `agent.py` bytes;
-- generic CEO agent status;
+- exact generic CEO agent and Skill pins;
 - double-hotload receipts;
 - mapping commitment;
 - per-capability tier, status, and integer coverage;
@@ -110,9 +113,11 @@ One compatibility Frame binds:
 - predecessor and triggering exhaust for a successor;
 - `grants_authority:false`.
 
-The current first fixture has a pending generic CEO agent. A pending pin cannot
-generate, select, or activate a dynamic successor. It does not block the
-already qualified static handshake.
+The generic CEO agent is bound to exact `agent.py` and `SKILL.md` bytes. Its
+implementation-binding receipt declares external-host-only activation,
+successor-only mutation, and `authority_from_presence:false`. The verified pin
+makes bounded successor planning eligible; it does not itself authorize,
+select, sign, adopt, or execute a successor.
 
 ## 5. Double-hotload Lens
 
@@ -390,6 +395,10 @@ source Lens agent.py:
   679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671
 target finalizer agent.py:
   c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296
+generic CEO/AutoBest agent.py:
+  827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c
+generic CEO/AutoBest SKILL.md:
+  5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8
 source commit:
   f66da3d879b53a439bc87de764d79f68ceec048a
 ```
@@ -433,6 +442,6 @@ bounded N-Lens search, mutation offers, privacy, replay/fork/rollback
 refusals, and unchanged closed sibling profiles.
 
 Passing conformance does not activate an estate, prove universal semantics,
-grant Hive membership, authorize effects, or qualify the missing generic CEO
-agent. Dynamic successor mutation remains blocked until that exact agent and
-its policy/runtime pins are installed.
+grant Hive membership, authorize effects, or activate the pinned generic CEO
+agent. Dynamic successor mutation still requires current authority, an exact
+policy/runtime binding, independent verification, and host activation.

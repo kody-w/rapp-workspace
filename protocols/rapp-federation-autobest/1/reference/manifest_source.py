@@ -41,7 +41,12 @@ def manifest():
         "parent": "rapp/1",
         "status": "candidate",
         "activation": "not-activated",
-        "generic_ceo_agent": "pending",
+        "generic_ceo_agent": {
+            "status": "verified",
+            "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+            "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+            "activation": "external-host-only",
+        },
         "carrier": "rapp/1 memory.save",
         "closed_sibling_profiles_modified": False,
         "files": files(),

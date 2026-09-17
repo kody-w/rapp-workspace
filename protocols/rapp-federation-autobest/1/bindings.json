@@ -32,9 +32,16 @@
     "verified_artifacts": 9
   },
   "generic_ceo_agent": {
-    "status": "pending",
-    "sha256": null,
-    "bytes": null,
-    "dynamic_successor_mutation_enabled": false
+    "status": "verified",
+    "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "bytes": 430291,
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "source_commit": "e8b1a1ffc795b48a854c31d76bb478adba583915",
+    "profile_agent_path": "fixtures/generic-ceo/agent.py",
+    "profile_skill_path": "fixtures/generic-ceo/SKILL.md",
+    "activation": "external-host-only",
+    "authority_from_presence": false,
+    "dynamic_successor_mutation_eligible": true
   }
 }

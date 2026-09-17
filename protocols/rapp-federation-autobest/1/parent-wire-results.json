@@ -14,7 +14,7 @@
   "static_agent_model_calls": 0,
   "result": "PASS",
   "limitations": [
-    "The generic CEO agent is not pinned.",
+    "The generic CEO agent is pinned but not activated by this profile.",
     "The fixture is public synthetic data plus externally supplied live qualification counts.",
     "Passing does not create a signed estate registry entry or activate an external effect."
   ]

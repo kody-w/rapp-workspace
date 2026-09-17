@@ -12,6 +12,19 @@
     "raw_private_repository_content_included": false,
     "role": "approved-private-fixture-binding"
   },
+  "generic_ceo_agent": {
+    "source_worktree": "microsol-wild-hive-release-20260917",
+    "source_commit": "e8b1a1ffc795b48a854c31d76bb478adba583915",
+    "agent_path": ".github/skills/microsol-autobest/agent.py",
+    "agent_sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "agent_bytes": 430291,
+    "skill_path": ".github/skills/microsol-autobest/SKILL.md",
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "profile_copy_is_byte_identical": true,
+    "activation": "external-host-only",
+    "authority_from_presence": false
+  },
   "conceptual_prior_art": {
     "repository": "https://github.com/kody-w/UniversalDataConnectorAI",
     "commit": "f2a978b9f85b65b9815b69d99c67e51c56732251",

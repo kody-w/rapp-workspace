@@ -31,11 +31,16 @@ reference does not claim to reverify it.
 | `vectors.py` | Reproducible fixture, learning trace, package, mutation offer, and static agent |
 | `conformance.py` | Positive and controlled-negative acceptance suite |
 
-## Current blocker
+## Verified generic CEO binding
 
-`bindings.json` deliberately records the generic CEO agent as `pending`.
-`require_ceo_for_mutation()` refuses dynamic successor generation until the
-exact agent bytes, runtime policy, and activation binding are supplied.
+`fixtures/generic-ceo/agent.py` and `SKILL.md` are byte-identical approved
+inputs. `implementation-binding.json` is deterministically reproduced by the
+agent's pure `bind_implementation_sha256()` API.
+
+The binding is external-host-only and grants no authority from presence.
+`require_ceo_for_mutation()` confirms pin eligibility only; every dynamic
+successor still requires current authority, policy, bounded execution,
+independent verification, and separate host activation.
 
 Known static compatibility continues to work under its declared partial
 coverage with zero model calls.

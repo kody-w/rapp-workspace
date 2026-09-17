@@ -1,7 +1,7 @@
 {
   "schema": "rapp-federation-autobest/1-safety-matrix",
   "profile": "rapp-federation-autobest/1",
-  "status": "candidate-ceo-agent-pending",
+  "status": "candidate-ceo-agent-verified-not-activated",
   "requirements": [
     {
       "id": "P0-RAPP-ENVELOPE",
@@ -30,11 +30,12 @@
       ]
     },
     {
-      "id": "P0-CEO-PENDING",
-      "requirement": "Missing generic CEO agent cannot silently enable dynamic mutation.",
-      "control": "Closed pending binding and explicit refusal.",
+      "id": "P0-CEO-BINDING",
+      "requirement": "The generic CEO agent and Skill must be exact bytes and presence must grant no authority.",
+      "control": "Verified agent/Skill pins, deterministic implementation binding, external-host-only activation, and tamper mutants.",
       "tests": [
-        "test_compatibility_record_is_partial_non_authorizing_and_ceo_pending"
+        "test_compatibility_record_is_partial_non_authorizing_and_ceo_verified",
+        "test_ceo_agent_skill_and_binding_mutations_refuse"
       ]
     },
     {
@@ -52,7 +53,7 @@
       "requirement": "Incomplete Hive compatibility is useful but never presented as complete membership.",
       "control": "Per-capability statuses, integer coverage, explicit gaps, and authority false.",
       "tests": [
-        "test_compatibility_record_is_partial_non_authorizing_and_ceo_pending",
+        "test_compatibility_record_is_partial_non_authorizing_and_ceo_verified",
         "test_live_bill_binding_is_external_evidence_not_local_reverification"
       ]
     },

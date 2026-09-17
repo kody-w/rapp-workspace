@@ -2,7 +2,7 @@
 from __future__ import annotations
 import hashlib, json, sys
 
-COMPATIBILITY_FRAME_HASH = 'f266537ad8c2bc0509ee3e976adc09e7128f0fce587cf2b54a3af6538c6cee49'
+COMPATIBILITY_FRAME_HASH = 'bbb943db36f2695a12beacbb922aa4dcf758dcb58db56e0e9c480f5aa68fc780'
 HANDSHAKE_SHA256 = 'b606b5e9e051857c813fbb0fecaefebaa177c4fa81ece4d6f66fed42e9676440'
 MAPPING = json.loads('{"source_operations":["open","publish"],"source_profile":"microsol-project/1","source_to_target":{"open":{"authority":{"const":false},"inventory":{"select":"payload.inventory"},"local_operation":{"const":"evidence"},"record":{"select":"payload.record"},"schema":{"const":"microsol-hive-compatible-observation/1"},"source_head":{"select":"head"},"source_operation":{"select":"payload.operation"},"source_profile":{"select":"payload.profile"},"subject":{"select":"payload.project"}},"publish":{"authority":{"const":false},"inventory":{"select":"payload.inventory"},"local_operation":{"const":"handoff"},"record":{"select":"payload.record"},"schema":{"const":"microsol-hive-compatible-observation/1"},"source_head":{"select":"head"},"source_operation":{"select":"payload.operation"},"source_profile":{"select":"payload.profile"},"subject":{"select":"payload.project"}}},"target_profile":"microsol-repository-private-hive/1","target_to_source":{"peer-offer":{"authority":{"const":false},"compatibility":{"select":"compatibility"},"operation":{"const":"peer-offer"},"peer":{"select":"peer"},"schema":{"const":"softwarecoellc-vteam-hive-peer-offer/1"},"subscription":{"select":"subscription"}}}}')
 FRAME_KEYS = ['frame_hash', 'kind', 'payload', 'payload_hash', 'prev', 'prev_wave', 'seq', 'sig', 'spec', 'stream_id', 'utc']
