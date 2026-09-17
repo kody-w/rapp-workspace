@@ -37,14 +37,13 @@
       "const": "active"
     },
     "generic_ceo_agent_sha256": {
-      "oneOf": [
-        {
-          "$ref": "common.schema.json#/$defs/hash"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "const": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c"
+    },
+    "generic_ceo_skill_sha256": {
+      "const": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8"
+    },
+    "generic_ceo_artifact_profile_sha256": {
+      "const": "568bb863d3c3f01109f6a4a40a56833127c6d6e509ef09b5433a40d92a83065a"
     }
   },
   "required": [
@@ -59,7 +58,9 @@
     "expires_utc",
     "signer_key_id",
     "revocation_status",
-    "generic_ceo_agent_sha256"
+    "generic_ceo_agent_sha256",
+    "generic_ceo_skill_sha256",
+    "generic_ceo_artifact_profile_sha256"
   ],
   "additionalProperties": false
 }

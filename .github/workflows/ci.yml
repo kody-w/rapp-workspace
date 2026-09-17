@@ -46,6 +46,7 @@ jobs:
           python-version: "3.12"
       - name: Candidate schemas and pins
         run: |
+          python3 -B tools/work_organization.py artifact
           python3 -B tools/work_organization.py schemas
           python3 -B tools/work_organization.py pins
       - name: Candidate conformance

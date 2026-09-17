@@ -1,8 +1,9 @@
 # RAPP Work Organization/1 reference
 
 This directory implements the profile-independent candidate gates for
-`rapp-work-organization/1`. It does not modify Brainstem, activate an estate,
-or supply the still-pending generic CEO `agent.py`.
+`rapp-work-organization/1`. It does not modify Brainstem or activate an estate.
+The exact verified generic CEO/AutoBest artifact is carried under
+`artifacts/generic-ceo/<agent-sha256>/`.
 
 The reference provides:
 
@@ -27,11 +28,12 @@ Run from the repository root:
 
 ```sh
 python3 -B tools/work_organization.py schemas
+python3 -B tools/work_organization.py artifact
 python3 -B tools/work_organization.py pins
 python3 -B tools/work_organization.py conformance
 ```
 
-Passing these checks establishes the checked-in candidate structure and
-synthetic profile-independent reference behavior. Live activation remains
-blocked until the generic CEO agent, Brainstem runtime, policy, signer, and
-revocation bindings are independently supplied and authenticated.
+Passing these checks establishes the checked-in candidate structure, exact
+generic CEO artifact binding, and synthetic profile-independent reference
+behavior. Estate activation still requires an independently authenticated
+Brainstem runtime, policy, signer, validity, and revocation document.

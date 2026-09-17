@@ -15,7 +15,18 @@ sys.path.insert(0, str(REFERENCE))
 from atomic_agent import verify_bundle  # noqa: E402
 from workorg_common import Refusal  # noqa: E402
 from compiler import compile_static_bundle, compiler_pin  # noqa: E402
-from protocol import validate_bill_binding, validate_learning_trace  # noqa: E402
+from protocol import (  # noqa: E402
+    validate_activation_document,
+    validate_bill_binding,
+    validate_learning_trace,
+)
+from workorg_artifact import (  # noqa: E402
+    ARTIFACT_RELATIVE,
+    GENERIC_CEO_PROFILE_SHA256,
+    GENERIC_CEO_SHA256,
+    GENERIC_CEO_SKILL_SHA256,
+    validate_generic_ceo_artifact,
+)
 try:
     from tests.test_work_organization import (  # noqa: E402
         HASH1,
@@ -113,16 +124,48 @@ class WorkOrganizationP0Tests(unittest.TestCase):
         with self.assertRaisesRegex(Refusal, "source_lens pin differs"):
             validate_bill_binding(binding)
 
-    def test_generic_ceo_cannot_be_fabricated(self) -> None:
+    def test_generic_ceo_binding_substitution_refuses(self) -> None:
         binding = __import__("json").loads(
             (
                 REPO
                 / "protocols/rapp-work-organization/1/fixtures/softwarecoellc-vteam-hive-1.json"
             ).read_text()
         )
-        binding["generic_ceo_agent"] = {"status": "approved", "sha256": HASH1}
-        with self.assertRaisesRegex(Refusal, "pin-gated"):
+        binding["generic_ceo_agent"]["sha256"] = HASH1
+        with self.assertRaisesRegex(Refusal, "exact verified"):
             validate_bill_binding(binding)
+
+    def test_generic_ceo_artifact_byte_mutation_refuses(self) -> None:
+        root = REPO / "protocols/rapp-work-organization/1" / ARTIFACT_RELATIVE
+        profile = __import__("json").loads((root / "profile.json").read_text())
+        agent = bytearray((root / "agent.py").read_bytes())
+        agent[-1] ^= 1
+        with self.assertRaisesRegex(Refusal, "agent bytes differ"):
+            validate_generic_ceo_artifact(
+                profile,
+                bytes(agent),
+                (root / "SKILL.md").read_bytes(),
+            )
+
+    def test_activation_with_wrong_ceo_pin_refuses(self) -> None:
+        document = {
+            "schema": "rapp-work-organization/1/activation-document",
+            "spec_sha256": HASH1,
+            "manifest_sha256": HASH2,
+            "brainstem_runtime_sha256": HASH3,
+            "organization_rappid": RAPPID,
+            "world_id": "test-world",
+            "policy": particle_ref(HASH4),
+            "not_before_utc": "2030-01-01T00:00:00.000Z",
+            "expires_utc": "2030-01-01T01:00:00.000Z",
+            "signer_key_id": "test-signer",
+            "revocation_status": "active",
+            "generic_ceo_agent_sha256": HASH1,
+            "generic_ceo_skill_sha256": GENERIC_CEO_SKILL_SHA256,
+            "generic_ceo_artifact_profile_sha256": GENERIC_CEO_PROFILE_SHA256,
+        }
+        with self.assertRaisesRegex(Refusal, "exact generic CEO"):
+            validate_activation_document(document)
 
 
 if __name__ == "__main__":

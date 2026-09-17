@@ -38,18 +38,23 @@ The profile-independent schemas, validators, deterministic reference compiler,
 atomic bundle placement, mutation/trace/search/evolution tests, exact manifest,
 and Bill binding are implemented.
 
-The generic Work Organization CEO `agent.py` is not yet pinned. Therefore:
+The generic Work Organization CEO/AutoBest artifact is now exactly pinned and
+carried in the profile:
 
-- live organization activation is blocked;
-- the candidate conformance report does not claim a cryptographically
-  activated organization runtime;
-- no generated agent receives host authority; and
-- passing the checked-in suite proves only the documented structural and
-  synthetic reference scope.
+| Artifact | SHA-256 | Bytes |
+|---|---|---:|
+| `agent.py` | `827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c` | 430291 |
+| `SKILL.md` | `5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8` | 39139 |
+| Artifact profile | `568bb863d3c3f01109f6a4a40a56833127c6d6e509ef09b5433a40d92a83065a` | 1819 |
+
+Artifact verification does not activate an organization or grant authority.
+Live estate use still requires an independently authenticated Brainstem
+runtime, policy, signer, validity, revocation, and exact activation document.
 
 ## Checks
 
 ```sh
+python3 -B tools/work_organization.py artifact
 python3 -B tools/work_organization.py schemas
 python3 -B tools/work_organization.py pins
 python3 -B tools/work_organization.py conformance

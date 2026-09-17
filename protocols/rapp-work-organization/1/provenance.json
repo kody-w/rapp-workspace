@@ -72,9 +72,19 @@
     "local_compatibility_and_static_agent_proof": "verified-private-not-exported"
   },
   "generic_ceo_agent": {
-    "status": "pending-pin",
-    "sha256": null,
-    "live_activation_blocked": true
+    "status": "verified",
+    "name": "@kody-w/microsol_autobest",
+    "version": "3.0.0",
+    "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "bytes": 430291,
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "artifact_profile_sha256": "568bb863d3c3f01109f6a4a40a56833127c6d6e509ef09b5433a40d92a83065a",
+    "artifact_profile_bytes": 1819,
+    "source": "microsol-wild-hive-release-20260917/.github/skills/microsol-autobest",
+    "exact_bytes_carried": true,
+    "authority_from_presence": false,
+    "estate_activation": false
   },
   "brainstem_modified": false,
   "estate_activation": false

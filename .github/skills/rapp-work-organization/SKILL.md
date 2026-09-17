@@ -45,16 +45,24 @@ construction/signing.
 - Peer organizations publish only their own signed additions. Roots, keys,
   native histories, and private state are never merged implicitly.
 
-## Current blocker
+## Exact generic CEO artifact
 
-The first private-safe wild-handshake pins for
-`softwarecoellc-vteam-hive` are checked in. The generic CEO `agent.py` pin is
-still pending. Do not claim live profile activation until it and the complete
-host activation document are independently authenticated.
+The verified AutoBest capability is carried under the profile artifact tree:
+
+```text
+agent.py  827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c
+SKILL.md  5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8
+```
+
+The artifact is inert and grants no authority from presence. Do not claim live
+estate activation until the complete host activation document independently
+authenticates the exact Brainstem runtime, policy, signer, validity,
+revocation, and these artifact pins.
 
 ## Checks
 
 ```sh
+python3 -B tools/work_organization.py artifact
 python3 -B tools/work_organization.py schemas
 python3 -B tools/work_organization.py pins
 python3 -B tools/work_organization.py conformance

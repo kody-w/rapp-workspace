@@ -7,10 +7,19 @@ import json
 from pathlib import Path
 
 from workorg_common import PROFILE, REPO, ROOT, pretty_bytes, read_bytes, sha256
+from workorg_artifact import (
+    ARTIFACT_RELATIVE,
+    GENERIC_CEO_BYTES,
+    GENERIC_CEO_PROFILE_SHA256,
+    GENERIC_CEO_SHA256,
+    GENERIC_CEO_SKILL_BYTES,
+    GENERIC_CEO_SKILL_SHA256,
+    validate_generic_ceo_artifact,
+)
 
 
 BRAND = "RAPP Work Organization/1"
-GENERATED_UTC = "2026-09-17T21:36:39.279Z"
+GENERATED_UTC = "2026-09-17T23:13:40.841Z"
 
 
 def record(base: Path, name: str) -> dict[str, object]:
@@ -25,6 +34,11 @@ def manifest() -> dict[str, object]:
     reference = ["reference/" + path.name for path in sorted((ROOT / "reference").glob("*.py"))]
     fixtures = [
         "fixtures/" + path.name for path in sorted((ROOT / "fixtures").glob("*.json"))
+    ]
+    artifacts = [
+        ARTIFACT_RELATIVE + "/agent.py",
+        ARTIFACT_RELATIVE + "/SKILL.md",
+        ARTIFACT_RELATIVE + "/profile.json",
     ]
     evidence = [
         "docs/rapp-work.md",
@@ -44,11 +58,19 @@ def manifest() -> dict[str, object]:
         "conformance_class": "single-host-locked-handshake",
         "brainstem_modified": False,
         "host_authority": "external",
-        "generic_ceo_agent": "pending-pin",
+        "generic_ceo_agent": {
+            "status": "verified",
+            "sha256": GENERIC_CEO_SHA256,
+            "bytes": GENERIC_CEO_BYTES,
+            "skill_sha256": GENERIC_CEO_SKILL_SHA256,
+            "skill_bytes": GENERIC_CEO_SKILL_BYTES,
+            "artifact_profile_sha256": GENERIC_CEO_PROFILE_SHA256,
+        },
         "live_activation": False,
         "normative": [record(ROOT, name) for name in normative],
         "reference": [record(ROOT, name) for name in reference],
         "fixtures": [record(ROOT, name) for name in fixtures],
+        "artifacts": [record(ROOT, name) for name in artifacts],
         "repository_evidence": [record(REPO, name) for name in evidence],
         "provenance": record(ROOT, "provenance.json"),
         "first_wild_handshake": {
@@ -65,6 +87,10 @@ def index_profile() -> dict[str, object]:
     files = record(REPO, base + "manifest.json")
     provenance = record(REPO, base + "provenance.json")
     fixture = record(REPO, base + "fixtures/softwarecoellc-vteam-hive-1.json")
+    generic_ceo = record(
+        REPO,
+        base + ARTIFACT_RELATIVE + "/profile.json",
+    )
     return {
         "name": PROFILE,
         "human_name": BRAND,
@@ -74,7 +100,13 @@ def index_profile() -> dict[str, object]:
         "conformance_class": "single-host-locked-handshake",
         "brainstem_modified": False,
         "host_authority": "external",
-        "generic_ceo_agent": "pending-pin",
+        "generic_ceo_agent": "verified",
+        "generic_ceo_agent_sha256": GENERIC_CEO_SHA256,
+        "generic_ceo_agent_bytes": GENERIC_CEO_BYTES,
+        "generic_ceo_skill_sha256": GENERIC_CEO_SKILL_SHA256,
+        "generic_ceo_skill_bytes": GENERIC_CEO_SKILL_BYTES,
+        "generic_ceo_artifact_profile": generic_ceo["path"],
+        "generic_ceo_artifact_profile_sha256": generic_ceo["sha256"],
         "live_activation": False,
         "locked_runtime_model_calls": "forbidden",
         "spec_path": spec["path"],
@@ -111,6 +143,16 @@ def main() -> int:
     args = parser.parse_args()
     expected = pretty_bytes(manifest())
     path = ROOT / "manifest.json"
+    artifact_root = ROOT / ARTIFACT_RELATIVE
+    artifact_good = False
+    if (artifact_root / "profile.json").is_file():
+        profile_value = json.loads((artifact_root / "profile.json").read_bytes())
+        validate_generic_ceo_artifact(
+            profile_value,
+            read_bytes(artifact_root / "agent.py"),
+            read_bytes(artifact_root / "SKILL.md"),
+        )
+        artifact_good = True
     if args.write:
         path.write_bytes(expected)
     if args.write_index:
@@ -121,7 +163,12 @@ def main() -> int:
         ] + [index_profile()]
         index["generated_utc"] = GENERATED_UTC
         index_path.write_bytes(pretty_bytes(index))
-    good = path.is_file() and path.read_bytes() == expected and check_index()
+    good = (
+        artifact_good
+        and path.is_file()
+        and path.read_bytes() == expected
+        and check_index()
+    )
     print("RAPP Work Organization/1 file and index pins: " + ("PASS" if good else "FAIL"))
     return int(not good)
 

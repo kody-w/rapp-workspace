@@ -12,8 +12,8 @@
     {
       "id": "P0-AUTHORITY",
       "gate": "external-current-authority-and-interrupt-frontier",
-      "status": "specified-generic-ceo-pin-pending",
-      "vectors": ["proposal-not-authority", "stale-policy", "user-interrupt"]
+      "status": "exact-generic-ceo-artifact-bound-estate-activation-external",
+      "vectors": ["proposal-not-authority", "stale-policy", "user-interrupt", "wrong-ceo-pin"]
     },
     {
       "id": "P0-HOTLOAD",
@@ -61,7 +61,7 @@
       "id": "P0-BILL-PINS",
       "gate": "first-wild-handshake-exact-private-safe-binding",
       "status": "implemented",
-      "vectors": ["profile-pin", "source-lens-pin", "target-finalizer-pin", "generic-ceo-still-pending"]
+      "vectors": ["profile-pin", "source-lens-pin", "target-finalizer-pin", "generic-ceo-exact-binding"]
     },
     {
       "id": "P1-SEARCH",

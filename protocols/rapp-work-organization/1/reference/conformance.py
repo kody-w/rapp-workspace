@@ -11,6 +11,15 @@ import unittest
 from workorg_common import REPO, ROOT, pretty_bytes, read_bytes, sha256
 from pins import check_index, manifest
 from protocol import validate_bill_binding
+from workorg_artifact import (
+    ARTIFACT_RELATIVE,
+    GENERIC_CEO_BYTES,
+    GENERIC_CEO_PROFILE_SHA256,
+    GENERIC_CEO_SHA256,
+    GENERIC_CEO_SKILL_BYTES,
+    GENERIC_CEO_SKILL_SHA256,
+    validate_generic_ceo_artifact,
+)
 from workorg_schema_source import documents
 
 
@@ -31,6 +40,12 @@ def main() -> int:
             raise SystemExit("Work Organization/1 schema drift: " + name)
     bill = validate_bill_binding(
         json.loads(read_bytes(ROOT / "fixtures/softwarecoellc-vteam-hive-1.json"))
+    )
+    artifact_root = ROOT / ARTIFACT_RELATIVE
+    generic_ceo = validate_generic_ceo_artifact(
+        json.loads(read_bytes(artifact_root / "profile.json")),
+        read_bytes(artifact_root / "agent.py"),
+        read_bytes(artifact_root / "SKILL.md"),
     )
     sys.path.insert(0, str(REPO / "tests"))
     suite = unittest.TestSuite()
@@ -63,7 +78,15 @@ def main() -> int:
         "private_source_bytes_embedded": False,
         "brainstem_modified": False,
         "locked_runtime_model_calls": 0,
-        "generic_ceo_agent": "pending-pin",
+        "generic_ceo_agent": {
+            "status": generic_ceo["status"],
+            "sha256": GENERIC_CEO_SHA256,
+            "bytes": GENERIC_CEO_BYTES,
+            "skill_sha256": GENERIC_CEO_SKILL_SHA256,
+            "skill_bytes": GENERIC_CEO_SKILL_BYTES,
+            "artifact_profile_sha256": GENERIC_CEO_PROFILE_SHA256,
+        },
+        "activation_artifact_ready": True,
         "live_activation": False,
         "rapp_frames_cryptographically_verified": 0,
         "scope": "profile-independent-structural-and-synthetic-reference",

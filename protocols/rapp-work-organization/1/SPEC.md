@@ -2,8 +2,8 @@
 
 **Protocol identifier:** `rapp-work-organization/1`
 
-**Status:** normative candidate; profile-independent reference implemented;
-generic CEO agent pin and estate activation pending.
+**Status:** normative candidate; profile-independent reference and exact
+generic CEO/AutoBest artifact binding implemented; estate activation separate.
 
 **Parent:** canonical RAPP/1, unchanged.
 
@@ -247,8 +247,22 @@ The private source qualified two signed Frames and nine artifacts. Local
 double-hotload, Compatibility Frame, and static-agent proof succeeded. Raw
 private source bytes and local runtime state are not embedded here.
 
-The generic CEO agent pin remains pending and therefore live organization
-activation remains blocked.
+The exact generic CEO/AutoBest artifact is profile-bound as:
+
+```text
+agent.py:
+  827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c
+  430291 bytes
+SKILL.md:
+  5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8
+  39139 bytes
+artifact profile:
+  568bb863d3c3f01109f6a4a40a56833127c6d6e509ef09b5433a40d92a83065a
+  1819 bytes
+```
+
+Artifact verification is not estate activation and grants no authority from
+presence.
 
 ## 13. N-Lens bounded search
 
@@ -307,14 +321,17 @@ never edited.
 
 ## 16. CEO agent
 
-The generic Brainstem-invoked CEO agent coordinates command scoping, plans,
-worker assignments, crossing, verification, and handoff in autonomous, guided,
-or fine-detail modes. It has no root keys or unilateral authority.
+The exact Brainstem-invoked generic CEO/AutoBest artifact coordinates command
+scoping, plans, worker assignments, crossing, verification, and handoff in
+autonomous, guided, or fine-detail modes. It has no root keys or unilateral
+authority. Its `agent.py` is deterministic, stdlib-only, inert, externally
+SHA-bound, and carried byte-for-byte under the content-addressed profile
+artifact directory.
 
-This release intentionally does not supply or invent its bytes. Activation
-documents use a nullable placeholder only while the candidate remains
-inactive. Live activation MUST refuse until the exact approved CEO agent pin
-is supplied.
+Activation MUST bind the exact agent, skill, and artifact-profile hashes plus
+the independently authenticated Brainstem runtime, policy, organization/world,
+signer, validity, and revocation state. Carrying or importing the artifact does
+not activate it.
 
 ## 17. Profile relationships
 
@@ -367,6 +384,7 @@ mutation/reverse accounting, deterministic compilation, atomic bundle
 placement, trace authority/privacy, bounded search, promotion firewall, and
 the private-safe Bill binding.
 
-Passing conformance does not activate an estate. Completion reports the
-generic CEO pin as pending, Brainstem unchanged, live activation false, and
-safe external deployment unproven.
+Passing conformance does not activate an estate. Completion reports the exact
+generic CEO artifact verified, Brainstem unchanged, live activation false
+absent an authenticated estate activation document, and safe external
+deployment unproven.

@@ -19,6 +19,7 @@ from atomic_agent import place_bundle, verify_bundle  # noqa: E402
 from workorg_common import Refusal, canonical_bytes, particle, read_json, sha256  # noqa: E402
 from compiler import compile_static_bundle, compiler_pin  # noqa: E402
 from protocol import (  # noqa: E402
+    validate_activation_document,
     validate_bill_binding,
     validate_evolution,
     validate_learning_trace,
@@ -26,6 +27,15 @@ from protocol import (  # noqa: E402
     validate_search,
 )
 from workorg_schema_source import documents  # noqa: E402
+from workorg_artifact import (  # noqa: E402
+    ARTIFACT_RELATIVE,
+    GENERIC_CEO_BYTES,
+    GENERIC_CEO_PROFILE_SHA256,
+    GENERIC_CEO_SHA256,
+    GENERIC_CEO_SKILL_BYTES,
+    GENERIC_CEO_SKILL_SHA256,
+    validate_generic_ceo_artifact,
+)
 
 
 HASH0 = "0" * 64
@@ -191,7 +201,50 @@ class WorkOrganizationTests(unittest.TestCase):
         )
         validate_bill_binding(binding)
         self.assertFalse(binding["embedded_private_content"])
-        self.assertEqual(binding["generic_ceo_agent"]["status"], "pending-pin")
+        self.assertEqual(binding["generic_ceo_agent"]["status"], "verified")
+        self.assertEqual(binding["generic_ceo_agent"]["sha256"], GENERIC_CEO_SHA256)
+
+    def test_generic_ceo_artifact_exact_bytes_and_binding_api(self) -> None:
+        root = REPO / "protocols/rapp-work-organization/1" / ARTIFACT_RELATIVE
+        agent = (root / "agent.py").read_bytes()
+        skill = (root / "SKILL.md").read_bytes()
+        profile = json.loads((root / "profile.json").read_text())
+        validate_generic_ceo_artifact(profile, agent, skill)
+        self.assertEqual((sha256(agent), len(agent)), (GENERIC_CEO_SHA256, GENERIC_CEO_BYTES))
+        self.assertEqual(
+            (sha256(skill), len(skill)),
+            (GENERIC_CEO_SKILL_SHA256, GENERIC_CEO_SKILL_BYTES),
+        )
+        self.assertEqual(sha256((root / "profile.json").read_bytes()), GENERIC_CEO_PROFILE_SHA256)
+        spec = importlib.util.spec_from_file_location("workorg_generic_ceo_fixture", root / "agent.py")
+        self.assertIsNotNone(spec)
+        self.assertIsNotNone(spec.loader)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        binding = module.bind_implementation_sha256(GENERIC_CEO_SHA256)
+        self.assertEqual(binding["implementation_sha256"], GENERIC_CEO_SHA256)
+        self.assertFalse(binding["authority_from_presence"])
+        self.assertEqual(module.__manifest__["capability_id"], "autobest:generic")
+        self.assertFalse(module.__manifest__["authority"])
+
+    def test_activation_document_binds_exact_generic_ceo(self) -> None:
+        document = {
+            "schema": "rapp-work-organization/1/activation-document",
+            "spec_sha256": HASH1,
+            "manifest_sha256": HASH2,
+            "brainstem_runtime_sha256": HASH3,
+            "organization_rappid": RAPPID,
+            "world_id": "test-world",
+            "policy": particle_ref(HASH4),
+            "not_before_utc": "2030-01-01T00:00:00.000Z",
+            "expires_utc": "2030-01-01T01:00:00.000Z",
+            "signer_key_id": "test-signer",
+            "revocation_status": "active",
+            "generic_ceo_agent_sha256": GENERIC_CEO_SHA256,
+            "generic_ceo_skill_sha256": GENERIC_CEO_SKILL_SHA256,
+            "generic_ceo_artifact_profile_sha256": GENERIC_CEO_PROFILE_SHA256,
+        }
+        validate_activation_document(document)
 
     def test_complete_bidirectional_lineage(self) -> None:
         self.assertEqual(

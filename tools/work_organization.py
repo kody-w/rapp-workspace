@@ -19,12 +19,16 @@ REFERENCE = (
 
 def main() -> int:
     commands = {
+        "artifact": ("workorg_artifact.py", ["--check"]),
         "schemas": ("workorg_schema_source.py", ["--check"]),
         "pins": ("pins.py", []),
         "conformance": ("conformance.py", []),
     }
     if len(sys.argv) < 2 or sys.argv[1] not in commands:
-        print("usage: work_organization.py {schemas|pins|conformance} [args...]", file=sys.stderr)
+        print(
+            "usage: work_organization.py {artifact|schemas|pins|conformance} [args...]",
+            file=sys.stderr,
+        )
         return 2
     script, defaults = commands[sys.argv[1]]
     rest = sys.argv[2:] or defaults

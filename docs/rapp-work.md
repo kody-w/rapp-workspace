@@ -78,8 +78,9 @@ The first owner-approved private wild-handshake binding is
 `softwarecoellc-vteam-hive`. This repository carries only its exact approved
 hashes, byte counts and qualification counts; no private source bytes, keys,
 runtime state, Compatibility Frame bytes or generated agent are embedded.
-Live organization activation remains blocked until the generic CEO `agent.py`
-and host activation bindings are independently pinned.
+The generic CEO/AutoBest artifact is exactly pinned and carried by the profile.
+Live organization authority still requires independently authenticated host
+runtime, policy, signer, validity, revocation, and activation bindings.
 
 See the [Work Organization overview](rapp-work-organization.md) for the
 implemented candidate boundary, exact first-handshake pins, and checks.

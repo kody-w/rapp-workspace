@@ -7,13 +7,20 @@
   "conformance_class": "single-host-locked-handshake",
   "brainstem_modified": false,
   "host_authority": "external",
-  "generic_ceo_agent": "pending-pin",
+  "generic_ceo_agent": {
+    "status": "verified",
+    "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "bytes": 430291,
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "artifact_profile_sha256": "568bb863d3c3f01109f6a4a40a56833127c6d6e509ef09b5433a40d92a83065a"
+  },
   "live_activation": false,
   "normative": [
     {
       "path": "SPEC.md",
-      "sha256": "8cf0e8283273da559c27c98487dd284b1162ca3dc26babd8f913ea2ba314dee4",
-      "bytes": 15140
+      "sha256": "e86c155decf0a66edccc821703e5f4172dd8dfb64828c1e53f009ff16c63bd7b",
+      "bytes": 15757
     },
     {
       "path": "limits.json",
@@ -22,13 +29,13 @@
     },
     {
       "path": "safety-matrix.json",
-      "sha256": "47595663d0a7038ff073627e6741f346415649175c31692cbdf90d9555a57399",
-      "bytes": 4269
+      "sha256": "0d8eca9b6b7231e32724267eec1eff290ee975ef9e514318eda48b5b0de4f9e6",
+      "bytes": 4312
     },
     {
       "path": "schemas/activation-document.schema.json",
-      "sha256": "4f4d14875127eb6cc91fc968e695d2c06ee74332b81b97c074f440bee7113534",
-      "bytes": 1589
+      "sha256": "0ee5e6c540ee52f9395b9345cb8aa5e2adcf59a75ddf4015fc95e93019a4c2de",
+      "bytes": 1861
     },
     {
       "path": "schemas/artifact-bundle.schema.json",
@@ -56,6 +63,11 @@
       "bytes": 3099
     },
     {
+      "path": "schemas/generic-ceo-artifact.schema.json",
+      "sha256": "27e6e4bdafe87b6f7dd4a94a99d4839e9b4ef4849dda3fd9ac303558dd8e3383",
+      "bytes": 5640
+    },
+    {
       "path": "schemas/learning-trace.schema.json",
       "sha256": "9135572e4d26d437e0948a5ba5a7bd4e1305c6b390611f598445aaeaec05d807",
       "bytes": 4951
@@ -77,8 +89,8 @@
     },
     {
       "path": "schemas/wild-handshake-binding.schema.json",
-      "sha256": "cc23045dbce85366de145f7829e3e6b30fe440ee7b6f1f83efe8a467fd46e3f5",
-      "bytes": 2718
+      "sha256": "52e58c8aadc1d1454ccca93635cae56d54c0a1581c8a6b14d41b870e09f53639",
+      "bytes": 3249
     }
   ],
   "reference": [
@@ -94,18 +106,23 @@
     },
     {
       "path": "reference/conformance.py",
-      "sha256": "d9f3cc7daf385c2bcf74503f428f9bca8d9f61a03847a45ef57b9e17e6d9fb17",
-      "bytes": 3233
+      "sha256": "adf6b12370379b9315ec45fc69d923a68938a620f512b5f3416296fab339931a",
+      "bytes": 4063
     },
     {
       "path": "reference/pins.py",
-      "sha256": "b6daa49a25fe0f41924fa361e9fb273ed26f44979da5a053cd6316a881a7943c",
-      "bytes": 4871
+      "sha256": "ae9acce182ba505d600831ec2b26be4f8a9eba261bb2b28e74819ba4d230336e",
+      "bytes": 6532
     },
     {
       "path": "reference/protocol.py",
-      "sha256": "a81f9b4ef56407c68faa2c2b5db9fa4412c3e9e1d26bd07f117f6625f68ccc9d",
-      "bytes": 20682
+      "sha256": "08daf990605e842ae1a2ca032b568080c87f8101021e8fe27952d2be3846fe75",
+      "bytes": 22532
+    },
+    {
+      "path": "reference/workorg_artifact.py",
+      "sha256": "a1d125fb27c211d6e9f318cf39392525a431f84cb05b300e28382e5d51f49081",
+      "bytes": 5636
     },
     {
       "path": "reference/workorg_common.py",
@@ -114,65 +131,82 @@
     },
     {
       "path": "reference/workorg_schema_source.py",
-      "sha256": "c2227280c88e2ebdc3853b1e024a9f8e23d51dbbce0505e4fda15014e1d3b9a2",
-      "bytes": 25615
+      "sha256": "11e8d32ffe79ea581a4208a9d4efeda418c4767d9d9651196622247384dc46b3",
+      "bytes": 29891
     }
   ],
   "fixtures": [
     {
       "path": "fixtures/softwarecoellc-vteam-hive-1.json",
-      "sha256": "06c8a26f0a3f9bce7a51a3d17b53ca33711869fdcc4ade3c5b0d53f20fe9cce3",
-      "bytes": 1517
+      "sha256": "7196f9b191d502bfc686969491dfa626faa1ef37766ca3c0312a5b4c438e2143",
+      "bytes": 1810
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "artifacts/generic-ceo/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/agent.py",
+      "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+      "bytes": 430291
+    },
+    {
+      "path": "artifacts/generic-ceo/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/SKILL.md",
+      "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+      "bytes": 39139
+    },
+    {
+      "path": "artifacts/generic-ceo/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/profile.json",
+      "sha256": "568bb863d3c3f01109f6a4a40a56833127c6d6e509ef09b5433a40d92a83065a",
+      "bytes": 1819
     }
   ],
   "repository_evidence": [
     {
       "path": "docs/rapp-work.md",
-      "sha256": "9fbd2332d18a74857d7e38f0c9db9de22a6c4a8b708da4518360a1dfdbc2c6b3",
-      "bytes": 3968
+      "sha256": "bc914e702848c78a1dd0626937323b947bd92d70df7da4afa01975ddfd221f54",
+      "bytes": 4063
     },
     {
       "path": "docs/rapp-work-organization.md",
-      "sha256": "cb0c2dcdfee2106221d43b6c70edefc3c7347e68ce95fecfc0422e106b1b77c0",
-      "bytes": 2431
+      "sha256": "a4b086a72a65677b314465e94232957ac605bbc11edf457dbc0afd57fbb6adb1",
+      "bytes": 2761
     },
     {
       "path": "tools/work_organization.py",
-      "sha256": "aa4acbf97f6670adb432c907bde3cf2e7b7819249a6199e0805f496e10183123",
-      "bytes": 953
+      "sha256": "e841fde785eee6d805794842f83e9d7edd3a1970e1c1778589eaa0fe69bbcb2e",
+      "bytes": 1055
     },
     {
       "path": "tests/test_work_organization.py",
-      "sha256": "3d5c9933cd9385330dd0c33b27912525b2f8cad48b346b39018d102d4891240c",
-      "bytes": 12766
+      "sha256": "38edbbfea5f04cabef289dd875cb2f3adda3635965e97cd26c995dc62d40132e",
+      "bytes": 15342
     },
     {
       "path": "tests/test_work_organization_p0.py",
-      "sha256": "c3ed9d75c689b86f0999ff98864b7049fba2c5f920261d3f64bb7faabb8d2a3b",
-      "bytes": 4672
+      "sha256": "d8f31671d51157be41dffed45aa1b6b720547cf02ed209c5506a58bca60f0a8a",
+      "bytes": 6364
     },
     {
       "path": ".github/skills/rapp-work-organization/SKILL.md",
-      "sha256": "6c8b5387ffe602985be8d8c8071b2de03fb5be21e127a6cae60d4fc68d6f30c0",
-      "bytes": 2841
+      "sha256": "74dde682ffb5f2a6acac0f00b779d12a0ce75100834941bcd8c0cbeffa558519",
+      "bytes": 3140
     },
     {
       "path": ".github/workflows/ci.yml",
-      "sha256": "77a0ad534b5d0e4d7f94eb8d2d4d52cebf1a60f38e860cba08ff784c808d5790",
-      "bytes": 1783
+      "sha256": "0290684d4f7dca15ce6765b51743ec751c09fd0f244d6dbb4a269f5670bb7eae",
+      "bytes": 1840
     }
   ],
   "provenance": {
     "path": "provenance.json",
-    "sha256": "ecc6c2a5cd090b92fbfe5610e66138c76c9230085f8e403adc3331f640e165a4",
-    "bytes": 3036
+    "sha256": "3e962bb398343d09d7c81148cc8f18aa88af7b92999eca8f6f05a834d634f02f",
+    "bytes": 3582
   },
   "first_wild_handshake": {
     "id": "softwarecoellc-vteam-hive",
     "fixture": {
       "path": "fixtures/softwarecoellc-vteam-hive-1.json",
-      "sha256": "06c8a26f0a3f9bce7a51a3d17b53ca33711869fdcc4ade3c5b0d53f20fe9cce3",
-      "bytes": 1517
+      "sha256": "7196f9b191d502bfc686969491dfa626faa1ef37766ca3c0312a5b4c438e2143",
+      "bytes": 1810
     },
     "private_source_bytes_embedded": false
   }

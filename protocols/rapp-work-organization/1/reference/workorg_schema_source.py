@@ -6,6 +6,16 @@ import argparse
 from pathlib import Path
 
 from workorg_common import PROFILE, ROOT, pretty_bytes
+from workorg_artifact import (
+    GENERIC_CEO_BYTES,
+    GENERIC_CEO_PROFILE_BYTES,
+    GENERIC_CEO_PROFILE_SHA256,
+    GENERIC_CEO_SHA256,
+    GENERIC_CEO_SKILL_BYTES,
+    GENERIC_CEO_SKILL_SHA256,
+    GENERIC_CEO_VERSION,
+    OPERATIONS,
+)
 
 
 SCHEMAS = ROOT / "schemas"
@@ -164,7 +174,11 @@ def activation_schema():
                 "expires_utc": ref("utc"),
                 "signer_key_id": ref("label"),
                 "revocation_status": {"const": "active"},
-                "generic_ceo_agent_sha256": nullable(ref("hash")),
+                "generic_ceo_agent_sha256": {"const": GENERIC_CEO_SHA256},
+                "generic_ceo_skill_sha256": {"const": GENERIC_CEO_SKILL_SHA256},
+                "generic_ceo_artifact_profile_sha256": {
+                    "const": GENERIC_CEO_PROFILE_SHA256
+                },
             }
         ),
     )
@@ -601,11 +615,101 @@ def bill_schema():
                 ),
                 "generic_ceo_agent": obj(
                     {
-                        "status": {"const": "pending-pin"},
-                        "sha256": {"type": "null"},
+                        "status": {"const": "verified"},
+                        "sha256": {"const": GENERIC_CEO_SHA256},
+                        "bytes": {"const": GENERIC_CEO_BYTES},
+                        "skill_sha256": {"const": GENERIC_CEO_SKILL_SHA256},
+                        "skill_bytes": {"const": GENERIC_CEO_SKILL_BYTES},
+                        "artifact_profile_sha256": {
+                            "const": GENERIC_CEO_PROFILE_SHA256
+                        },
                     }
                 ),
                 "authority": {"const": False},
+            }
+        ),
+    )
+
+
+def generic_ceo_schema():
+    file_entry = lambda path, role, digest, size: obj(
+        {
+            "path": {"const": path},
+            "role": {"const": role},
+            "sha256": {"const": digest},
+            "bytes": {"const": size},
+        }
+    )
+    return schema(
+        "generic-ceo-artifact.schema.json",
+        obj(
+            {
+                "schema": {"const": PROFILE + "/generic-ceo-artifact"},
+                "id": {"const": "autobest:generic"},
+                "name": {"const": "@kody-w/microsol_autobest"},
+                "version": {"const": GENERIC_CEO_VERSION},
+                "status": {"const": "verified"},
+                "content_address": obj(
+                    {
+                        "algorithm": {"const": "sha256"},
+                        "subject": {"const": "exact-agent.py-bytes"},
+                        "hash": {"const": GENERIC_CEO_SHA256},
+                    }
+                ),
+                "entrypoint": {"const": "agent.py"},
+                "files": {
+                    "type": "array",
+                    "prefixItems": [
+                        file_entry(
+                            "agent.py",
+                            "brainstem-hotload-entrypoint",
+                            GENERIC_CEO_SHA256,
+                            GENERIC_CEO_BYTES,
+                        ),
+                        file_entry(
+                            "SKILL.md",
+                            "human-and-agent-operating-guide",
+                            GENERIC_CEO_SKILL_SHA256,
+                            GENERIC_CEO_SKILL_BYTES,
+                        ),
+                    ],
+                    "items": False,
+                    "minItems": 2,
+                    "maxItems": 2,
+                },
+                "aggregate_sha256": ref("hash"),
+                "runtime": obj(
+                    {
+                        "stdlib_only": {"const": True},
+                        "deterministic": {"const": True},
+                        "single_file_entrypoint": {"const": True},
+                        "requires_environment": {"const": False},
+                        "reads_files": {"const": False},
+                        "reads_stdin": {"const": False},
+                        "uses_clock": {"const": False},
+                        "uses_randomness": {"const": False},
+                        "uses_network": {"const": False},
+                        "uses_subprocess": {"const": False},
+                    }
+                ),
+                "binding": obj(
+                    {
+                        "api": {"const": "bind_implementation_sha256"},
+                        "required_before_activation": {"const": True},
+                        "external_host_only": {"const": True},
+                    }
+                ),
+                "operations": {
+                    "type": "array",
+                    "prefixItems": [{"const": operation} for operation in OPERATIONS],
+                    "items": False,
+                    "minItems": len(OPERATIONS),
+                    "maxItems": len(OPERATIONS),
+                },
+                "authority": {"const": False},
+                "authority_from_presence": {"const": False},
+                "brainstem_modified": {"const": False},
+                "estate_activation": {"const": False},
             }
         ),
     )
@@ -686,6 +790,7 @@ def documents():
         "evolution.schema.json": evolution_schema(),
         "mutation-offer.schema.json": offer_schema(),
         "wild-handshake-binding.schema.json": bill_schema(),
+        "generic-ceo-artifact.schema.json": generic_ceo_schema(),
         "frame.schema.json": frame_schema(),
     }
 

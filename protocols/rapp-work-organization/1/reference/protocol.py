@@ -19,12 +19,60 @@ from workorg_common import (
     validate_plain_json,
     wave,
 )
+from workorg_artifact import (
+    GENERIC_CEO_BYTES,
+    GENERIC_CEO_PROFILE_SHA256,
+    GENERIC_CEO_SHA256,
+    GENERIC_CEO_SKILL_BYTES,
+    GENERIC_CEO_SKILL_SHA256,
+)
 
 
 BILL_PROFILE_SHA256 = "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882"
 BILL_SOURCE_LENS_SHA256 = "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671"
 BILL_TARGET_FINALIZER_SHA256 = "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296"
 BILL_CONTRACT_SHA256 = "4ca6674ee491af0a09b6c333c9f24763face5f22462ce0b454a0ce4c84793932"
+
+
+def validate_activation_document(value: Any) -> dict[str, Any]:
+    document = exact_object(
+        value,
+        {
+            "schema",
+            "spec_sha256",
+            "manifest_sha256",
+            "brainstem_runtime_sha256",
+            "organization_rappid",
+            "world_id",
+            "policy",
+            "not_before_utc",
+            "expires_utc",
+            "signer_key_id",
+            "revocation_status",
+            "generic_ceo_agent_sha256",
+            "generic_ceo_skill_sha256",
+            "generic_ceo_artifact_profile_sha256",
+        },
+        "REFUSE_ACTIVATION",
+    )
+    require(
+        document["schema"] == "rapp-work-organization/1/activation-document"
+        and document["revocation_status"] == "active",
+        "REFUSE_ACTIVATION",
+        "Invalid activation identity or revocation state.",
+    )
+    for name in ("spec_sha256", "manifest_sha256", "brainstem_runtime_sha256"):
+        hash_value(document[name], "REFUSE_ACTIVATION")
+    particle_ref(document["policy"])
+    require(
+        document["generic_ceo_agent_sha256"] == GENERIC_CEO_SHA256
+        and document["generic_ceo_skill_sha256"] == GENERIC_CEO_SKILL_SHA256
+        and document["generic_ceo_artifact_profile_sha256"]
+        == GENERIC_CEO_PROFILE_SHA256,
+        "REFUSE_ACTIVATION",
+        "Activation does not bind the exact generic CEO artifact.",
+    )
+    return document
 
 
 def _ids(items: list[dict[str, Any]], key: str, code: str) -> set[str]:
@@ -569,8 +617,16 @@ def validate_bill_binding(value: Any) -> dict[str, Any]:
     require(
         binding["proof"]["double_hotload"] == "verified-local"
         and binding["proof"]["model_calls_static_runtime"] == 0
-        and binding["generic_ceo_agent"] == {"status": "pending-pin", "sha256": None},
+        and binding["generic_ceo_agent"]
+        == {
+            "status": "verified",
+            "sha256": GENERIC_CEO_SHA256,
+            "bytes": GENERIC_CEO_BYTES,
+            "skill_sha256": GENERIC_CEO_SKILL_SHA256,
+            "skill_bytes": GENERIC_CEO_SKILL_BYTES,
+            "artifact_profile_sha256": GENERIC_CEO_PROFILE_SHA256,
+        },
         "REFUSE_BILL_BINDING",
-        "The fixture must remain pin-gated on the generic CEO agent.",
+        "The fixture must bind the exact verified generic CEO artifact.",
     )
     return binding
