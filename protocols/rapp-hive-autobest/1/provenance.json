@@ -62,5 +62,21 @@
     "verified_frames": 2,
     "verified_artifacts": 9,
     "authority": false
+  },
+  "generic_ceo_autobest": {
+    "repository": "https://github.com/kody-w/microsol-organization",
+    "commit": "e8b1a1ffc795b48a854c31d76bb478adba583915",
+    "skill_path": ".github/skills/microsol-autobest",
+    "capability_id": "autobest:generic",
+    "profile": "microsol-ceo",
+    "version": "3.0.0",
+    "agent_sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "agent_bytes": 430291,
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "profile_artifact_hash": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271",
+    "binding_hash": "cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40",
+    "activation": "external-host-only",
+    "authority": false
   }
 }

@@ -43,6 +43,7 @@ OFFER_SCHEMA = f"{PROFILE}-mutation-offer"
 CATALOG_SCHEMA = f"{PROFILE}-handshake-catalog"
 EVOLUTION_SCHEMA = f"{PROFILE}-evolution-proposal"
 FIXTURE_SCHEMA = f"{PROFILE}-fixture-binding"
+CEO_BINDING_SCHEMA = f"{PROFILE}-ceo-binding"
 
 KIND_SCHEMAS = {
     "hive-autobest.compatibility": COMPATIBILITY_SCHEMA,
@@ -137,6 +138,12 @@ def validate_compatibility(document: dict[str, Any]) -> str:
     require(
         static["coverage_bps"] <= mapping["coverage_bps"],
         "compatibility: static coverage exceeds evaluated mapping coverage",
+    )
+    controller = document["autobest_controller"]
+    require(
+        controller["activation"] == "external-host-only"
+        and controller["grants_authority"] is False,
+        "compatibility: generic CEO binding cannot self-activate or grant authority",
     )
     trigger = document["trigger"]
     previous = document["previous_compatibility"]
@@ -457,6 +464,20 @@ def validate_fixture_binding(document: dict[str, Any]) -> str:
     return particle_hash(document)
 
 
+def validate_ceo_binding(document: dict[str, Any]) -> str:
+    require(document["grants_authority"] is False, "CEO binding: authority is forbidden")
+    require(
+        document["authority_from_presence"] is False,
+        "CEO binding: presence cannot become authority",
+    )
+    require(document["shared_brain"] is False, "CEO binding: Hive cannot become a shared brain")
+    require(
+        document["private_state_transfer"] == document["key_transfer"] == "none",
+        "CEO binding: private state or keys cannot transfer",
+    )
+    return particle_hash(document)
+
+
 VALIDATORS = {
     COMPATIBILITY_SCHEMA: validate_compatibility,
     EXHAUST_SCHEMA: validate_exhaust,
@@ -472,6 +493,7 @@ VALIDATORS = {
     CATALOG_SCHEMA: validate_catalog,
     EVOLUTION_SCHEMA: validate_evolution,
     FIXTURE_SCHEMA: validate_fixture_binding,
+    CEO_BINDING_SCHEMA: validate_ceo_binding,
 }
 
 
@@ -565,6 +587,59 @@ def validate_bill_fixture(fixture_root: Path) -> dict[str, Any]:
         "static_agent_sha256": _hash_bytes(agent),
         "verified_frames": binding["source"]["verified_frames"],
         "verified_artifacts": binding["source"]["verified_artifacts"],
+    }
+
+
+def validate_ceo_fixture(fixture_root: Path) -> dict[str, Any]:
+    binding = json.loads((fixture_root / "binding.json").read_text(encoding="utf-8"))
+    validate(binding)
+    manifest_raw = (fixture_root / "manifest.json").read_bytes()
+    manifest = json.loads(manifest_raw)
+    require(
+        _hash_bytes(manifest_raw) == binding["manifest"]["sha256"]
+        and len(manifest_raw) == binding["manifest"]["bytes"],
+        "CEO fixture: manifest bytes differ",
+    )
+    require(
+        particle_hash(manifest) == binding["profile_artifact"]["hash"],
+        "CEO fixture: profile artifact address differs",
+    )
+    require(
+        manifest["schema"] == "rapp-hive-autobest/1-ceo-profile-artifact"
+        and manifest["capability_id"] == binding["capability_id"]
+        and manifest["profile"] == binding["profile"]
+        and manifest["authority"] is False,
+        "CEO fixture: invalid profile artifact",
+    )
+    files = {record["path"]: record for record in manifest["files"]}
+    require(set(files) == {"agent.py", "SKILL.md"}, "CEO fixture: incomplete exact-byte package")
+    for section, path in (("agent", "agent.py"), ("skill", "SKILL.md")):
+        record = binding[section]
+        raw = (fixture_root / path).read_bytes()
+        require(
+            record["path"] == path
+            and len(raw) == record["bytes"] == files[path]["bytes"]
+            and _hash_bytes(raw) == record["sha256"] == files[path]["sha256"],
+            f"CEO fixture: {path} bytes differ",
+        )
+    properties = manifest["properties"]
+    require(
+        properties["deterministic"] is True
+        and properties["inert"] is True
+        and properties["authority"] is False
+        and properties["activation"] == "external-host-only"
+        and properties["authority_from_presence"] is False
+        and properties["normal_traffic_model_calls"] == 0
+        and properties["shared_brain"] is False
+        and properties["private_state_transfer"] == "none"
+        and properties["key_transfer"] == "none",
+        "CEO fixture: unsafe capability property",
+    )
+    return {
+        "binding_hash": particle_hash(binding),
+        "profile_artifact_hash": particle_hash(manifest),
+        "agent_sha256": binding["agent"]["sha256"],
+        "skill_sha256": binding["skill"]["sha256"],
     }
 
 

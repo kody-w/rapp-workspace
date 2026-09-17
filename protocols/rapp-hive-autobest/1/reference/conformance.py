@@ -6,6 +6,7 @@ from __future__ import annotations
 import base64
 import copy
 import hashlib
+import importlib.util
 import json
 import subprocess
 import sys
@@ -21,6 +22,7 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = Path(__file__).resolve().parent
 FIXTURE = ROOT / "fixtures" / "softwarecoellc-vteam-hive"
+CEO_FIXTURE = ROOT / "fixtures" / "generic-ceo-autobest"
 HIVE_REFERENCE = ROOT.parents[1] / "rapp-hive" / "1" / "reference"
 for value in (str(REFERENCE), str(HIVE_REFERENCE)):
     if value not in sys.path:
@@ -431,6 +433,7 @@ def compatibility_fixture(
     source_agent = (FIXTURE / "source-agent.py").read_bytes()
     target_agent = (FIXTURE / "target-finalizer.py").read_bytes()
     static_agent = (FIXTURE / "static" / "agent.py").read_bytes()
+    ceo_binding = json.loads((CEO_FIXTURE / "binding.json").read_text())
     return {
         "schema": A.COMPATIBILITY_SCHEMA,
         "hive_rappid": HIVE,
@@ -496,6 +499,23 @@ def compatibility_fixture(
             "bytes": len(target_agent),
             "runtime_sha256": digest("global-brainstem-runtime"),
             "policy_sha256": digest("target-finalizer-policy"),
+        },
+        "autobest_controller": {
+            "capability_id": "autobest:generic",
+            "profile": "microsol-ceo",
+            "artifact": ceo_binding["profile_artifact"],
+            "binding": {
+                "space": "rapp/1:particle",
+                "hash": particle_hash(ceo_binding),
+            },
+            "agent_sha256": ceo_binding["agent"]["sha256"],
+            "agent_bytes": ceo_binding["agent"]["bytes"],
+            "skill_sha256": ceo_binding["skill"]["sha256"],
+            "skill_bytes": ceo_binding["skill"]["bytes"],
+            "runtime_sha256": digest("global-brainstem-runtime"),
+            "policy_sha256": digest("autobest-controller-policy"),
+            "activation": "external-host-only",
+            "grants_authority": False,
         },
         "hotload_slot": {
             "schema": "rapp-workspace-autobest/1-hotload-slot",
@@ -893,6 +913,66 @@ class AutoBestConformance(unittest.TestCase):
             result["static_agent_sha256"],
             "46c981ac9660f24a2e02809ce1957e28b3c9497f85cb60a3f4ff4b06c0455a18",
         )
+
+    def test_generic_ceo_exact_bytes_and_external_binding(self) -> None:
+        result = A.validate_ceo_fixture(CEO_FIXTURE)
+        self.assertEqual(
+            result["agent_sha256"],
+            "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+        )
+        self.assertEqual(
+            result["skill_sha256"],
+            "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+        )
+        self.assertEqual(
+            result["profile_artifact_hash"],
+            "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271",
+        )
+        self.assertEqual(
+            result["binding_hash"],
+            "cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40",
+        )
+        specification = importlib.util.spec_from_file_location(
+            "rapp_hive_autobest_ceo_fixture",
+            CEO_FIXTURE / "agent.py",
+        )
+        self.assertIsNotNone(specification)
+        self.assertIsNotNone(specification.loader)
+        module = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(module)
+        binding = module.bind_implementation_sha256(result["agent_sha256"])
+        self.assertEqual(binding["implementation_sha256"], result["agent_sha256"])
+        self.assertEqual(binding["capability_home"], "specific-protocol-and-seed-profiles")
+        self.assertFalse(binding["authority_from_presence"])
+        profile = module.profile_config("microsol-ceo")
+        self.assertEqual(profile["name"], "microsol-ceo")
+        self.assertTrue(profile["host_activation_required"])
+        self.assertFalse(profile["authority_from_profile"])
+        self.assertTrue(module.__manifest__["deterministic"])
+        self.assertTrue(module.__manifest__["inert"])
+        self.assertFalse(module.__manifest__["authority"])
+        self.assertEqual(module.__manifest__["normal_traffic_model_calls"], 0)
+
+    def test_generic_ceo_pin_and_package_substitution_refuse(self) -> None:
+        binding = json.loads((CEO_FIXTURE / "binding.json").read_text())
+        value = copy.deepcopy(binding)
+        value["agent"]["sha256"] = digest("substituted-agent")
+        with self.assertRaises(ValueError):
+            A.validate(value)
+        value = copy.deepcopy(binding)
+        value["profile_artifact"]["hash"] = digest("substituted-artifact")
+        with self.assertRaises(ValueError):
+            A.validate(value)
+        original = (CEO_FIXTURE / "agent.py").read_bytes()
+        mutated = original[:-1] + bytes([original[-1] ^ 1])
+        self.assertNotEqual(
+            hashlib.sha256(mutated).hexdigest(),
+            binding["agent"]["sha256"],
+        )
+        compatibility = copy.deepcopy(self.compatibility)
+        compatibility["autobest_controller"]["agent_sha256"] = digest("wrong-controller")
+        with self.assertRaises(ValueError):
+            A.validate(compatibility)
 
     def test_all_profile_records_validate(self) -> None:
         records = [

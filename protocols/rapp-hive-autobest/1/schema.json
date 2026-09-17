@@ -46,6 +46,9 @@
     },
     {
       "$ref": "#/$defs/fixtureBinding"
+    },
+    {
+      "$ref": "#/$defs/ceoBinding"
     }
   ],
   "$defs": {
@@ -370,7 +373,8 @@
             "source-lens",
             "target-finalizer",
             "static-agent",
-            "verifier"
+            "verifier",
+            "autobest-controller"
           ]
         },
         "artifact": {
@@ -396,6 +400,88 @@
         "bytes",
         "runtime_sha256",
         "policy_sha256"
+      ]
+    },
+    "ceoController": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "capability_id": {
+          "const": "autobest:generic"
+        },
+        "profile": {
+          "const": "microsol-ceo"
+        },
+        "artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "const": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ]
+        },
+        "binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "const": "cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ]
+        },
+        "agent_sha256": {
+          "const": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c"
+        },
+        "agent_bytes": {
+          "const": 430291
+        },
+        "skill_sha256": {
+          "const": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8"
+        },
+        "skill_bytes": {
+          "const": 39139
+        },
+        "runtime_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "policy_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "activation": {
+          "const": "external-host-only"
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "capability_id",
+        "profile",
+        "artifact",
+        "binding",
+        "agent_sha256",
+        "agent_bytes",
+        "skill_sha256",
+        "skill_bytes",
+        "runtime_sha256",
+        "policy_sha256",
+        "activation",
+        "grants_authority"
       ]
     },
     "slotContract": {
@@ -1898,6 +1984,9 @@
         "target_finalizer": {
           "$ref": "#/$defs/agentPin"
         },
+        "autobest_controller": {
+          "$ref": "#/$defs/ceoController"
+        },
         "hotload_slot": {
           "$ref": "#/$defs/slotContract"
         },
@@ -1983,6 +2072,7 @@
         "target",
         "source_lens",
         "target_finalizer",
+        "autobest_controller",
         "hotload_slot",
         "intent_hash",
         "source_vector",
@@ -3030,6 +3120,225 @@
         "target_finalizer",
         "static_package",
         "authority"
+      ]
+    },
+    "ceoBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-ceo-binding"
+        },
+        "capability_id": {
+          "const": "autobest:generic"
+        },
+        "profile": {
+          "const": "microsol-ceo"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "repository": {
+              "const": "https://github.com/kody-w/microsol-organization"
+            },
+            "commit": {
+              "const": "e8b1a1ffc795b48a854c31d76bb478adba583915"
+            },
+            "skill_path": {
+              "const": ".github/skills/microsol-autobest"
+            }
+          },
+          "required": [
+            "repository",
+            "commit",
+            "skill_path"
+          ]
+        },
+        "profile_artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "const": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ]
+        },
+        "manifest": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "const": "manifest.json"
+            },
+            "sha256": {
+              "const": "b8a5272cd1de0c0a82ed1727f001c88ec056dccf36afecd9574c4432873d4686"
+            },
+            "bytes": {
+              "const": 1605
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ]
+        },
+        "agent": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "const": "agent.py"
+            },
+            "sha256": {
+              "const": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c"
+            },
+            "bytes": {
+              "const": 430291
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ]
+        },
+        "skill": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "const": "SKILL.md"
+            },
+            "sha256": {
+              "const": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8"
+            },
+            "bytes": {
+              "const": 39139
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ]
+        },
+        "implementation_binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "algorithm": {
+              "const": "sha256"
+            },
+            "subject": {
+              "const": "exact-agent.py-bytes"
+            },
+            "binding_api": {
+              "const": "bind_implementation_sha256"
+            },
+            "required_before_activation": {
+              "const": true
+            },
+            "self_digest_embedded": {
+              "const": false
+            }
+          },
+          "required": [
+            "algorithm",
+            "subject",
+            "binding_api",
+            "required_before_activation",
+            "self_digest_embedded"
+          ]
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "version": {
+              "const": "3.0.0"
+            },
+            "single_file": {
+              "const": true
+            },
+            "stdlib_only": {
+              "const": true
+            },
+            "deterministic": {
+              "const": true
+            },
+            "inert": {
+              "const": true
+            },
+            "authority_source": {
+              "const": "external-host"
+            },
+            "activation": {
+              "const": "external-host-only"
+            },
+            "mutation": {
+              "const": "successor-only"
+            },
+            "normal_traffic_model_calls": {
+              "const": 0
+            },
+            "canonical_rapp1_envelope_owned_by_host": {
+              "const": true
+            }
+          },
+          "required": [
+            "version",
+            "single_file",
+            "stdlib_only",
+            "deterministic",
+            "inert",
+            "authority_source",
+            "activation",
+            "mutation",
+            "normal_traffic_model_calls",
+            "canonical_rapp1_envelope_owned_by_host"
+          ]
+        },
+        "grants_authority": {
+          "const": false
+        },
+        "authority_from_presence": {
+          "const": false
+        },
+        "shared_brain": {
+          "const": false
+        },
+        "private_state_transfer": {
+          "const": "none"
+        },
+        "key_transfer": {
+          "const": "none"
+        }
+      },
+      "required": [
+        "schema",
+        "capability_id",
+        "profile",
+        "source",
+        "profile_artifact",
+        "manifest",
+        "agent",
+        "skill",
+        "implementation_binding",
+        "properties",
+        "grants_authority",
+        "authority_from_presence",
+        "shared_brain",
+        "private_state_transfer",
+        "key_transfer"
       ]
     }
   }

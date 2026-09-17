@@ -1,0 +1,60 @@
+{
+  "schema": "rapp-hive-autobest/1-ceo-profile-artifact",
+  "capability_id": "autobest:generic",
+  "profile": "microsol-ceo",
+  "version": "3.0.0",
+  "source": {
+    "repository": "https://github.com/kody-w/microsol-organization",
+    "commit": "e8b1a1ffc795b48a854c31d76bb478adba583915",
+    "skill_path": ".github/skills/microsol-autobest"
+  },
+  "files": [
+    {
+      "path": "SKILL.md",
+      "bytes": 39139,
+      "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+      "role": "operating-contract"
+    },
+    {
+      "path": "agent.py",
+      "bytes": 430291,
+      "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+      "role": "hotload-entrypoint"
+    }
+  ],
+  "properties": {
+    "single_file_agent": true,
+    "stdlib_only": true,
+    "deterministic": true,
+    "inert": true,
+    "authority": false,
+    "authority_source": "external-host",
+    "activation": "external-host-only",
+    "mutation": "successor-only",
+    "authority_from_presence": false,
+    "normal_traffic_model_calls": 0,
+    "canonical_rapp1_envelope_owned_by_host": true,
+    "shared_brain": false,
+    "private_state_transfer": "none",
+    "key_transfer": "none"
+  },
+  "operations": [
+    "artifact_bundle",
+    "ceo",
+    "compatibility",
+    "compatibility_exhaust",
+    "compatibility_successor",
+    "compile_static_agent",
+    "cross",
+    "delegate",
+    "double_hotload",
+    "meta_evolution",
+    "mutation_offer",
+    "mutation_offer_decision",
+    "n_lens_search",
+    "run",
+    "self_host_repository",
+    "translate_hive"
+  ],
+  "authority": false
+}

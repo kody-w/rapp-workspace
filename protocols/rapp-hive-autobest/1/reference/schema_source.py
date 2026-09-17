@@ -172,12 +172,52 @@ def build_schema() -> dict:
     )
     agent_pin = closed(
         {
-            "role": enum("source-lens", "target-finalizer", "static-agent", "verifier"),
+            "role": enum(
+                "source-lens",
+                "target-finalizer",
+                "static-agent",
+                "verifier",
+                "autobest-controller",
+            ),
             "artifact": ref("address"),
             "sha256": ref("hash"),
             "bytes": ref("uint53"),
             "runtime_sha256": ref("hash"),
             "policy_sha256": ref("hash"),
+        }
+    )
+    ceo_controller = closed(
+        {
+            "capability_id": const("autobest:generic"),
+            "profile": const("microsol-ceo"),
+            "artifact": closed(
+                {
+                    "space": const("rapp/1:particle"),
+                    "hash": const(
+                        "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271"
+                    ),
+                }
+            ),
+            "binding": closed(
+                {
+                    "space": const("rapp/1:particle"),
+                    "hash": const(
+                        "cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40"
+                    ),
+                }
+            ),
+            "agent_sha256": const(
+                "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c"
+            ),
+            "agent_bytes": const(430291),
+            "skill_sha256": const(
+                "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8"
+            ),
+            "skill_bytes": const(39139),
+            "runtime_sha256": ref("hash"),
+            "policy_sha256": ref("hash"),
+            "activation": const("external-host-only"),
+            "grants_authority": const(False),
         }
     )
     slot_contract = closed(
@@ -561,6 +601,7 @@ def build_schema() -> dict:
             "target": ref("endpoint"),
             "source_lens": ref("agentPin"),
             "target_finalizer": ref("agentPin"),
+            "autobest_controller": ref("ceoController"),
             "hotload_slot": ref("slotContract"),
             "intent_hash": ref("hash"),
             "source_vector": array(ref("sourceVectorEntry"), minimum=1, maximum=256),
@@ -857,6 +898,83 @@ def build_schema() -> dict:
             "authority": const(False),
         }
     )
+    ceo_binding = closed(
+        {
+            "schema": const("rapp-hive-autobest/1-ceo-binding"),
+            "capability_id": const("autobest:generic"),
+            "profile": const("microsol-ceo"),
+            "source": closed(
+                {
+                    "repository": const("https://github.com/kody-w/microsol-organization"),
+                    "commit": const("e8b1a1ffc795b48a854c31d76bb478adba583915"),
+                    "skill_path": const(".github/skills/microsol-autobest"),
+                }
+            ),
+            "profile_artifact": closed(
+                {
+                    "space": const("rapp/1:particle"),
+                    "hash": const(
+                        "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271"
+                    ),
+                }
+            ),
+            "manifest": closed(
+                {
+                    "path": const("manifest.json"),
+                    "sha256": const(
+                        "b8a5272cd1de0c0a82ed1727f001c88ec056dccf36afecd9574c4432873d4686"
+                    ),
+                    "bytes": const(1605),
+                }
+            ),
+            "agent": closed(
+                {
+                    "path": const("agent.py"),
+                    "sha256": const(
+                        "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c"
+                    ),
+                    "bytes": const(430291),
+                }
+            ),
+            "skill": closed(
+                {
+                    "path": const("SKILL.md"),
+                    "sha256": const(
+                        "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8"
+                    ),
+                    "bytes": const(39139),
+                }
+            ),
+            "implementation_binding": closed(
+                {
+                    "algorithm": const("sha256"),
+                    "subject": const("exact-agent.py-bytes"),
+                    "binding_api": const("bind_implementation_sha256"),
+                    "required_before_activation": const(True),
+                    "self_digest_embedded": const(False),
+                }
+            ),
+            "properties": closed(
+                {
+                    "version": const("3.0.0"),
+                    "single_file": const(True),
+                    "stdlib_only": const(True),
+                    "deterministic": const(True),
+                    "inert": const(True),
+                    "authority_source": const("external-host"),
+                    "activation": const("external-host-only"),
+                    "mutation": const("successor-only"),
+                    "normal_traffic_model_calls": const(0),
+                    "canonical_rapp1_envelope_owned_by_host": const(True),
+                }
+            ),
+            "grants_authority": const(False),
+            "authority_from_presence": const(False),
+            "shared_brain": const(False),
+            "private_state_transfer": const("none"),
+            "key_transfer": const("none"),
+        }
+    )
 
     definitions = {
         "hash": hash_value,
@@ -876,6 +994,7 @@ def build_schema() -> dict:
         "capability": capability,
         "endpoint": endpoint,
         "agentPin": agent_pin,
+        "ceoController": ceo_controller,
         "slotContract": slot_contract,
         "runtimeBounds": runtime_bounds,
         "sourceVectorEntry": source_vector_entry,
@@ -912,6 +1031,7 @@ def build_schema() -> dict:
         "handshakeCatalog": handshake_catalog,
         "evolution": evolution,
         "fixtureBinding": fixture_binding,
+        "ceoBinding": ceo_binding,
     }
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -945,6 +1065,7 @@ def build_schema() -> dict:
             ref("handshakeCatalog"),
             ref("evolution"),
             ref("fixtureBinding"),
+            ref("ceoBinding"),
         ],
         "$defs": definitions,
     }

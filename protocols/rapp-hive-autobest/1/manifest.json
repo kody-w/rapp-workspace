@@ -23,54 +23,83 @@
     "hive-autobest.mutation-offer"
   ],
   "generic_ceo_binding": {
-    "status": "pending-external-pin",
+    "status": "verified-exact-bytes",
+    "capability_id": "autobest:generic",
+    "profile": "microsol-ceo",
+    "profile_artifact_hash": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271",
+    "binding_hash": "cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40",
+    "agent_sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "agent_bytes": 430291,
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "activation": "external-host-only",
     "authority_inferred": false
   },
   "normative": [
     {
       "path": "SPEC.md",
-      "sha256": "6cc55fe8b7cf4435a02858126be050801d1372a0ff435318e47ad5d4235ecb94",
-      "bytes": 20661
+      "sha256": "a47420f2df1f31280be07c3d146774522eb21893a16b905cd1f5c30345e0c61f",
+      "bytes": 26083
     },
     {
       "path": "schema.json",
-      "sha256": "70aec49a2f1ebf33aa350a54ba8e3cd928ed4b23108bbe14d80eb4ce6f8d100f",
-      "bytes": 70699
+      "sha256": "b3e66a8980bd9e53ed94bf7bed8cfb1fb252e50bd181d7058acda13ecb7a459b",
+      "bytes": 78591
     },
     {
       "path": "provenance.json",
-      "sha256": "84c5dbf88f79dce5fe31616cd4f77182f07bbe7c988115219c5bb763fb1d3543",
-      "bytes": 2606
+      "sha256": "a9b2fe2fa383f45262f2967faa6e4355d617e36a77bcd3b231bf012d77be1ebf",
+      "bytes": 3393
     }
   ],
   "reference": [
     {
       "path": "reference/conformance.py",
-      "sha256": "201d9c9710efe96fa55a6f8034141772dceb2f8600f843cb037e6b9da7a894ad",
-      "bytes": 46261
+      "sha256": "06a8863cec82c493846b0dcd07ad6fb676e983a071fdde60e0286cb7e87d8215",
+      "bytes": 51929
     },
     {
       "path": "reference/pins.py",
-      "sha256": "bcd11b858ce7f54584d9de0e9eebd8ccd1312614cc45b2ebab64e4132f2d38da",
-      "bytes": 6050
+      "sha256": "ed4d2db432745197d167dfd0003ec9a7837fa8c38f970017b9f5994729241613",
+      "bytes": 7700
     },
     {
       "path": "reference/rapp_hive_autobest.py",
-      "sha256": "38f3480b325c8c04dd630b14470e9a578f77c504899eb43fb38ad79ab3578f2a",
-      "bytes": 26320
+      "sha256": "4ce5852551696579d3e8fee0e5b17a2f33f3a509898bafd34c954e53cc5576e7",
+      "bytes": 29564
     },
     {
       "path": "reference/schema_source.py",
-      "sha256": "ede09fc85b841881f932cde75ceaf1eb9935b876eb20c49644c6b5f7d57c2334",
-      "bytes": 36104
+      "sha256": "97c18cbdb282c363295cdf762ec60438830e9e4c91b24f44dbdda4051517deb7",
+      "bytes": 40745
     },
     {
       "path": "reference/README.md",
-      "sha256": "fedf2657ebb14aa7a6e98bf30521054a636c96d7ba6484080cc46744d8a6551d",
-      "bytes": 1439
+      "sha256": "d6405f097c622521cd7013e264f9af177d2998cd18947807d639e4984fb10592",
+      "bytes": 1806
     }
   ],
   "fixtures": [
+    {
+      "path": "fixtures/generic-ceo-autobest/SKILL.md",
+      "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+      "bytes": 39139
+    },
+    {
+      "path": "fixtures/generic-ceo-autobest/agent.py",
+      "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+      "bytes": 430291
+    },
+    {
+      "path": "fixtures/generic-ceo-autobest/binding.json",
+      "sha256": "fb433fdb135f6ea5af37ab2f505ce673521b8f1ae2ee9321ff3036d695181938",
+      "bytes": 1617
+    },
+    {
+      "path": "fixtures/generic-ceo-autobest/manifest.json",
+      "sha256": "b8a5272cd1de0c0a82ed1727f001c88ec056dccf36afecd9574c4432873d4686",
+      "bytes": 1605
+    },
     {
       "path": "fixtures/softwarecoellc-vteam-hive/binding.json",
       "sha256": "7561194738570644fb860f74b8ab9fade858509edaac566299f0cf227b484e2a",
@@ -123,5 +152,13 @@
     "target_finalizer_sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
     "verified_frames": 2,
     "verified_artifacts": 9
+  },
+  "generic_ceo_autobest": {
+    "agent_sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "agent_bytes": 430291,
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "profile_artifact_hash": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271",
+    "binding_hash": "cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40"
   }
 }

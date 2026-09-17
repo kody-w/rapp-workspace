@@ -71,7 +71,16 @@ def manifest_document() -> dict:
             "hive-autobest.mutation-offer",
         ],
         "generic_ceo_binding": {
-            "status": "pending-external-pin",
+            "status": "verified-exact-bytes",
+            "capability_id": "autobest:generic",
+            "profile": "microsol-ceo",
+            "profile_artifact_hash": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271",
+            "binding_hash": "cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40",
+            "agent_sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+            "agent_bytes": 430291,
+            "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+            "skill_bytes": 39139,
+            "activation": "external-host-only",
             "authority_inferred": False,
         },
         "normative": [record(path) for path in normative],
@@ -83,6 +92,14 @@ def manifest_document() -> dict:
             "target_finalizer_sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
             "verified_frames": 2,
             "verified_artifacts": 9,
+        },
+        "generic_ceo_autobest": {
+            "agent_sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+            "agent_bytes": 430291,
+            "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+            "skill_bytes": 39139,
+            "profile_artifact_hash": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271",
+            "binding_hash": "cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40",
         },
     }
 
@@ -115,7 +132,16 @@ def profile_entry(manifest_bytes: bytes) -> dict:
         "provenance_sha256": provenance["sha256"],
         "provenance_bytes": provenance["bytes"],
         "conformance": f"protocols/{PROFILE}/reference/conformance.py",
-        "generic_ceo_binding": "pending-external-pin",
+        "generic_ceo_binding": {
+            "status": "verified-exact-bytes",
+            "profile_artifact_hash": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271",
+            "binding_hash": "cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40",
+            "agent_sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+            "agent_bytes": 430291,
+            "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+            "skill_bytes": 39139,
+            "activation": "external-host-only",
+        },
         "grants_authority": False,
     }
 

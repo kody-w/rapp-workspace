@@ -457,6 +457,137 @@ storage/network, mutable sessions, time/MD5 identity, floating confidence,
 auto-approval, simulated tests, broad success-shaped fallback, and unqualified
 generated code are excluded.
 
+### 14.1 Generic CEO/AutoBest capability binding
+
+The generic controller capability is the exact private MicroSOL AutoBest
+artifact:
+
+```text
+capability: autobest:generic
+profile: microsol-ceo
+version: 3.0.0
+
+agent.py
+sha256 827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c
+bytes  430291
+
+SKILL.md
+sha256 5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8
+bytes  39139
+
+profile artifact particle
+cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271
+
+binding particle
+cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40
+```
+
+Every Compatibility Frame carries this exact `autobest_controller` binding,
+plus the current host runtime and policy pins. The implementation is a
+single-file, standard-library, deterministic, inert capability whose
+activation and authority remain external. It cannot grant authority through
+file presence, catalog inclusion, profile selection, import, or Hive
+membership.
+
+Changing either source file creates a new content address and requires an
+additive profile successor or explicitly versioned binding. The exact-byte
+binding API is `bind_implementation_sha256`; the implementation does not embed
+its own full-file digest.
+
+### 14.1 Whole-repository self-hosting reference
+
+The exact source repository is an immutable repository-input organism:
+
+```text
+repository
+https://github.com/kody-w/UniversalDataConnectorAI
+
+commit
+f2a978b9f85b65b9815b69d99c67e51c56732251
+
+files / bytes
+40 / 1945967
+
+inventory SHA-256
+d20a0537f181ac63cf6ea34f8191e7ecb32b6c97ba2932ed4c1524bbc2612519
+```
+
+The source is not a RAPP/1 organism merely because a successor references it.
+Every original path, mode, byte, commit, and inventory occurrence remains
+legacy source evidence. The successor uses a fresh keyed RAPPID, a fresh
+RAPP/1 sidecar Frame, a complete mutation lineage, a deterministic static
+agent, exact generation/package receipts, sanitized learning trace, and
+independent mutation tests.
+
+Selected conceptual traits are:
+
+- universal source analysis;
+- schema learning;
+- format synthesis;
+- connector-learning orchestration; and
+- connector registry/discovery.
+
+The successor excludes or replaces:
+
+- ambient Azure storage;
+- ambient model/network clients;
+- broad success-shaped fallback;
+- confidence-driven auto-approval;
+- unqualified generated Python;
+- missing RAPP/1 authority;
+- mutable learning sessions;
+- popularity/success-rate selection;
+- simulated tests; and
+- time/random/MD5 identity.
+
+No source Python byte is imported into the sidecar package. No legacy agent is
+renamed or relabeled as RAPP/1-compliant.
+
+#### Cross-profile responsibility
+
+| Layer | Whole-repository mutation responsibility |
+|---|---|
+| Workspace | Accept only an externally captured exact repository commit/tree/inventory as inert input. Mutation requests grant no source access, execution, or adoption. |
+| Work Organization | Preserve source and successor as sovereign lineage nodes; bind source inventory, mutation intent, selected/omitted traits, sidecar identity, tests, and separate adoption. |
+| Private Hive | Carry the sidecar Frame, static agent, package metadata, tests, sanitized trace, and receipts as inert content-addressed artifacts; transfer no source credentials or mutable native state. |
+| Federation | Exchange mutation offers and verification receipts between sovereign estates without transitive authority, automatic adoption, source rewrite, or legacy relabeling. |
+| AutoBest | Compile a complete successor from exact source traits/exhaust/holdout/mutants; host qualification, signing, and activation remain separate. |
+
+The Work Organization layer is the organization graph and owner/controller
+transaction above Workspace; this section does not create a new RAPP/1
+envelope or silently activate an unregistered protocol name.
+
+#### Unknown-unknown gates
+
+- incomplete or changed source tree: verify exact commit, modes, paths, bytes,
+  counts, and inventory before and after;
+- unsafe source entry: refuse symlink, submodule, device, special mode, path
+  ambiguity, or oversized blob;
+- copied legacy implementation: close package paths and require
+  `source_bytes_imported:false`;
+- retroactive conformance: require
+  `source_rapp1_compliance_claimed:false` and
+  `legacy_agents_relabelled:false`;
+- trait/substrate coupling: review selected and omitted trait receipts
+  independently;
+- omitted unsafe trait reintroduced: host mutants and package/source scans;
+- source/successor identity confusion: fresh keyed sidecar RAPPID and explicit
+  `immutable-repository-input-organism` predecessor kind;
+- generated sidecar drift: deterministic generation receipt and agent
+  hash/version;
+- incomplete tests/package: exact nonzero file coverage and independent
+  mutation receipts;
+- hidden ambient dependency/effect: isolated file-routed hotload, no source
+  imports, zero-model normal runtime;
+- missing semantic behavior: partial/unproven status, never a universal truth
+  claim;
+- unavailable inverse evidence: retain exact source commit/inventory and do
+  not claim exact-lossless reconstruction;
+- source-right ambiguity: package references hashes/traits and excludes source
+  bytes; separate rights remain required; and
+- local proof mistaken for adoption: synthetic/local signer evidence remains
+  distinct from owner/estate activation.
+
 ## 15. Compatibility and migration
 
 Existing Hive/1 implementations remain conformant and may retain these
@@ -471,9 +602,10 @@ Missing historical evaluator bytes may leave integrity inspectable while fresh
 semantic replay is unavailable. That state is explicit, not false and not a
 renewed grant.
 
-The generic CEO agent is outside this profile and remains independently pinned
-by the Workspace/Work-Organization layer. Its absence does not weaken or
-silently populate any Hive capability.
+The generic CEO/AutoBest bytes are pinned by this profile, but activation,
+current authority, root budgets and organization adoption remain owned by the
+Workspace/Work-Organization controller. The Hive binding supplies no grant and
+does not turn the Hive into a shared brain.
 
 ## 16. Conformance
 

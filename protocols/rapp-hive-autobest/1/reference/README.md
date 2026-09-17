@@ -19,7 +19,9 @@ PYTHONDONTWRITEBYTECODE=1 \
 - `validate(document)` for structural and cross-record validation;
 - `authorize_frame(...)` for exact kind/schema binding through trusted RAPP/1
   signature and authorization verifiers;
-- `validate_bill_fixture(path)` for the pinned first wild-handshake package.
+- `validate_bill_fixture(path)` for the pinned first wild-handshake package;
+- `validate_ceo_fixture(path)` for the exact generic CEO/AutoBest capability
+  artifact and external implementation binding.
 
 Closed derived records cover JIT assignments, exact worker checkpoints,
 Crossing Lens/AutoBest decisions, board/chat views, complete program bundles,
@@ -33,3 +35,8 @@ the Mother Hive stream and enter Hive catalogs through ordinary
 
 The Bill fixture is private conformance evidence. It contains no private key,
 native model session, customer payload, or activation grant.
+
+The generic CEO fixture carries the exact verified `agent.py` and `SKILL.md`
+bytes. Importability, deterministic manifest claims and
+`bind_implementation_sha256` are checked, but file presence and profile
+selection remain non-authoritative.
