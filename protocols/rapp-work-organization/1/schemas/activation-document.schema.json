@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-organization/1/schemas/activation-document.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-organization/1/activation-document"
+    },
+    "spec_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "manifest_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "brainstem_runtime_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "organization_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "$ref": "common.schema.json#/$defs/label"
+    },
+    "policy": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "not_before_utc": {
+      "$ref": "common.schema.json#/$defs/utc"
+    },
+    "expires_utc": {
+      "$ref": "common.schema.json#/$defs/utc"
+    },
+    "signer_key_id": {
+      "$ref": "common.schema.json#/$defs/label"
+    },
+    "revocation_status": {
+      "const": "active"
+    },
+    "generic_ceo_agent_sha256": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "spec_sha256",
+    "manifest_sha256",
+    "brainstem_runtime_sha256",
+    "organization_rappid",
+    "world_id",
+    "policy",
+    "not_before_utc",
+    "expires_utc",
+    "signer_key_id",
+    "revocation_status",
+    "generic_ceo_agent_sha256"
+  ],
+  "additionalProperties": false
+}

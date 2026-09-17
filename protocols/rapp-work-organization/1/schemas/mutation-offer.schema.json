@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-organization/1/schemas/mutation-offer.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-organization/1/mutation-offer"
+    },
+    "offer_id": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "source_organization": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "destination_organization": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "source_parents": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true
+    },
+    "successor_frame": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "successor_inventory": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "successor_artifact": {
+      "$ref": "common.schema.json#/$defs/egg"
+    },
+    "forward_map": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "reverse_map": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "trait_map": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "compatibility": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "verification_receipts": {
+      "$ref": "common.schema.json#/$defs/receiptSet"
+    },
+    "transport": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "git-pr",
+            "rapp-egg",
+            "private-hive",
+            "federation",
+            "offline"
+          ]
+        },
+        "head_commit": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/gitHash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "head_tree": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/gitHash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "projection_sha256": {
+          "$ref": "common.schema.json#/$defs/hash"
+        }
+      },
+      "required": [
+        "kind",
+        "head_commit",
+        "head_tree",
+        "projection_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "merge_roots": {
+      "const": false
+    },
+    "transfer_keys": {
+      "const": false
+    },
+    "transfer_private_state": {
+      "const": false
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "offer_id",
+    "source_organization",
+    "destination_organization",
+    "source_parents",
+    "successor_frame",
+    "successor_inventory",
+    "successor_artifact",
+    "forward_map",
+    "reverse_map",
+    "trait_map",
+    "compatibility",
+    "verification_receipts",
+    "transport",
+    "merge_roots",
+    "transfer_keys",
+    "transfer_private_state",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

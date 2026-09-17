@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-organization/1/schemas/frame.schema.json",
+  "type": "object",
+  "properties": {
+    "spec": {
+      "const": "rapp/1"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "organization.declaration",
+        "organization.agent",
+        "organization.placement",
+        "organization.lens",
+        "organization.mutation",
+        "organization.rehearsal",
+        "organization.exhaust",
+        "organization.compatibility",
+        "organization.compilation",
+        "organization.artifact",
+        "organization.execution",
+        "organization.catalog",
+        "organization.trace",
+        "organization.command",
+        "organization.work",
+        "organization.search",
+        "organization.candidate",
+        "organization.cross",
+        "organization.selection",
+        "organization.evolution",
+        "organization.evaluation",
+        "organization.promotion",
+        "organization.rollback",
+        "organization.offer",
+        "organization.decision",
+        "organization.subscription",
+        "organization.control",
+        "organization.checkpoint"
+      ]
+    },
+    "stream_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 278
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "utc": {
+      "$ref": "common.schema.json#/$defs/utc"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "pattern": "^rapp-work-organization/1/"
+        },
+        "organization_rappid": {
+          "$ref": "common.schema.json#/$defs/rappid"
+        },
+        "world_id": {
+          "$ref": "common.schema.json#/$defs/label"
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/wave"
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "body": {
+          "type": "object"
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "organization_rappid",
+        "world_id",
+        "parents",
+        "body",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    },
+    "payload_hash": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "frame_hash": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "prev": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "prev_wave": {
+      "type": "null"
+    },
+    "sig": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    }
+  },
+  "required": [
+    "spec",
+    "kind",
+    "stream_id",
+    "seq",
+    "utc",
+    "payload",
+    "payload_hash",
+    "frame_hash",
+    "prev",
+    "prev_wave",
+    "sig"
+  ],
+  "additionalProperties": false
+}

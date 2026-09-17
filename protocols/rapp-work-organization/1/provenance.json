@@ -1,0 +1,81 @@
+{
+  "schema": "rapp-work-organization-provenance/1",
+  "profile": "rapp-work-organization/1",
+  "status": "candidate",
+  "parent": {
+    "profile": "rapp/1",
+    "role": "canonical-compatibility-substrate-unchanged",
+    "inspected_commit": "dda32d741c7218f41443a5bd17eebfe0eae82cb7"
+  },
+  "related_profiles": [
+    {
+      "profile": "rapp-workspace/1",
+      "relationship": "authorized-observation-catalog-and-pointer-input-only"
+    },
+    {
+      "profile": "rapp-hive/1",
+      "relationship": "private-catalog-and-artifact-storage-without-runtime-activation"
+    },
+    {
+      "profile": "rapp-federation/1",
+      "relationship": "sealed-sovereign-offer-transport-without-root-merge"
+    }
+  ],
+  "universal_data_connector_ai": {
+    "role": "conceptual-provenance-only",
+    "repository": "https://github.com/kody-w/UniversalDataConnectorAI",
+    "commit": "f2a978b9f85b65b9815b69d99c67e51c56732251",
+    "tree": "dd9163300aeca61d9776d112bc882844ba756519",
+    "files": 40,
+    "aggregate_blob_bytes": 1945967,
+    "copied_code": false,
+    "runtime_dependency": false,
+    "rapp1_conformance": false,
+    "authority": false,
+    "inspected_blobs": {
+      "agents/connector_learning_orchestrator.py": "1542986362f27598c224327e1372350d81ead56a",
+      "agents/schema_learner_agent.py": "edf4c8bb146c478b77c24f6d1330a07ca79586ba",
+      "agents/cx_format_synthesis_agent.py": "548b88840321de0a56af9d0ea78b36a44dcb49bd",
+      "agents/data_connector_registry_agent.py": "87c99950029ecae3ccc1c5143c9f45efab1f9127"
+    },
+    "safe_concepts": [
+      "unknown-source-analysis",
+      "schema-learning",
+      "transformation-synthesis",
+      "agent-generation",
+      "test-before-registration",
+      "reusable-connector-catalog"
+    ],
+    "rejected_substrate": [
+      "ambient-azure-storage",
+      "ambient-model-network",
+      "broad-catches",
+      "time-random-md5-identity",
+      "floating-confidence",
+      "auto-approval",
+      "simulated-tests",
+      "mutable-in-memory-sessions",
+      "unqualified-generated-code"
+    ]
+  },
+  "first_wild_handshake": {
+    "id": "softwarecoellc-vteam-hive",
+    "source_repository": "https://github.com/billwhalenmsft/softwarecoellc-vteam-hive",
+    "source_commit": "f66da3d879b53a439bc87de764d79f68ceec048a",
+    "handshake_profile_sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+    "source_lens_sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+    "target_finalizer_sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+    "interoperability_contract_sha256": "4ca6674ee491af0a09b6c333c9f24763face5f22462ce0b454a0ce4c84793932",
+    "verified_frames": 2,
+    "verified_artifacts": 9,
+    "private_source_bytes_embedded": false,
+    "local_compatibility_and_static_agent_proof": "verified-private-not-exported"
+  },
+  "generic_ceo_agent": {
+    "status": "pending-pin",
+    "sha256": null,
+    "live_activation_blocked": true
+  },
+  "brainstem_modified": false,
+  "estate_activation": false
+}

@@ -1,0 +1,27 @@
+{
+  "profile": "rapp-work-organization/1",
+  "status": "candidate",
+  "conformance_class": "single-host-locked-handshake",
+  "tests_run": 21,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "schemas_checked": 11,
+  "manifest_sha256": "f94a9fc35f596902ba19b1b55641c37e2285ab7040a9af448ea6c20e6b268f43",
+  "first_wild_handshake": {
+    "id": "softwarecoellc-vteam-hive",
+    "handshake_profile_sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+    "source_lens_sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+    "target_finalizer_sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+    "verified_frames": 2,
+    "verified_artifacts": 9
+  },
+  "private_source_bytes_embedded": false,
+  "brainstem_modified": false,
+  "locked_runtime_model_calls": 0,
+  "generic_ceo_agent": "pending-pin",
+  "live_activation": false,
+  "rapp_frames_cryptographically_verified": 0,
+  "scope": "profile-independent-structural-and-synthetic-reference",
+  "input_tree_stable": true
+}

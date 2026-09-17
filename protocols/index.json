@@ -1,6 +1,6 @@
 {
   "schema": "rapp-estate-protocol-index/1",
-  "generated_utc": "2026-09-17T21:36:39.047Z",
+  "generated_utc": "2026-09-17T21:36:39.279Z",
   "profiles": [
     {
       "name": "rapp-hive/1",
@@ -74,6 +74,37 @@
       "execution": "external-host-only",
       "grants_authority": false,
       "generic_ceo_agent": "awaiting-pin"
+    },
+    {
+      "name": "rapp-work-organization/1",
+      "human_name": "RAPP Work Organization/1",
+      "parent": "rapp/1",
+      "status": "candidate",
+      "generation": "application-profile",
+      "conformance_class": "single-host-locked-handshake",
+      "brainstem_modified": false,
+      "host_authority": "external",
+      "generic_ceo_agent": "pending-pin",
+      "live_activation": false,
+      "locked_runtime_model_calls": "forbidden",
+      "spec_path": "protocols/rapp-work-organization/1/SPEC.md",
+      "spec_sha256": "8cf0e8283273da559c27c98487dd284b1162ca3dc26babd8f913ea2ba314dee4",
+      "spec_bytes": 15140,
+      "manifest_path": "protocols/rapp-work-organization/1/manifest.json",
+      "manifest_sha256": "f94a9fc35f596902ba19b1b55641c37e2285ab7040a9af448ea6c20e6b268f43",
+      "manifest_bytes": 5648,
+      "provenance_path": "protocols/rapp-work-organization/1/provenance.json",
+      "provenance_sha256": "ecc6c2a5cd090b92fbfe5610e66138c76c9230085f8e403adc3331f640e165a4",
+      "provenance_bytes": 3036,
+      "schemas_path": "protocols/rapp-work-organization/1/schemas",
+      "conformance": "protocols/rapp-work-organization/1/reference/conformance.py",
+      "first_wild_handshake_fixture": "protocols/rapp-work-organization/1/fixtures/softwarecoellc-vteam-hive-1.json",
+      "first_wild_handshake_fixture_sha256": "06c8a26f0a3f9bce7a51a3d17b53ca33711869fdcc4ade3c5b0d53f20fe9cce3",
+      "related_profiles": [
+        "rapp-workspace/1",
+        "rapp-hive/1",
+        "rapp-federation/1"
+      ]
     }
   ],
   "authority": true,

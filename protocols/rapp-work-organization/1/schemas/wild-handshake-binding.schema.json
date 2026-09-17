@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-organization/1/schemas/wild-handshake-binding.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-organization/1/wild-handshake-binding"
+    },
+    "id": {
+      "const": "softwarecoellc-vteam-hive"
+    },
+    "status": {
+      "const": "owner-approved-private"
+    },
+    "embedded_private_content": {
+      "const": false
+    },
+    "handshake_profile": {
+      "$ref": "common.schema.json#/$defs/artifactPin"
+    },
+    "source_lens": {
+      "$ref": "common.schema.json#/$defs/artifactPin"
+    },
+    "target_finalizer": {
+      "$ref": "common.schema.json#/$defs/artifactPin"
+    },
+    "contract": {
+      "$ref": "common.schema.json#/$defs/artifactPin"
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "const": "https://github.com/billwhalenmsft/softwarecoellc-vteam-hive"
+        },
+        "commit": {
+          "$ref": "common.schema.json#/$defs/gitHash"
+        },
+        "profile": {
+          "const": "microsol-project/1"
+        },
+        "verified_frames": {
+          "const": 2
+        },
+        "verified_artifacts": {
+          "const": 9
+        }
+      },
+      "required": [
+        "repository",
+        "commit",
+        "profile",
+        "verified_frames",
+        "verified_artifacts"
+      ],
+      "additionalProperties": false
+    },
+    "proof": {
+      "type": "object",
+      "properties": {
+        "double_hotload": {
+          "const": "verified-local"
+        },
+        "compatibility_frame": {
+          "const": "verified-local-private"
+        },
+        "static_agent": {
+          "const": "verified-local-private"
+        },
+        "model_calls_static_runtime": {
+          "const": 0
+        }
+      },
+      "required": [
+        "double_hotload",
+        "compatibility_frame",
+        "static_agent",
+        "model_calls_static_runtime"
+      ],
+      "additionalProperties": false
+    },
+    "generic_ceo_agent": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "const": "pending-pin"
+        },
+        "sha256": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "status",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "id",
+    "status",
+    "embedded_private_content",
+    "handshake_profile",
+    "source_lens",
+    "target_finalizer",
+    "contract",
+    "source",
+    "proof",
+    "generic_ceo_agent",
+    "authority"
+  ],
+  "additionalProperties": false
+}

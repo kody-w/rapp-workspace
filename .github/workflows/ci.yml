@@ -36,3 +36,24 @@ jobs:
           --output .validation/workspace1-core-ci
       - name: Compile
         run: python3 -m py_compile tools/*.py protocols/rapp-workspace/1/reference/*.py tests/*.py
+
+  work-organization1-candidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Candidate schemas and pins
+        run: |
+          python3 -B tools/work_organization.py schemas
+          python3 -B tools/work_organization.py pins
+      - name: Candidate conformance
+        run: python3 -B tools/work_organization.py conformance
+      - name: Compile
+        run: >-
+          python3 -m py_compile
+          tools/work_organization.py
+          protocols/rapp-work-organization/1/reference/*.py
+          tests/test_work_organization.py
+          tests/test_work_organization_p0.py

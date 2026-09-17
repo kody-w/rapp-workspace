@@ -1,0 +1,44 @@
+{
+  "schema": "rapp-work-organization-limits/1",
+  "profile": "rapp-work-organization/1",
+  "reference_defaults": {
+    "max_lenses": 8,
+    "max_candidates": 32,
+    "max_cross_parents": 4,
+    "max_cross_traits": 16,
+    "max_depth": 4,
+    "max_rounds": 4,
+    "max_work_units": 100000,
+    "max_artifact_bytes": 67108864,
+    "beam_width": 8,
+    "pareto_frontier": 8,
+    "no_progress_rounds": 2,
+    "stable_rehearsal_passes": 2
+  },
+  "hard_ceiling": {
+    "max_lenses": 64,
+    "max_candidates": 256,
+    "max_cross_parents": 8,
+    "max_cross_traits": 64,
+    "max_depth": 32,
+    "max_rounds": 16,
+    "max_work_units": 1000000,
+    "max_artifact_bytes": 1073741824,
+    "beam_width": 32,
+    "pareto_frontier": 32,
+    "no_progress_rounds": 4,
+    "stable_rehearsal_passes": 8,
+    "handshake_attempts": 128,
+    "fixture_vectors": 1024,
+    "catalog_candidates": 4096,
+    "direct_peer_subscriptions": 256,
+    "aggregate_frames": 4096
+  },
+  "rules": {
+    "child_resets_root_budget": false,
+    "policy_may_raise_existing_root": false,
+    "stop_slot_reserved": true,
+    "power_set_cross_enumeration": false,
+    "automatic_upward_promotion": false
+  }
+}

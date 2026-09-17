@@ -38,6 +38,31 @@ mandatory relay, or public GODD graph. ActivityPub, AT Protocol, Git, HTTP,
 Matrix, and delay-tolerant transports are replaceable adapters; none confers
 RAPP authority.
 
+[`rapp-work-organization/1`](../protocols/rapp-work-organization/1/SPEC.md)
+defines the candidate RAPP Work Organization host profile. An unchanged global
+Brainstem may atomically hotload exact content-addressed Lens agents, derive
+arbitrary application successors through a source pass and target/finalizer
+pass, rehearse against canonical and hidden scenarios, and lock one
+Compatibility Frame plus a deterministic static artifact bundle. The host,
+not the Lens, constructs and signs canonical RAPP/1 successor Frames.
+
+Work Organization/1 also defines complete forward mutation and reverse
+ancestry maps, sanitized correction traces, bounded N-Lens search and crossing,
+recursive improvement with promotion firewalls, mutation-offer pull-request
+projections, and private-Hive learned-handshake packages. Generated tests
+cannot certify their generator. Git merge, Hive storage, catalog popularity,
+or passing a local fixture never grants authority or rewrites an ancestor.
+
+The first owner-approved private wild-handshake binding is
+`softwarecoellc-vteam-hive`. This repository carries only its exact approved
+hashes, byte counts and qualification counts; no private source bytes, keys,
+runtime state, Compatibility Frame bytes or generated agent are embedded.
+Live organization activation remains blocked until the generic CEO `agent.py`
+and host activation bindings are independently pinned.
+
+See the [Work Organization overview](rapp-work-organization.md) for the
+implemented candidate boundary, exact first-handshake pins, and checks.
+
 The checked-in federation reference is a bounded, offline receiver and
 conformance candidate. It does not claim that an estate has activated the
 profile, that a live federation exists, or that unsupported transport and
