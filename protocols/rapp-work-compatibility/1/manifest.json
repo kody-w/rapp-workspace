@@ -1,0 +1,240 @@
+{
+  "schema": "rapp-work-compatibility-file-manifest/1",
+  "profile": "rapp-work-compatibility/1",
+  "human_name": "RAPP Work Compatibility/1",
+  "parent": "rapp-workspace/1",
+  "substrate": "rapp/1",
+  "authority": false,
+  "status": "optional-application-profile",
+  "signed_activation": false,
+  "normative": [
+    {
+      "path": "SPEC.md",
+      "sha256": "29580b3c54b439411ea74ca28b18061de2e6497c729e7937b7d86d4bf17a8d6e",
+      "bytes": 13967
+    },
+    {
+      "path": "safety-matrix.json",
+      "sha256": "1ca934c017d4785bf31a6a41f4e5296b8802510feb0807750089aca3f5b85d1f",
+      "bytes": 3052
+    },
+    {
+      "path": "runtime-manifest.json",
+      "sha256": "169cde589f5dda1539f12c188e85e713a197e01f6fc26d583413efe8637dad36",
+      "bytes": 455
+    },
+    {
+      "path": "schemas/artifact-bundle.schema.json",
+      "sha256": "7230c85c3262d90c8c06fbd42818297fe879c7378ecf9f54556eca4eff84f2fc",
+      "bytes": 6702
+    },
+    {
+      "path": "schemas/candidate-cross.schema.json",
+      "sha256": "6ffa3b77d4203e5503376278b6218aeab03e823610db8c6215e6438f3070811b",
+      "bytes": 2301
+    },
+    {
+      "path": "schemas/causal-mutation-manifest.schema.json",
+      "sha256": "a12b59940704dfdfcf8c39305c5e586ecba6bf7b40775a6e2c07aa33d4fb7842",
+      "bytes": 8972
+    },
+    {
+      "path": "schemas/common.schema.json",
+      "sha256": "96953d1ff332ca572c8b1ca2ae65acaef4761b3a14685ed75b137b0a82e4ddff",
+      "bytes": 9031
+    },
+    {
+      "path": "schemas/compatibility-exhaust.schema.json",
+      "sha256": "f02e0d39799d8ad90e24b010dcc7211b59d16b9ea9d0d89bd6c945b420331dd2",
+      "bytes": 6352
+    },
+    {
+      "path": "schemas/compatibility.schema.json",
+      "sha256": "ad11c6bf6c10e55e8580b1b0c979e2540d91005d5035770efd3b60a4d52ab46a",
+      "bytes": 18037
+    },
+    {
+      "path": "schemas/evaluation-receipt.schema.json",
+      "sha256": "55f7ee97d0c610d906a7f5e5cc819df2a5afc6082092bf32fb26181a57340d47",
+      "bytes": 6913
+    },
+    {
+      "path": "schemas/evolution-proposal.schema.json",
+      "sha256": "8ed1c676586a7414f01eefcfea56802a543d3c2532e87cfb6458c1ef9d00f3d5",
+      "bytes": 2401
+    },
+    {
+      "path": "schemas/handshake-package.schema.json",
+      "sha256": "2194b0ea711759ed53f2fae6d07f9b15d2c68a1c42670b528addb4606f158ff9",
+      "bytes": 8958
+    },
+    {
+      "path": "schemas/learning-trace.schema.json",
+      "sha256": "aba9976a4b2f68cbfa3cc698323925fdfdfadb5c3c092c64b288332093a4d0a7",
+      "bytes": 7887
+    },
+    {
+      "path": "schemas/lens-dimension.schema.json",
+      "sha256": "ef15de81f491aeaf660ca4ea3310064aa2b69090c51b3f2802ee2639b657f443",
+      "bytes": 6853
+    },
+    {
+      "path": "schemas/mutation-offer.schema.json",
+      "sha256": "faf90144ec8310e51d1726887866fc62894fee8fbf6c9588eba32efc3faf70a1",
+      "bytes": 3281
+    },
+    {
+      "path": "schemas/promotion-decision.schema.json",
+      "sha256": "d0cf4184d28986183676a3d95b62f8d28660e022dcb6b4877497cecb6d5f8811",
+      "bytes": 2122
+    },
+    {
+      "path": "schemas/source-qualification.schema.json",
+      "sha256": "adcfb55d5949b4f895099b6db7efab11314aa09a263c3f564487a556c16a63f0",
+      "bytes": 1276
+    },
+    {
+      "path": "schemas/static-agent-generation.schema.json",
+      "sha256": "70c09adbd0517862142ff386fa55aebc31322d8cace37e428c1853788b5b6f7c",
+      "bytes": 4445
+    },
+    {
+      "path": "schemas/transformation-receipt.schema.json",
+      "sha256": "7806f3e6f0cda6393c7a3935a8cbddc879ca7f559dd63cfc887d5ee34ec95764",
+      "bytes": 3933
+    }
+  ],
+  "reference": [
+    {
+      "path": "reference/common.py",
+      "sha256": "1fc64b0e007939eb165f7fe43e287f6e31a2578acf6e4098786c89db50c1c28d",
+      "bytes": 11125
+    },
+    {
+      "path": "reference/conformance.py",
+      "sha256": "2e7a842f2427e66eff934ef366e11d00a2af1c1dcb7d2ce60442562a36c89d00",
+      "bytes": 4622
+    },
+    {
+      "path": "reference/import_bill_fixture.py",
+      "sha256": "50c10902a7f15b1eb166f500d40cf96cb698ddcfd34ba22794744fd3ed42bdf0",
+      "bytes": 16510
+    },
+    {
+      "path": "reference/pins.py",
+      "sha256": "4e5773d8c72cbe7cb6b627ee5bd00106946074aa73b278218904cc1e62d817fc",
+      "bytes": 4847
+    },
+    {
+      "path": "reference/schema_source.py",
+      "sha256": "a1f72363a1b9563339fc103969a560c7fed81eae444d17c67ba2ed87ba405c13",
+      "bytes": 19462
+    },
+    {
+      "path": "reference/validator.py",
+      "sha256": "147b25bccaa9779087268f8f68e49b8aa78b8bfe374e4e1b4dd42b186d18f63b",
+      "bytes": 16455
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_profile.py",
+      "sha256": "ae274ae130017e85351f31b272ca683c1b46a9680f255c9934e093bc3d4b9508",
+      "bytes": 16260
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/compatibility-frame.json",
+      "sha256": "845f169812f9faaabd7877517133c444a61e59c5ac8f10e8a440ae6039121619",
+      "bytes": 5314
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/fixture-index.json",
+      "sha256": "8c9b580e16ad6579c5f833eb8050664db433283d25350298da2fbce984613e51",
+      "bytes": 2022
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/generation-receipt.json",
+      "sha256": "b2ae1fa6f0c5661bfce6bd23068700d87d8f3b5325f5a44bef33d06d3029aef6",
+      "bytes": 1347
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/handshake.json",
+      "sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+      "bytes": 5351
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/package.json",
+      "sha256": "e1b0bc90e75e7b165063992740d735b8d978b1c696f98deb8d5a80ca2ae6e02d",
+      "bytes": 2384
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/source-agent.py",
+      "sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+      "bytes": 11302
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/source-frames/00000000.json",
+      "sha256": "acc15bbc941c95431dcafbb746a45be92285734201f9e6b3f23dab8be12b52e5",
+      "bytes": 960
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/source-frames/00000001.json",
+      "sha256": "f1b9e9e52e0be4f6d15ef20380253f670ced328dd19b71c5199a0620adaa9d58",
+      "bytes": 1037
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/source-qualification.json",
+      "sha256": "14f800ab22772b7b36b576f7fa86f8a11db1552773eddfa073e26fea01ffa0e6",
+      "bytes": 329
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/static-agent.py",
+      "sha256": "67072ec9058eb2cbaaec3893fddd6f58a548350d5d33c90fd682f88ba11cd4ef",
+      "bytes": 6026
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/target-finalizer.py",
+      "sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+      "bytes": 11461
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/transformation-receipts/00000000-source.json",
+      "sha256": "d299a459d90ec54a59c8ac85de5f8ae5450dd3bd02e3a16237184c89954423e1",
+      "bytes": 1727
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/transformation-receipts/00000000-target.json",
+      "sha256": "b5a010a8a636d8712ee3c243f1635ffcd274e0c3232dc21f97e585f7227559e1",
+      "bytes": 1741
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/transformation-receipts/00000001-source.json",
+      "sha256": "6d36b8a9ba87837e8eb7f01f4bdfb0e08768bdb7829fff0ce97ac2e1f9743823",
+      "bytes": 1727
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/transformation-receipts/00000001-target.json",
+      "sha256": "c18a5b07bd1e7f77b9b51bacf9269a05d859004dcfbba6c598486dadaee4f015",
+      "bytes": 1741
+    }
+  ],
+  "documentation": [
+    {
+      "path": "README.md",
+      "sha256": "e7d9bd40da68657c4f310f0282f618a40fda163b03599d0254e4ade4c63fda34",
+      "bytes": 1154
+    }
+  ],
+  "provenance": {
+    "path": "provenance.json",
+    "sha256": "40308ce16844417dff86bcc42736ecf441337b54f854d22b6bc459687e4dcc6d",
+    "bytes": 4313
+  },
+  "authority_boundary": "local-validation-and-external-controller-adoption-required",
+  "dynamic_execution": "external-global-brainstem-only",
+  "static_execution": "captured-byte-isolated-host-qualification-required",
+  "generic_ceo_agent": "awaiting-exact-pin-not-included",
+  "microsol_schema_boundary": "concrete-live-subscription-profile-only"
+}

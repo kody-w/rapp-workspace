@@ -1,0 +1,359 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-work/raw/main/protocols/rapp-work-compatibility/1/schemas/handshake-package.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-compatibility/1/handshake-package"
+    },
+    "handshake_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1024
+    },
+    "status": {
+      "enum": [
+        "candidate",
+        "owner-approved-private",
+        "retired"
+      ]
+    },
+    "source_profile": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+    },
+    "target_profile": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+    },
+    "handshake": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "particle": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "executable": {
+          "const": false
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "particle",
+        "role",
+        "media_type",
+        "executable"
+      ],
+      "additionalProperties": false
+    },
+    "source_agent": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "particle": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "executable": {
+          "const": false
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "particle",
+        "role",
+        "media_type",
+        "executable"
+      ],
+      "additionalProperties": false
+    },
+    "target_agent": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "particle": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "executable": {
+          "const": false
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "particle",
+        "role",
+        "media_type",
+        "executable"
+      ],
+      "additionalProperties": false
+    },
+    "static_agent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+            },
+            "sha256": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            },
+            "particle": {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:particle"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            "role": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+            },
+            "media_type": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+            },
+            "executable": {
+              "const": false
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes",
+            "particle",
+            "role",
+            "media_type",
+            "executable"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "generation_receipt": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/particle"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "compatibility_template": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "rehearsal": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "mutation_tests": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "source_qualification": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "private_hive_object_kind": {
+      "const": "rapp-work-compatibility/1-handshake-program"
+    },
+    "authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "handshake_id",
+    "version",
+    "status",
+    "source_profile",
+    "target_profile",
+    "handshake",
+    "source_agent",
+    "target_agent",
+    "static_agent",
+    "generation_receipt",
+    "compatibility_template",
+    "rehearsal",
+    "mutation_tests",
+    "source_qualification",
+    "private_hive_object_kind",
+    "authority"
+  ],
+  "additionalProperties": false
+}

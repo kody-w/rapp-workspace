@@ -1,0 +1,342 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-work/raw/main/protocols/rapp-work-compatibility/1/schemas/causal-mutation-manifest.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-compatibility/1/causal-mutation-manifest"
+    },
+    "source_parents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "frame": {
+            "$ref": "common.schema.json#/$defs/wave"
+          },
+          "commit": {
+            "type": "string",
+            "minLength": 40,
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{40,64}$(?![\\s\\S])"
+          },
+          "inventory": {
+            "$ref": "common.schema.json#/$defs/particle"
+          }
+        },
+        "required": [
+          "frame",
+          "commit",
+          "inventory"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "target_inventory": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "forward": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+              },
+              "sha256": {
+                "type": "string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 16777216
+              },
+              "mode": {
+                "enum": [
+                  "100644",
+                  "100755"
+                ]
+              }
+            },
+            "required": [
+              "path",
+              "sha256",
+              "bytes",
+              "mode"
+            ],
+            "additionalProperties": false
+          },
+          "disposition": {
+            "enum": [
+              "retained",
+              "replaced",
+              "moved",
+              "removed"
+            ]
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+                },
+                "sha256": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 16777216
+                },
+                "mode": {
+                  "enum": [
+                    "100644",
+                    "100755"
+                  ]
+                }
+              },
+              "required": [
+                "path",
+                "sha256",
+                "bytes",
+                "mode"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 0,
+            "maxItems": 128,
+            "uniqueItems": true
+          },
+          "content_relation": {
+            "enum": [
+              "identical",
+              "derived",
+              "absent"
+            ]
+          },
+          "receipt": {
+            "$ref": "common.schema.json#/$defs/particle"
+          },
+          "traits": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+            },
+            "minItems": 0,
+            "maxItems": 256,
+            "uniqueItems": true
+          },
+          "loss_class": {
+            "$ref": "common.schema.json#/$defs/loss_class"
+          }
+        },
+        "required": [
+          "source",
+          "disposition",
+          "targets",
+          "content_relation",
+          "receipt",
+          "traits",
+          "loss_class"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 10000,
+      "uniqueItems": true
+    },
+    "reverse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+              },
+              "sha256": {
+                "type": "string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 16777216
+              },
+              "mode": {
+                "enum": [
+                  "100644",
+                  "100755"
+                ]
+              }
+            },
+            "required": [
+              "path",
+              "sha256",
+              "bytes",
+              "mode"
+            ],
+            "additionalProperties": false
+          },
+          "provenance": {
+            "enum": [
+              "inherited",
+              "derived",
+              "new"
+            ]
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+                },
+                "sha256": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 16777216
+                },
+                "mode": {
+                  "enum": [
+                    "100644",
+                    "100755"
+                  ]
+                }
+              },
+              "required": [
+                "path",
+                "sha256",
+                "bytes",
+                "mode"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 0,
+            "maxItems": 128,
+            "uniqueItems": true
+          },
+          "receipt": {
+            "$ref": "common.schema.json#/$defs/particle"
+          },
+          "inverse_artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/particle"
+            },
+            "minItems": 0,
+            "maxItems": 128,
+            "uniqueItems": true
+          },
+          "loss_class": {
+            "$ref": "common.schema.json#/$defs/loss_class"
+          }
+        },
+        "required": [
+          "target",
+          "provenance",
+          "sources",
+          "receipt",
+          "inverse_artifacts",
+          "loss_class"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 10000,
+      "uniqueItems": true
+    },
+    "aggregate_loss_class": {
+      "$ref": "common.schema.json#/$defs/loss_class"
+    },
+    "inverse_artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/particle"
+      },
+      "minItems": 0,
+      "maxItems": 10000,
+      "uniqueItems": true
+    },
+    "selected_traits": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 1024,
+      "uniqueItems": true
+    },
+    "omitted_traits": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 1024,
+      "uniqueItems": true
+    },
+    "complete": {
+      "const": true
+    }
+  },
+  "required": [
+    "schema",
+    "source_parents",
+    "target_inventory",
+    "forward",
+    "reverse",
+    "aggregate_loss_class",
+    "inverse_artifacts",
+    "selected_traits",
+    "omitted_traits",
+    "complete"
+  ],
+  "additionalProperties": false
+}

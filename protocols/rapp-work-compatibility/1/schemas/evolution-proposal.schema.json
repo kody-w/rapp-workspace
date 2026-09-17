@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-work/raw/main/protocols/rapp-work-compatibility/1/schemas/evolution-proposal.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-compatibility/1/evolution-proposal"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "activation_mode": {
+      "enum": [
+        "live",
+        "synthetic"
+      ]
+    },
+    "activation": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "level": {
+      "enum": [
+        "handshake",
+        "agent",
+        "compiler",
+        "seed",
+        "protocol"
+      ]
+    },
+    "ancestors": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "candidate_bundle": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "scenario_corpus": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "hidden_holdout": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "controlled_mutants": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "canary": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "independent_verification": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "promotion_target": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+    },
+    "automatic_promotion": {
+      "const": false
+    },
+    "status": {
+      "const": "candidate"
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "activation_mode",
+    "activation",
+    "restrictions",
+    "level",
+    "ancestors",
+    "candidate_bundle",
+    "scenario_corpus",
+    "hidden_holdout",
+    "controlled_mutants",
+    "canary",
+    "independent_verification",
+    "promotion_target",
+    "automatic_promotion",
+    "status",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

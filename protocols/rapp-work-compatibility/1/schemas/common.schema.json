@@ -1,0 +1,377 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-work/raw/main/protocols/rapp-work-compatibility/1/schemas/common.schema.json",
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+    },
+    "rappid": {
+      "type": "string",
+      "minLength": 76,
+      "maxLength": 213,
+      "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "wave": {
+      "type": "object",
+      "properties": {
+        "space": {
+          "const": "rapp/1:wave"
+        },
+        "hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "space",
+        "hash"
+      ],
+      "additionalProperties": false
+    },
+    "particle": {
+      "type": "object",
+      "properties": {
+        "space": {
+          "const": "rapp/1:particle"
+        },
+        "hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "space",
+        "hash"
+      ],
+      "additionalProperties": false
+    },
+    "head": {
+      "type": "object",
+      "properties": {
+        "stream_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "seq": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "utc": {
+          "type": "string",
+          "minLength": 24,
+          "maxLength": 24,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$(?![\\s\\S])"
+        },
+        "payload_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "frame_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "stream_id",
+        "seq",
+        "utc",
+        "payload_hash",
+        "frame_hash"
+      ],
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "particle": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "executable": {
+          "const": false
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "particle",
+        "role",
+        "media_type",
+        "executable"
+      ],
+      "additionalProperties": false
+    },
+    "restrictions": {
+      "type": "object",
+      "properties": {
+        "rights": {
+          "type": "object",
+          "properties": {
+            "capture": {
+              "type": "boolean"
+            },
+            "local_synthesis": {
+              "type": "boolean"
+            },
+            "model_submission": {
+              "type": "boolean"
+            },
+            "retention": {
+              "type": "boolean"
+            },
+            "redistribution": {
+              "type": "boolean"
+            },
+            "adoption": {
+              "type": "boolean"
+            },
+            "materialization": {
+              "type": "boolean"
+            },
+            "execution": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "capture",
+            "local_synthesis",
+            "model_submission",
+            "retention",
+            "redistribution",
+            "adoption",
+            "materialization",
+            "execution"
+          ],
+          "additionalProperties": false
+        },
+        "privacy": {
+          "enum": [
+            "godd",
+            "dogg",
+            "neutral"
+          ]
+        },
+        "audience": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "hashes_sensitive": {
+          "const": true
+        },
+        "repository_content_is_instructions": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        },
+        "authorizes_effects": {
+          "const": false
+        }
+      },
+      "required": [
+        "rights",
+        "privacy",
+        "audience",
+        "hashes_sensitive",
+        "repository_content_is_instructions",
+        "grants_authority",
+        "authorizes_effects"
+      ],
+      "additionalProperties": false
+    },
+    "bounds": {
+      "type": "object",
+      "properties": {
+        "max_input_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
+        },
+        "max_output_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
+        },
+        "max_files": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "max_frames": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 512
+        },
+        "max_lenses": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "max_candidates": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 128
+        },
+        "max_cross_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "max_rounds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "max_model_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 128
+        },
+        "max_tool_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        }
+      },
+      "required": [
+        "max_input_bytes",
+        "max_output_bytes",
+        "max_files",
+        "max_frames",
+        "max_lenses",
+        "max_candidates",
+        "max_cross_size",
+        "max_depth",
+        "max_rounds",
+        "max_model_calls",
+        "max_tool_calls"
+      ],
+      "additionalProperties": false
+    },
+    "file_ref": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "mode": {
+          "enum": [
+            "100644",
+            "100755"
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "mode"
+      ],
+      "additionalProperties": false
+    },
+    "loss_class": {
+      "enum": [
+        "lossless-direct",
+        "lossless-retained-delta",
+        "lossy-source-referenced",
+        "lossy-unavailable"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false
+}

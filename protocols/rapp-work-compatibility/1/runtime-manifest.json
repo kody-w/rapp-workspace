@@ -1,0 +1,13 @@
+{
+  "schema": "rapp-work-compatibility-runtime/1",
+  "profile": "rapp-work-compatibility/1",
+  "python": "3.10+",
+  "dependencies": [],
+  "canonical_parent": "explicit-byte-pinned-rapp1-checkout",
+  "dynamic_lens_runtime": "external-global-brainstem",
+  "static_agent_runtime": "isolated-captured-byte-python",
+  "network": false,
+  "ambient_credentials": false,
+  "native_model_sessions_persisted": false,
+  "repository_content_is_instructions": false
+}

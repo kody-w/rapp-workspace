@@ -1,0 +1,704 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-work/raw/main/protocols/rapp-work-compatibility/1/schemas/compatibility.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-compatibility/1/compatibility"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "activation_mode": {
+      "enum": [
+        "live",
+        "synthetic"
+      ]
+    },
+    "activation": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "status": {
+      "enum": [
+        "candidate",
+        "partial",
+        "read-only",
+        "full"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "rappid": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "stream_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "head": {
+          "type": "object",
+          "properties": {
+            "stream_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+            },
+            "seq": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "utc": {
+              "type": "string",
+              "minLength": 24,
+              "maxLength": 24,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$(?![\\s\\S])"
+            },
+            "payload_hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            },
+            "frame_hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "stream_id",
+            "seq",
+            "utc",
+            "payload_hash",
+            "frame_hash"
+          ],
+          "additionalProperties": false
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+          },
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true
+        },
+        "repository": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "git_commit": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{40,64}$(?![\\s\\S])"
+        },
+        "inventory": {
+          "$ref": "common.schema.json#/$defs/particle"
+        }
+      },
+      "required": [
+        "rappid",
+        "stream_id",
+        "head",
+        "profile",
+        "capabilities",
+        "repository",
+        "git_commit",
+        "inventory"
+      ],
+      "additionalProperties": false
+    },
+    "target": {
+      "type": "object",
+      "properties": {
+        "profile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+          },
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "profile",
+        "operations"
+      ],
+      "additionalProperties": false
+    },
+    "lens": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "const": "global-rapp-brainstem"
+        },
+        "source_agent": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+            },
+            "sha256": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            },
+            "particle": {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:particle"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            "role": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+            },
+            "media_type": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+            },
+            "executable": {
+              "const": false
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes",
+            "particle",
+            "role",
+            "media_type",
+            "executable"
+          ],
+          "additionalProperties": false
+        },
+        "target_agent": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+            },
+            "sha256": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            },
+            "particle": {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:particle"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            "role": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+            },
+            "media_type": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+            },
+            "executable": {
+              "const": false
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes",
+            "particle",
+            "role",
+            "media_type",
+            "executable"
+          ],
+          "additionalProperties": false
+        },
+        "passes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "source-lens",
+              "target-finalizer"
+            ]
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/particle"
+          },
+          "minItems": 0,
+          "maxItems": 512,
+          "uniqueItems": true
+        },
+        "native_session_persisted": {
+          "const": false
+        },
+        "brainstem_modified": {
+          "const": false
+        }
+      },
+      "required": [
+        "host",
+        "source_agent",
+        "target_agent",
+        "passes",
+        "receipts",
+        "native_session_persisted",
+        "brainstem_modified"
+      ],
+      "additionalProperties": false
+    },
+    "static_program": {
+      "type": "object",
+      "properties": {
+        "bundle": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/particle"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "entrypoint": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+                },
+                "sha256": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 16777216
+                },
+                "particle": {
+                  "type": "object",
+                  "properties": {
+                    "space": {
+                      "const": "rapp/1:particle"
+                    },
+                    "hash": {
+                      "type": "string",
+                      "minLength": 64,
+                      "maxLength": 64,
+                      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                    }
+                  },
+                  "required": [
+                    "space",
+                    "hash"
+                  ],
+                  "additionalProperties": false
+                },
+                "role": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+                },
+                "media_type": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+                },
+                "executable": {
+                  "const": false
+                }
+              },
+              "required": [
+                "path",
+                "sha256",
+                "bytes",
+                "particle",
+                "role",
+                "media_type",
+                "executable"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "generation_receipt": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/particle"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "model_calls": {
+          "const": 0
+        }
+      },
+      "required": [
+        "bundle",
+        "entrypoint",
+        "generation_receipt",
+        "model_calls"
+      ],
+      "additionalProperties": false
+    },
+    "coverage": {
+      "type": "object",
+      "properties": {
+        "supported": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "required": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "basis_points": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+          },
+          "minItems": 0,
+          "maxItems": 1024,
+          "uniqueItems": true
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+          },
+          "minItems": 0,
+          "maxItems": 1024,
+          "uniqueItems": true
+        },
+        "scenario": {
+          "$ref": "common.schema.json#/$defs/particle"
+        }
+      },
+      "required": [
+        "supported",
+        "required",
+        "basis_points",
+        "gaps",
+        "unknowns",
+        "scenario"
+      ],
+      "additionalProperties": false
+    },
+    "lineage": {
+      "type": "object",
+      "properties": {
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/wave"
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "mutation_manifest": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/particle"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reverse_ancestry": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/particle"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "previous_compatibility": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/wave"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trigger_exhaust": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/wave"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "parents",
+        "mutation_manifest",
+        "reverse_ancestry",
+        "previous_compatibility",
+        "trigger_exhaust"
+      ],
+      "additionalProperties": false
+    },
+    "qualification": {
+      "type": "object",
+      "properties": {
+        "rehearsal": {
+          "$ref": "common.schema.json#/$defs/particle"
+        },
+        "host_tests": {
+          "$ref": "common.schema.json#/$defs/particle"
+        },
+        "mutation_tests": {
+          "$ref": "common.schema.json#/$defs/particle"
+        },
+        "canary": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/particle"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "generated_tests_are_independent_proof": {
+          "const": false
+        }
+      },
+      "required": [
+        "rehearsal",
+        "host_tests",
+        "mutation_tests",
+        "canary",
+        "generated_tests_are_independent_proof"
+      ],
+      "additionalProperties": false
+    },
+    "bounds": {
+      "type": "object",
+      "properties": {
+        "max_input_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
+        },
+        "max_output_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
+        },
+        "max_files": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "max_frames": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 512
+        },
+        "max_lenses": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "max_candidates": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 128
+        },
+        "max_cross_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "max_rounds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "max_model_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 128
+        },
+        "max_tool_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        }
+      },
+      "required": [
+        "max_input_bytes",
+        "max_output_bytes",
+        "max_files",
+        "max_frames",
+        "max_lenses",
+        "max_candidates",
+        "max_cross_size",
+        "max_depth",
+        "max_rounds",
+        "max_model_calls",
+        "max_tool_calls"
+      ],
+      "additionalProperties": false
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "activation_mode",
+    "activation",
+    "restrictions",
+    "status",
+    "source",
+    "target",
+    "lens",
+    "static_program",
+    "coverage",
+    "lineage",
+    "qualification",
+    "bounds",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

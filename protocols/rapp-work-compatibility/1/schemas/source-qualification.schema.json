@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-work/raw/main/protocols/rapp-work-compatibility/1/schemas/source-qualification.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-compatibility/1/source-qualification"
+    },
+    "repository": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "commit": {
+      "type": "string",
+      "minLength": 40,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{40,64}$(?![\\s\\S])"
+    },
+    "verified_frames": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 512
+    },
+    "verified_artifacts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "qualification_status": {
+      "enum": [
+        "synthetic",
+        "externally-verified-summary"
+      ]
+    },
+    "source_heads_bundled": {
+      "type": "boolean"
+    },
+    "authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "repository",
+    "commit",
+    "verified_frames",
+    "verified_artifacts",
+    "qualification_status",
+    "source_heads_bundled",
+    "authority"
+  ],
+  "additionalProperties": false
+}

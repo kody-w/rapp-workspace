@@ -1,6 +1,6 @@
 {
   "schema": "rapp-estate-protocol-index/1",
-  "generated_utc": "2026-09-15T16:19:18.852Z",
+  "generated_utc": "2026-09-17T21:36:39.047Z",
   "profiles": [
     {
       "name": "rapp-hive/1",
@@ -46,6 +46,34 @@
       "external_effects": "disabled",
       "live_activation": "exact-document-external-verifier-required",
       "production_key_custody": "external-unqualified"
+    },
+    {
+      "name": "rapp-work-compatibility/1",
+      "human_name": "RAPP Work Compatibility/1",
+      "parent": "rapp-workspace/1",
+      "substrate": "rapp/1",
+      "authority": false,
+      "status": "optional-application-profile",
+      "signed_activation": false,
+      "spec_path": "protocols/rapp-work-compatibility/1/SPEC.md",
+      "spec_sha256": "29580b3c54b439411ea74ca28b18061de2e6497c729e7937b7d86d4bf17a8d6e",
+      "spec_bytes": 13967,
+      "manifest_path": "protocols/rapp-work-compatibility/1/manifest.json",
+      "manifest_sha256": "648f06e6149733f27bc317cb1534f324035afec0ec8452d56a60c37dbc2cde13",
+      "manifest_bytes": 8310,
+      "provenance_path": "protocols/rapp-work-compatibility/1/provenance.json",
+      "provenance_sha256": "40308ce16844417dff86bcc42736ecf441337b54f854d22b6bc459687e4dcc6d",
+      "provenance_bytes": 4313,
+      "schemas_path": "protocols/rapp-work-compatibility/1/schemas",
+      "conformance": "protocols/rapp-work-compatibility/1/reference/conformance.py",
+      "bill_fixture_package": {
+        "path": "protocols/rapp-work-compatibility/1/fixtures/softwarecoellc-vteam-hive/package.json",
+        "sha256": "e1b0bc90e75e7b165063992740d735b8d978b1c696f98deb8d5a80ca2ae6e02d",
+        "bytes": 2384
+      },
+      "execution": "external-host-only",
+      "grants_authority": false,
+      "generic_ceo_agent": "awaiting-pin"
     }
   ],
   "authority": true,

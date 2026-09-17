@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-work/raw/main/protocols/rapp-work-compatibility/1/schemas/candidate-cross.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-compatibility/1/candidate-cross"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "activation_mode": {
+      "enum": [
+        "live",
+        "synthetic"
+      ]
+    },
+    "activation": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "parents": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 2,
+      "maxItems": 8,
+      "uniqueItems": true
+    },
+    "selected_traits": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 1024,
+      "uniqueItems": true
+    },
+    "omitted_traits": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 1024,
+      "uniqueItems": true
+    },
+    "dependency_evidence": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "result_bundle": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "fitness_evidence": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "lineage": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "activation_mode",
+    "activation",
+    "restrictions",
+    "parents",
+    "selected_traits",
+    "omitted_traits",
+    "dependency_evidence",
+    "result_bundle",
+    "fitness_evidence",
+    "lineage",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

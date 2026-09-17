@@ -1,0 +1,291 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-work/raw/main/protocols/rapp-work-compatibility/1/schemas/lens-dimension.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-compatibility/1/lens-dimension"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "activation_mode": {
+      "enum": [
+        "live",
+        "synthetic"
+      ]
+    },
+    "activation": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "ancestor": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "intent": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "source_agent": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "particle": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "executable": {
+          "const": false
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "particle",
+        "role",
+        "media_type",
+        "executable"
+      ],
+      "additionalProperties": false
+    },
+    "target_agent": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "particle": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "executable": {
+          "const": false
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "particle",
+        "role",
+        "media_type",
+        "executable"
+      ],
+      "additionalProperties": false
+    },
+    "scope_traits": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 1024,
+      "uniqueItems": true
+    },
+    "parent_dimension": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "max_input_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
+        },
+        "max_output_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
+        },
+        "max_files": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "max_frames": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 512
+        },
+        "max_lenses": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "max_candidates": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 128
+        },
+        "max_cross_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "max_rounds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "max_model_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 128
+        },
+        "max_tool_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        }
+      },
+      "required": [
+        "max_input_bytes",
+        "max_output_bytes",
+        "max_files",
+        "max_frames",
+        "max_lenses",
+        "max_candidates",
+        "max_cross_size",
+        "max_depth",
+        "max_rounds",
+        "max_model_calls",
+        "max_tool_calls"
+      ],
+      "additionalProperties": false
+    },
+    "candidate_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "activation_mode",
+    "activation",
+    "restrictions",
+    "ancestor",
+    "intent",
+    "source_agent",
+    "target_agent",
+    "scope_traits",
+    "parent_dimension",
+    "budget",
+    "candidate_limit",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}
