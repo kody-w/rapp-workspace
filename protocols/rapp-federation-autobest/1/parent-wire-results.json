@@ -1,0 +1,21 @@
+{
+  "scope": "Independent canonical RAPP/1 frame, Ed25519, chain, strict-JSON, and static compatibility checks; not estate activation",
+  "profile": "rapp-federation-autobest/1",
+  "carrier_kind": "memory.save",
+  "frames_verified": 4,
+  "source_frames_verified": 2,
+  "compatibility_frames_verified": 1,
+  "exhaust_frames_verified": 1,
+  "exact_eleven_key_envelopes": true,
+  "detached_ed25519_jws": true,
+  "particle_and_wave_hashes": true,
+  "predecessor_chain_checked": true,
+  "duplicate_keys_and_floats_refused": true,
+  "static_agent_model_calls": 0,
+  "result": "PASS",
+  "limitations": [
+    "The generic CEO agent is not pinned.",
+    "The fixture is public synthetic data plus externally supplied live qualification counts.",
+    "Passing does not create a signed estate registry entry or activate an external effect."
+  ]
+}

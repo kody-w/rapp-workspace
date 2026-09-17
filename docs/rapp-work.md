@@ -40,6 +40,19 @@ discovery, explicit peer consent, recipient-scoped sealed exchange, bilateral
 business agreements, durable idempotency, phased receipts, revocation and
 moderation, and delay-tolerant operation across long partitions.
 
+[`rapp-federation-autobest/1`](../protocols/rapp-federation-autobest/1/SPEC.md)
+is an optional, separately pinned compatibility profile for wild encounters
+between RAPP/1-valid applications with different endpoint shapes. It records
+honest partial capabilities, runs exact source and target agents through
+ephemeral double hotload, compiles a deterministic static `agent.py`, and emits
+typed exhaust instead of improvising. Compatibility, PR transport, adoption,
+active-root selection, and external effects remain separate.
+
+Its first checked-in fixture binds the approved SoftwareCo V-team Hive
+handshake and exact source/finalizer agent bytes. No raw private repository
+content is included. The generic CEO agent remains pending, so the profile does
+not claim live dynamic successor generation.
+
 Universal and galactic do not mean centralized or globally visible. The Hive
 Mind has no universal owner, signing key, writable head, complete database,
 mandatory relay, or public GODD graph. ActivityPub, AT Protocol, Git, HTTP,

@@ -80,3 +80,26 @@ jobs:
           python3 -B protocols/rapp-hive-autobest/1/reference/conformance.py
       - name: Compile Hive AutoBest reference
         run: python3 -m py_compile protocols/rapp-hive-autobest/1/reference/*.py
+
+  federation-autobest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install profile requirements
+        run: pip install -r protocols/rapp-federation-autobest/1/requirements.txt
+      - name: Check schema and reproducible fixture
+        run: |
+          python3 -B protocols/rapp-federation-autobest/1/reference/schema_source.py --check
+          python3 -B protocols/rapp-federation-autobest/1/reference/manifest_source.py --check
+          python3 -B protocols/rapp-federation-autobest/1/reference/vectors.py --check
+      - name: Run profile conformance
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: >-
+          python3 -B protocols/rapp-federation-autobest/1/reference/conformance.py
+          --report protocols/rapp-federation-autobest/1/conformance-results.json
+      - name: Compile profile reference
+        run: python3 -m py_compile protocols/rapp-federation-autobest/1/reference/*.py

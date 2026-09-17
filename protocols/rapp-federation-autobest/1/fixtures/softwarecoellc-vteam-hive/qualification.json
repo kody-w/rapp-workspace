@@ -1,0 +1,13 @@
+{
+  "schema": "rapp-federation-autobest/1-wild-qualification",
+  "source_repository": "https://github.com/billwhalenmsft/softwarecoellc-vteam-hive",
+  "source_commit": "f66da3d879b53a439bc87de764d79f68ceec048a",
+  "measured_date": "2026-09-17",
+  "assurance": "parent-supplied-live-qualification",
+  "signed_frames_verified": 2,
+  "artifacts_verified": 9,
+  "fresh_local_compatibility_proof": "passed",
+  "fresh_static_agent_proof": "passed",
+  "raw_private_repository_content_included": false,
+  "authority": false
+}

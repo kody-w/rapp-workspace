@@ -1,0 +1,157 @@
+{
+  "schema": "rapp-federation-autobest-file-manifest/1",
+  "profile": "rapp-federation-autobest/1",
+  "parent": "rapp/1",
+  "status": "candidate",
+  "activation": "not-activated",
+  "generic_ceo_agent": "pending",
+  "carrier": "rapp/1 memory.save",
+  "closed_sibling_profiles_modified": false,
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "13968c0bd636034180290603de634e0a39c48e4c28d50df173b1a5f9a032e172",
+      "bytes": 88
+    },
+    {
+      "path": "SPEC.md",
+      "sha256": "5b13745b250444cf90983ad2db189d05be0c2092104423c78928e1e81253d9fb",
+      "bytes": 15907
+    },
+    {
+      "path": "bindings.json",
+      "sha256": "b6011cbf750858137154f79b78b05e34412516ffe2cc2e22ecc50db24a5c274d",
+      "bytes": 1680
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/compatibility/exhaust.json",
+      "sha256": "96317972fa839c81e126caf40d8d5f568501e0e11fc8cf2811d5f790006cd651",
+      "bytes": 2290
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/compatibility/frame.json",
+      "sha256": "8cb5ad917417023508bf2ed4406fa37aeb8bb47b45cebc0cd6c58cfff2dcc15a",
+      "bytes": 8995
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/fixture.json",
+      "sha256": "32a870a7dd30a3cb2c177daa6e76f5ef080b466902b855f953ab9589cec97834",
+      "bytes": 23812
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/handshakes/microsol-target-finalizer/agent.py",
+      "sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+      "bytes": 11461
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/handshakes/softwarecoellc-vteam-hive/1.json",
+      "sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+      "bytes": 5351
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/handshakes/softwarecoellc-vteam-hive/agent.py",
+      "sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+      "bytes": 11302
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/learning-trace.json",
+      "sha256": "d637e13603239c8b1551d8c85ae48442c532df19426902a21dfafbe743ed78c0",
+      "bytes": 2834
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/lens-search.json",
+      "sha256": "ecdfa3ae0fcc80225ec45684e43a865ec9e7be0a7b8af171552f99dde4a2a7cc",
+      "bytes": 705
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/mutation-offer.json",
+      "sha256": "f0699a80562891f65ff94c55374acb58c0f67cfcdaad87c222a9cff1899390b6",
+      "bytes": 868
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/mutation-tests.json",
+      "sha256": "6b5a7cfbbc00ed3d230b01ae15f12e7831dd0e4a9586a52cfd5b1fb1a2a824bc",
+      "bytes": 657
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/package-manifest.json",
+      "sha256": "ffb1b8c4d327077677b472e461cfbd195ae1eb160d9777e30273f2147536824d",
+      "bytes": 7479
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/qualification.json",
+      "sha256": "a165ac5089974801bdf1f67445693824e8887e6a007440cf75f6cdc623480295",
+      "bytes": 518
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/schemas/rapp-federation-autobest-1.schema.json",
+      "sha256": "0874923f01c2e006700a8a562febffd3545cd9a6e436d79e0b89ff21492aab96",
+      "bytes": 39743
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/static/agent.py",
+      "sha256": "4ee1ecb811f13d0b63bb5ddf2bdebd1415203d5d0f30099784b7704aab23d45b",
+      "bytes": 6364
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/static/generation-receipt.json",
+      "sha256": "ea74b6b95b949523e8d67f1d90a7be7fef1d3c55e5080b0a197cdcc1a6f65329",
+      "bytes": 830
+    },
+    {
+      "path": "parent-wire-results.json",
+      "sha256": "56773960db88e19e564d54c1755b1192fc9d1256d13c9ec55f77a847aaebb9a0",
+      "bytes": 836
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "62b3ef75c28678e1ee40556aaca45dedf4324b293d87b21152dad3210e433b7e",
+      "bytes": 2184
+    },
+    {
+      "path": "reference/README.md",
+      "sha256": "daa5c20c52b47e1661461b7054e26859b761114685b8884435870f39c4cbd951",
+      "bytes": 1702
+    },
+    {
+      "path": "reference/compatibility.py",
+      "sha256": "4870ab4cf214536ac0ecb41651537bdfdd52497423887b729d1207a5e7120f5d",
+      "bytes": 20355
+    },
+    {
+      "path": "reference/conformance.py",
+      "sha256": "79270f74dc81aa28a5082affeb98fe1f55c033f2c29fa5fd08e0554bf82d11b6",
+      "bytes": 21155
+    },
+    {
+      "path": "reference/manifest_source.py",
+      "sha256": "c8d59a27a8a27b0a4a09b4c7d5dc529aa6db0083f0f9edc63a698429e40105bf",
+      "bytes": 1835
+    },
+    {
+      "path": "reference/schema_source.py",
+      "sha256": "de69b9e8504a30b0f6420bdfcd224ba417ded350075201b90186d954a35757fe",
+      "bytes": 20908
+    },
+    {
+      "path": "reference/vectors.py",
+      "sha256": "193f6bd68027410bd5e8cc17990f88ae1cb10c5f247c44ce1ea38ea171e9384c",
+      "bytes": 30096
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "f2661695af26aedec09b6f1ac907c2cc6aa821ca04483396fed0cc2bfc83dd3f",
+      "bytes": 40
+    },
+    {
+      "path": "safety-matrix.json",
+      "sha256": "635f7ff39a27bdac468db424e15c96eecde912c200506f8736d4a7267e41f7cc",
+      "bytes": 5743
+    },
+    {
+      "path": "schema.json",
+      "sha256": "0874923f01c2e006700a8a562febffd3545cd9a6e436d79e0b89ff21492aab96",
+      "bytes": 39743
+    }
+  ]
+}
