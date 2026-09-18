@@ -1,0 +1,1181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:rapp-work-index:1:schema",
+  "title": "RAPP Work Index/1 (non-authoritative application data)",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/record"
+    },
+    {
+      "$ref": "#/$defs/shard"
+    },
+    {
+      "$ref": "#/$defs/generation"
+    },
+    {
+      "$ref": "#/$defs/proof"
+    },
+    {
+      "$ref": "#/$defs/checkpoint"
+    },
+    {
+      "$ref": "#/$defs/verified-frame"
+    },
+    {
+      "$ref": "#/$defs/binding"
+    },
+    {
+      "$ref": "#/$defs/frontier"
+    },
+    {
+      "$ref": "#/$defs/cursor"
+    },
+    {
+      "$ref": "#/$defs/anti-entropy"
+    }
+  ],
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rappid",
+        "content_sha256",
+        "content_bytes",
+        "particle_hash",
+        "occurrence_hash"
+      ],
+      "properties": {
+        "rappid": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[a-z0-9-]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[a-z0-9-]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "content_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "content_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1048576
+        },
+        "particle_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "occurrence_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      }
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domain",
+        "key"
+      ],
+      "properties": {
+        "domain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]*$(?![\\s\\S])"
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+$(?![\\s\\S])"
+        }
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "domain",
+        "key",
+        "rappid",
+        "content_sha256",
+        "content_bytes",
+        "particle_hash",
+        "occurrence_hash"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rapp-work-index/1/record"
+        },
+        "domain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]*$(?![\\s\\S])"
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+$(?![\\s\\S])"
+        },
+        "rappid": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[a-z0-9-]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[a-z0-9-]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "content_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "content_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1048576
+        },
+        "particle_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "occurrence_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "signer",
+        "spki_sha256",
+        "stream",
+        "key_epoch",
+        "registry_epoch",
+        "registry_root",
+        "policy_root",
+        "grant_root",
+        "revocation_root",
+        "subscription_root",
+        "context_root"
+      ],
+      "properties": {
+        "signer": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[a-z0-9-]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[a-z0-9-]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "spki_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "stream": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[!-~]+$(?![\\s\\S])"
+        },
+        "key_epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "registry_epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "registry_root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "policy_root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "grant_root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "revocation_root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "subscription_root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "context_root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "subject",
+        "raw_sha256",
+        "raw_bytes",
+        "signer",
+        "spki_sha256",
+        "stream",
+        "seq",
+        "key_epoch",
+        "registry_epoch",
+        "payload_hash",
+        "frame_hash",
+        "frame_sha256",
+        "policy_root",
+        "registry_root"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]*$(?![\\s\\S])"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[a-z0-9-]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[a-z0-9-]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "raw_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "raw_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1048576
+        },
+        "signer": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[a-z0-9-]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[a-z0-9-]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "spki_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "stream": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[!-~]+$(?![\\s\\S])"
+        },
+        "seq": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "key_epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "registry_epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "payload_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "frame_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "frame_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "policy_root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "registry_root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      }
+    },
+    "source-vector": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "shard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "shard",
+        "records"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rapp-work-index/1/shard"
+        },
+        "shard": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/record"
+          },
+          "minItems": 0,
+          "maxItems": 256
+        }
+      }
+    },
+    "descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shard",
+        "sha256",
+        "bytes",
+        "items",
+        "leaf_hash"
+      ],
+      "properties": {
+        "shard": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 262144
+        },
+        "items": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 256
+        },
+        "leaf_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      }
+    },
+    "generation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "generation",
+        "root",
+        "context",
+        "source_vector",
+        "shards",
+        "total_items",
+        "total_bytes",
+        "authority"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rapp-work-index/1/generation"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "source_vector": {
+          "$ref": "#/$defs/source-vector"
+        },
+        "shards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/descriptor"
+          },
+          "minItems": 16,
+          "maxItems": 16
+        },
+        "total_items": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4194304
+        },
+        "authority": {
+          "const": false
+        }
+      }
+    },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "manifest_sha256",
+        "root",
+        "shard",
+        "leaf_hash",
+        "siblings"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rapp-work-index/1/proof"
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "shard": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "leaf_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "siblings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      }
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "generation",
+        "manifest_sha256",
+        "root",
+        "context_sha256",
+        "source_vector_sha256",
+        "authority"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rapp-work-index/1/checkpoint"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "context_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "source_vector_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "authority": {
+          "const": false
+        }
+      }
+    },
+    "verified-frame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "verification",
+        "kind",
+        "signature_verified",
+        "chain_verified",
+        "context",
+        "payload",
+        "signer",
+        "spki_sha256",
+        "stream",
+        "key_epoch",
+        "registry_epoch",
+        "seq",
+        "payload_hash",
+        "frame_hash",
+        "frame_sha256"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rapp-work-index/1/verified-frame"
+        },
+        "verification": {
+          "const": "external-canonical-rapp/1"
+        },
+        "kind": {
+          "const": "memory.save"
+        },
+        "signature_verified": {
+          "const": true
+        },
+        "chain_verified": {
+          "const": true
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "payload": {
+          "$ref": "#/$defs/checkpoint"
+        },
+        "signer": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[a-z0-9-]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[a-z0-9-]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "spki_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "stream": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[!-~]+$(?![\\s\\S])"
+        },
+        "key_epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "registry_epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "seq": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "payload_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "frame_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "frame_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "generation",
+        "manifest_sha256",
+        "root",
+        "context_sha256",
+        "source_vector_sha256",
+        "authority",
+        "signer",
+        "spki_sha256",
+        "stream",
+        "key_epoch",
+        "registry_epoch",
+        "seq",
+        "payload_hash",
+        "frame_hash",
+        "frame_sha256"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rapp-work-index/1/binding"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "context_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "source_vector_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "authority": {
+          "const": false
+        },
+        "signer": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[a-z0-9-]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[a-z0-9-]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "spki_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "stream": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[!-~]+$(?![\\s\\S])"
+        },
+        "key_epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "registry_epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "seq": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "payload_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "frame_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "frame_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      }
+    },
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "context",
+        "source_vector",
+        "manifest_sha256",
+        "checkpoint_frame_hash",
+        "checkpoint_frame_sha256"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rapp-work-index/1/frontier"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "source_vector": {
+          "$ref": "#/$defs/source-vector"
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "checkpoint_frame_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "checkpoint_frame_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      }
+    },
+    "cursor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "generation",
+        "manifest_sha256",
+        "root",
+        "binding_sha256",
+        "checkpoint_frame_hash",
+        "domain",
+        "key",
+        "shard",
+        "after",
+        "page_size"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rapp-work-index/1/cursor"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "binding_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "checkpoint_frame_hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "domain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]*$(?![\\s\\S])"
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+$(?![\\s\\S])"
+        },
+        "shard": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "after": {
+          "$ref": "#/$defs/identity"
+        },
+        "page_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        }
+      }
+    },
+    "token": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cursor",
+        "checksum"
+      ],
+      "properties": {
+        "cursor": {
+          "$ref": "#/$defs/cursor"
+        },
+        "checksum": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      }
+    },
+    "anti-entropy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "local_manifest_sha256",
+        "target_manifest_sha256",
+        "target_generation",
+        "target_root",
+        "changed",
+        "missing",
+        "divergent",
+        "available_needs_proof",
+        "authority"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rapp-work-index/1/anti-entropy"
+        },
+        "local_manifest_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "target_manifest_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "target_generation": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "target_root": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "changed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "shard",
+              "local_sha256",
+              "target_sha256"
+            ],
+            "properties": {
+              "shard": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              "local_sha256": {
+                "type": "string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+              },
+              "target_sha256": {
+                "type": "string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "shard",
+              "target_sha256"
+            ],
+            "properties": {
+              "shard": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              "target_sha256": {
+                "type": "string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "divergent": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "shard",
+              "local_sha256",
+              "observed_sha256",
+              "target_sha256"
+            ],
+            "properties": {
+              "shard": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              "local_sha256": {
+                "type": "string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+              },
+              "observed_sha256": {
+                "type": "string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+              },
+              "target_sha256": {
+                "type": "string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "available_needs_proof": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "shard",
+              "sha256"
+            ],
+            "properties": {
+              "shard": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              "sha256": {
+                "type": "string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "authority": {
+          "const": false
+        }
+      }
+    },
+    "adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "status",
+        "platforms",
+        "stores",
+        "optimizations",
+        "verification",
+        "authority",
+        "resident_processes",
+        "polling",
+        "network"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]*$(?![\\s\\S])"
+        },
+        "status": {
+          "enum": [
+            "reference",
+            "mapping-only"
+          ]
+        },
+        "platforms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9.-]*$(?![\\s\\S])"
+          },
+          "minItems": 1,
+          "maxItems": 4
+        },
+        "stores": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[!-~]+$(?![\\s\\S])"
+          },
+          "minItems": 1,
+          "maxItems": 4
+        },
+        "optimizations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[!-~]+$(?![\\s\\S])"
+          },
+          "minItems": 0,
+          "maxItems": 4
+        },
+        "verification": {
+          "const": "identical-canonical-shards-and-external-checkpoint"
+        },
+        "authority": {
+          "const": false
+        },
+        "resident_processes": {
+          "const": 0
+        },
+        "polling": {
+          "const": false
+        },
+        "network": {
+          "const": false
+        }
+      }
+    }
+  }
+}

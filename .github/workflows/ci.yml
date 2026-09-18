@@ -104,3 +104,36 @@ jobs:
           --report protocols/rapp-federation-autobest/1/conformance-results.json
       - name: Compile profile reference
         run: python3 -m py_compile protocols/rapp-federation-autobest/1/reference/*.py
+
+  work-index1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          repository: kody-w/rapp-1
+          ref: dda32d741c7218f41443a5bd17eebfe0eae82cb7
+          path: rapp-1
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install canonical signed-evidence dependency
+        run: >-
+          python3 -m pip install --disable-pip-version-check --quiet
+          -r protocols/rapp-work-index/1/requirements-conformance.txt
+      - name: Exact schema, public vectors, manifest and index
+        run: |
+          python3 -B tools/work_index.py schemas --check
+          python3 -B tools/work_index.py vectors --check --rapp1-path "${{ github.workspace }}/rapp-1"
+          python3 -B tools/work_index.py pins --check
+      - name: Blocking index and signed RAPP1 conformance
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: >-
+          python3 -B tools/work_index.py conformance
+          --rapp1-path "${{ github.workspace }}/rapp-1"
+          --output .validation/work-index1-ci
+      - name: Compile profile and check whitespace
+        run: |
+          python3 -m py_compile tools/work_index.py protocols/rapp-work-index/1/reference/*.py protocols/rapp-work-index/1/tests/*.py
+          git diff --check

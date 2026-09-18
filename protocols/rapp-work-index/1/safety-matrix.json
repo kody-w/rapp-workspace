@@ -1,0 +1,184 @@
+{
+  "schema": "rapp-work-index-safety-matrix/1",
+  "profile": "rapp-work-index/1",
+  "generated_utc": "2026-09-17T21:36:39.234Z",
+  "authority": false,
+  "activation": "not-activated",
+  "requirements": [
+    {
+      "id": "non-authoritative-index",
+      "gate": "Exact verified read snapshot; deletion/corruption refuses without source or high-water mutation",
+      "implementation": "reference/work_index.py:ExactIndex",
+      "tests": [
+        "SQLiteTests.test_missing_database_refuses_no_creation",
+        "SQLiteTests.test_deleted_candidate_cannot_silently_win",
+        "SQLiteTests.test_corrupt_or_substituted_record_refuses"
+      ]
+    },
+    {
+      "id": "closed-exact-canonical-input",
+      "gate": "Closed schemas, ASCII exact-value JSON, duplicate/noncanonical/expanding input refusal",
+      "implementation": "reference/common.py:parse,validate",
+      "tests": [
+        "EncodingTests.test_every_object_schema_is_closed",
+        "EncodingTests.test_duplicate_json_members_refused",
+        "EncodingTests.test_noncanonical_encodings_refused",
+        "EncodingTests.test_application_domain_refuses_cycles_depth_unicode_float"
+      ]
+    },
+    {
+      "id": "actual-signed-checkpoint",
+      "gate": "Canonical RAPP/1 signed Frame verification at an explicit byte-pinned checkout; no copied wire",
+      "implementation": "reference/canonical_fixture.py:CanonicalRapp",
+      "tests": [
+        "CanonicalTests.test_actual_signed_checkpoint_and_canonical_envelope",
+        "CanonicalTests.test_real_signature_tampering_refuses",
+        "CanonicalTests.test_unsigned_checkpoint_refuses",
+        "CanonicalTests.test_wrong_spki_or_expected_signer_refuses",
+        "CanonicalTests.test_canonical_source_tampering_refuses_before_execution"
+      ]
+    },
+    {
+      "id": "protected-caller-verification-boundary",
+      "gate": "Caller must authenticate signer, registry, chain and current policy independently; flags cannot authenticate themselves",
+      "implementation": "reference/work_index.py:bind_checkpoint,validate_checkpoint_binding",
+      "tests": [
+        "CheckpointTests.test_external_record_required",
+        "CheckpointTests.test_stored_binding_cannot_substitute_occurrence",
+        "CheckpointTests.test_manifest_and_policy_substitution_refused"
+      ],
+      "external_requirement": "Production key custody, registry authentication, revocation and protected caller channel are not qualified here"
+    },
+    {
+      "id": "merkle-proof-integrity",
+      "gate": "Exact shard bytes, position/length domain-separated leaf hashes, four siblings, canonical ordering and complete coverage",
+      "implementation": "reference/work_index.py:verify_shard",
+      "tests": [
+        "MerkleTests.test_all_sixteen_proofs_and_empty_shards",
+        "MerkleTests.test_tampered_bytes_refused",
+        "MerkleTests.test_missing_or_substituted_proof_refused",
+        "MerkleTests.test_signed_root_does_not_excuse_noncanonical_record_order"
+      ]
+    },
+    {
+      "id": "fork-rollback-stale-generation",
+      "gate": "Same-sequence different root/occurrence is a fork; lower sequence, generation reuse and epoch rollback refuse",
+      "implementation": "reference/work_index.py:check_transition",
+      "tests": [
+        "CheckpointTests.test_rollback_and_same_sequence_fork_refuse",
+        "CheckpointTests.test_generation_reuse_key_rollback_stream_change_refuse",
+        "CanonicalTests.test_real_fork_is_not_excused_by_valid_signature"
+      ],
+      "external_requirement": "The host must protect the high-water binding outside disposable caches"
+    },
+    {
+      "id": "anti-entropy-no-auto-trust",
+      "gate": "Compare externally pinned roots; report exact hashes; accept supplied bytes only with target proof; no fetch/merge",
+      "implementation": "reference/work_index.py:anti_entropy,accept_shard",
+      "tests": [
+        "AntiEntropyTests.test_exact_missing_and_corrupt_hash_reports",
+        "AntiEntropyTests.test_changed_manifest_reports_all_exact_hashes",
+        "AntiEntropyTests.test_reused_shard_requires_proof_for_new_generation",
+        "AntiEntropyTests.test_rollback_fork_and_unbounded_inventory_refuse"
+      ]
+    },
+    {
+      "id": "exact-pagination",
+      "gate": "Complete generation/binding/domain/key/shard/final-identity/page-size cursor; stale or substituted cursors refuse",
+      "implementation": "reference/work_index.py:ExactIndex.page",
+      "tests": [
+        "PaginationTests.test_exact_pages_preserve_every_full_candidate",
+        "PaginationTests.test_token_tampering_and_wrong_binding_refuse",
+        "PaginationTests.test_new_generation_even_same_root_invalidates_token",
+        "PaginationTests.test_nonexistent_substituted_or_nonboundary_final_identity_refuses"
+      ]
+    },
+    {
+      "id": "collision-and-content-substitution",
+      "gate": "Retain every full candidate; full identity and pinned exact bytes required; never first repository wins",
+      "implementation": "reference/work_index.py:ExactIndex.summon",
+      "tests": [
+        "MerkleTests.test_duplicate_candidates_never_first_wins",
+        "MerkleTests.test_source_substitution_and_duplicate_sources_refuse",
+        "PaginationTests.test_summon_exact_identity_and_bytes_not_authority",
+        "SQLiteTests.test_deleted_candidate_cannot_silently_win"
+      ]
+    },
+    {
+      "id": "complete-cache-invalidation",
+      "gate": "Raw bytes, signer/SPKI, stream, epochs, every policy/checkpoint/root and full source vector bound; current frontier at every use",
+      "implementation": "reference/work_index.py:PinnedGeneration.require_current,cache_key",
+      "tests": [
+        "CheckpointTests.test_all_cache_context_and_checkpoint_changes_invalidate",
+        "CheckpointTests.test_raw_bytes_and_signed_pivot_change_cache_identity",
+        "PaginationTests.test_current_frontier_required_on_every_use",
+        "CanonicalTests.test_actual_rotation_requires_new_external_context"
+      ]
+    },
+    {
+      "id": "bounded-on-demand-runtime",
+      "gate": "Finite items/shards/bytes/queues/SQL/operations/files; no background workers, compressed expansion, network or ambient scanning",
+      "implementation": "reference/schema_source.py; reference/common.py; reference/work_index.py",
+      "tests": [
+        "MerkleTests.test_bounded_record_stream_consumption",
+        "MerkleTests.test_collision_bucket_and_shard_item_ceiling",
+        "EncodingTests.test_aggregate_escaped_byte_budget_precedes_materialization",
+        "CheckpointTests.test_frontier_schema_refuses_before_canonical_materialization",
+        "SQLiteTests.test_operation_budget_and_closed_snapshot_refuse",
+        "SQLiteTests.test_arbitrary_corruption_and_disk_ceiling_refuse",
+        "SQLiteTests.test_incomplete_duplicate_or_corrupt_input_creates_no_database"
+      ],
+      "external_requirement": "Host quotas bound allocator overhead, concurrency, retention and aggregate workflows"
+    },
+    {
+      "id": "safe-explicit-filesystem",
+      "gate": "Explicit caller-owned no-follow regular files; unknown sidecars and unsafe paths refuse without recovery fallback",
+      "implementation": "reference/common.py:directory,read_file; reference/work_index.py:owned_database_path",
+      "tests": [
+        "SQLiteTests.test_path_escape_symlink_hardlink_fifo_refuse",
+        "SQLiteTests.test_sidecar_never_automatically_recovers_or_reads",
+        "SQLiteTests.test_existing_database_cannot_be_overwritten",
+        "SQLiteTests.test_extra_trigger_refuses"
+      ],
+      "external_requirement": "Trustworthy OS/SQLite and protected exclusive paths; hostile same-UID filesystem races are not sandboxed"
+    },
+    {
+      "id": "portable-identical-roots",
+      "gate": "Adapters may change storage, never canonical bytes, verification or roots; sleeping requires zero process/poll/network",
+      "implementation": "reference/work_index.py:platform_adapters",
+      "tests": [
+        "AntiEntropyTests.test_platform_descriptors_never_change_verification"
+      ],
+      "external_requirement": "Windows and browser descriptors are mapping-only, not deployed or qualified adapters"
+    },
+    {
+      "id": "particle-versus-wave",
+      "gate": "Content reuse cannot substitute for a new signed contextual checkpoint occurrence",
+      "implementation": "reference/work_index.py:check_transition; reference/vectors.py",
+      "tests": [
+        "CheckpointTests.test_pivot_reuses_shards_but_requires_new_signed_wave",
+        "CanonicalTests.test_particle_reuse_does_not_collapse_signed_occurrences"
+      ]
+    },
+    {
+      "id": "nonzero-blocking-evidence",
+      "gate": "Exact pins before/after, all tests nonzero without skips, persisted actual signed Frames independently re-read and verified",
+      "implementation": "reference/conformance.py",
+      "tests": [
+        "CanonicalTests.test_full_deterministic_emission_uses_canonical_checkout",
+        "CanonicalTests.test_wrong_checkout_and_missing_checkout_refuse",
+        "EncodingTests.test_exact_generated_schema_and_vectors"
+      ]
+    }
+  ],
+  "disabled": [
+    "network-fetch",
+    "automatic-root-or-registry-follow",
+    "authority-merge",
+    "ambient-home-discovery",
+    "downloaded-content-execution",
+    "first-repository-wins",
+    "estate-activation",
+    "unmeasured-global-O(1)-or-latency-claims"
+  ]
+}

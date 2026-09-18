@@ -7,7 +7,7 @@
   "errors": 0,
   "skipped": 0,
   "schemas_checked": 12,
-  "manifest_sha256": "60649e30bd9f5610dca0d35a7ce58304fd124d50d7790fec3575d93e72caffbe",
+  "manifest_sha256": "0541ed43caea66f6382dc5a7744b1eb3d4b7732da2e545ba2c23f061e19b5d0e",
   "first_wild_handshake": {
     "id": "softwarecoellc-vteam-hive",
     "handshake_profile_sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
