@@ -21,10 +21,11 @@ SharePoint, NAS, LAN, or other approved channels.
 
 This skill has two distinct boundaries:
 
-1. **Preparation** (`scripts/prepare_workspace.py`) inventories a workspace,
-   adds private local controls, validates explicit selections and signed PII
-   receipts, and stages safe copies. A successful preparation command is
-   **not** a deployment claim.
+1. **Preparation** (`scripts/prepare_workspace.py`) first installs or verifies
+   the checksum-locked `rapp-work-sdk/1` `.rapp-work/` sidecar, then inventories
+   a workspace, adds private local controls, validates explicit selections and
+   signed PII receipts, and stages safe copies. A successful preparation
+   command is **not** a deployment claim.
 2. **Single-owner deployment** (`scripts/deploy_hive.py`) uses an explicitly
    created or loaded Ed25519 owner key, the exact vendored `rapp-hive/1`
    authenticated verifier, immutable owner-approved releases, private
@@ -42,7 +43,10 @@ about this deployment MVP.
 ## Non-negotiable boundaries
 
 - Existing workspace files are local-only by default.
-- Preparation is additive: it writes only `.rapp-hive/`.
+- Preparation is additive: it writes only `.rapp-work/` and `.rapp-hive/`.
+- `.rapp-work/` is offline-first metadata only. It copies no native workspace
+  content and grants no Hive publication, plugin, skill, or static API
+  authority.
 - Moving into the Hive defaults to copy; the local source is never deleted.
 - DOGG is globally safe data and must have `pii_status:none` plus evidence.
 - GODD is private data. A selected GODD slice remains local until a deployment
@@ -66,8 +70,16 @@ about this deployment MVP.
 Run inspection first:
 
 ```bash
-python3 scripts/prepare_workspace.py inspect --workspace /path/to/workspace
+python3 scripts/prepare_workspace.py inspect \
+  --workspace /path/to/workspace \
+  --world-id optional-explicit-world
 ```
+
+If native identity omits its world, inspection and recovery may instead use
+the exact world recorded by a verified installed `.rapp-work/` sidecar or
+existing Hive declaration. Conflicts refuse and native content is unchanged.
+On case-insensitive filesystems, all case-fold aliases of `.rapp-work` and
+`.rapp-hive` are reserved from inventory and selection.
 
 Prepare additive Hive control metadata:
 
@@ -79,30 +91,36 @@ python3 scripts/prepare_workspace.py prepare \
   --world-id my-world
 ```
 
-The command snapshots every pre-existing regular file, writes `.rapp-hive/`,
-then proves every pre-existing byte is unchanged.
+The command atomically installs or verifies `.rapp-work/`, snapshots every
+pre-existing regular file outside both control sidecars, writes `.rapp-hive/`,
+then proves every pre-existing native byte is unchanged. A same-pin SDK install
+is idempotent; conflicts, symlinks, partial state, and unknown pins refuse.
 
-## Migrate an older local-first workspace
+## Explicit legacy migration lane
 
-Use `migrate` for an existing workspace that predates `rapp-hive/1`:
+Use `legacy-migrate` only for an existing workspace that needs the historical
+Private Hive migration receipt and embedded project skills:
 
 ```bash
-python3 scripts/prepare_workspace.py migrate \
+python3 scripts/prepare_workspace.py legacy-migrate \
   --workspace /path/to/older-workspace \
   --member-rappid 'rappid:@owner/member:<64hex>' \
   --hive-name my-private-hive \
   --world-id my-world
 ```
 
-Migration preserves the existing workspace RAPPID and every original file. It
-adds the Hive protocol as an additive sidecar, records the prior
+The compatibility alias `migrate` retains the same explicit legacy behavior.
+Migration preserves the existing workspace RAPPID, world, workspace spec, and
+every original file. It adds the Work SDK and Hive protocols as independent
+additive sidecars, records the prior
 `workspace_spec` (or `legacy-unversioned`), and writes a deterministic migration
 receipt only after re-verifying the complete baseline. Re-running the same
-migration is idempotent. It also embeds this locked project skill at
-`.github/skills/rapp-private-hive`, so sharing the migrated workspace carries
-the capability with it. Conflicting identities, changed baseline bytes,
-incomplete control state, or a different requested Hive configuration are
-refused rather than repaired or overwritten.
+migration is idempotent. It embeds the locked `rapp-work-sdk` and
+`rapp-private-hive` project skills under `.github/skills`, so sharing the
+migrated workspace carries the exact offline scaffold and Hive capability.
+Conflicting identities, changed baseline bytes, incomplete control state, or a
+different requested Hive configuration are refused rather than repaired or
+overwritten. This lane does not relabel the native workspace as Workspace/1.
 
 ## Select data explicitly
 

@@ -89,7 +89,7 @@ def relative(value: str) -> str:
             "unsafe relative path")
     require("\\" not in value and ":" not in value
             and all(32 <= ord(char) != 127 for char in value), "unsafe relative path characters")
-    require(all(part.casefold() not in {".git", ".rapp-hive", ".hive-inventory.json"}
+    require(all(part.casefold() not in {".git", ".rapp-hive", ".rapp-work", ".hive-inventory.json"}
                 and not part.endswith((".", " ")) for part in parts), "reserved control path")
     require(all(not re.fullmatch(r"(?i)(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?", part)
                 for part in parts), "reserved device path")

@@ -149,7 +149,17 @@ class IndependentClientTests(FixtureTest):
         alias.symlink_to(self.fx.output, target_is_directory=True)
         with self.assertRaisesRegex(ValueError, "symlink"):
             client.materialize(self.fx.client, alias)
-        for path in ("../escape", "/absolute", "C:/escape", "safe//a", ".git/config", "a/.rapp-hive/state", "CON", "a\\b"):
+        for path in (
+            "../escape",
+            "/absolute",
+            "C:/escape",
+            "safe//a",
+            ".git/config",
+            "a/.rapp-hive/state",
+            "a/.rapp-work/install.json",
+            "CON",
+            "a\\b",
+        ):
             with self.subTest(path=path), self.assertRaises(ValueError):
                 relative(path)
 

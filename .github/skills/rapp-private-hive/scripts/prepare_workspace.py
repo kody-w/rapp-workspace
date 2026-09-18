@@ -22,8 +22,14 @@ from pathlib import Path, PurePosixPath
 ROOT = Path(__file__).resolve().parents[1]
 RAPP_PATH = ROOT / "vendor" / "rapp.py"
 CONTROL = ".rapp-hive"
+WORK_SDK_CONTROL = ".rapp-work"
+WORK_SDK_SKILL = ROOT.parent / "rapp-work-sdk"
+WORK_SDK_SCRIPT = WORK_SDK_SKILL / "scripts" / "scaffold.py"
+WORK_SDK_LOCK_SHA256 = "4291aeeffb6b27058de0a914788927e73023ea2362a8f99b7512607f80920e5c"
+WORK_SDK_PROFILE_SHA256 = "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc"
+WORK_SDK_CURRENT_PIN = "591e014ad39e223b00ab343ae26e5d9a867ebeee"
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
-EXCLUDED_ROOTS = {".git", CONTROL}
+EXCLUDED_ROOTS = {".git", CONTROL, WORK_SDK_CONTROL}
 CONTROL_SCHEMAS = {
     "state.json": "rapp-private-hive-workspace/1",
     "declaration.json": "rapp-hive/1-declaration",
@@ -57,6 +63,102 @@ def _load_rapp():
 
 
 R = _load_rapp()
+_WORK_SDK = None
+
+
+def _verify_work_sdk_source() -> None:
+    lock_path = WORK_SDK_SKILL / "rapp" / "agent.lock.json"
+    if lock_path.is_symlink() or not lock_path.is_file():
+        raise ValueError("checksum-locked sibling rapp-work-sdk skill is missing or unsafe")
+    lock_raw = lock_path.read_bytes()
+    if hashlib.sha256(lock_raw).hexdigest() != WORK_SDK_LOCK_SHA256:
+        raise ValueError("sibling rapp-work-sdk lock does not match the Private Hive pin")
+    try:
+        lock = json.loads(lock_raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ValueError("sibling rapp-work-sdk lock is invalid") from error
+    protocol = lock.get("protocol")
+    entries = lock.get("files")
+    if (
+        lock.get("schema") != "rapp-skill-lock/1"
+        or lock.get("name") != "rapp-work-sdk"
+        or lock.get("version") != "1.0.0"
+        or not isinstance(protocol, dict)
+        or protocol.get("profile_sha256") != WORK_SDK_PROFILE_SHA256
+        or protocol.get("rapp_work_commit") != WORK_SDK_CURRENT_PIN
+        or not isinstance(entries, list)
+    ):
+        raise ValueError("sibling rapp-work-sdk lock metadata is invalid")
+    paths = []
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != {"path", "sha256"}:
+            raise ValueError("sibling rapp-work-sdk lock entry is invalid")
+        relative = entry["path"]
+        expected_hash = entry["sha256"]
+        if not isinstance(relative, str):
+            raise ValueError("sibling rapp-work-sdk lock path is invalid")
+        path = PurePosixPath(relative)
+        if (
+            not relative
+            or "\\" in relative
+            or path.is_absolute()
+            or any(part in {"", ".", ".."} for part in path.parts)
+            or not isinstance(expected_hash, str)
+            or HEX64.fullmatch(expected_hash) is None
+        ):
+            raise ValueError("sibling rapp-work-sdk lock entry is invalid")
+        source = WORK_SDK_SKILL.joinpath(*path.parts)
+        if source.is_symlink() or not source.is_file():
+            raise ValueError(f"sibling rapp-work-sdk file is missing or unsafe: {relative}")
+        if hashlib.sha256(source.read_bytes()).hexdigest() != expected_hash:
+            raise ValueError(f"sibling rapp-work-sdk checksum mismatch: {relative}")
+        paths.append(relative)
+    if paths != sorted(set(paths)) or "scripts/scaffold.py" not in paths:
+        raise ValueError("sibling rapp-work-sdk lock file set is invalid")
+    actual = sorted(
+        path.relative_to(WORK_SDK_SKILL).as_posix()
+        for path in WORK_SDK_SKILL.rglob("*")
+        if path.is_file()
+        and path.relative_to(WORK_SDK_SKILL).as_posix() != "rapp/agent.lock.json"
+        and "__pycache__" not in path.parts
+        and path.suffix != ".pyc"
+    )
+    if actual != paths:
+        raise ValueError("sibling rapp-work-sdk lock does not cover the complete skill")
+
+
+def _load_work_sdk():
+    global _WORK_SDK
+    if _WORK_SDK is not None:
+        return _WORK_SDK
+    if WORK_SDK_SCRIPT.is_symlink() or not WORK_SDK_SCRIPT.is_file():
+        raise ValueError(
+            "checksum-locked sibling rapp-work-sdk skill is required for Private Hive preparation"
+        )
+    _verify_work_sdk_source()
+    spec = importlib.util.spec_from_file_location("private_hive_work_sdk", WORK_SDK_SCRIPT)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot import pinned RAPP Work SDK scaffold: {WORK_SDK_SCRIPT}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    verified = module.verify_lock()
+    implementation = module.load_verified()
+    if (
+        verified.get("version") != "1.0.0"
+        or implementation.CURRENT_PIN != WORK_SDK_CURRENT_PIN
+        or implementation.PARENT_PIN.get("commit") != WORK_SDK_CURRENT_PIN
+    ):
+        raise ValueError("loaded rapp-work-sdk implementation does not match the Private Hive pin")
+    _WORK_SDK = implementation
+    return implementation
+
+
+def install_work_sdk(root: Path, world_id: str) -> dict:
+    return _load_work_sdk().install_workspace(root, world_id=world_id)
+
+
+def verify_work_sdk(root: Path, world_id: str | None = None) -> dict:
+    return _load_work_sdk().verify_workspace(root, world_id=world_id)
 
 
 def utc_now() -> str:
@@ -174,7 +276,30 @@ def workspace_root(raw: str) -> Path:
     return root
 
 
-def safe_relative(raw: str) -> str:
+def _case_insensitive_workspace(root: Path) -> bool:
+    if os.name == "nt":
+        return True
+    if os.name != "posix" or not hasattr(os, "O_NOFOLLOW"):
+        return True
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | os.O_NOFOLLOW
+    try:
+        descriptor = os.open(root, flags)
+    except OSError as error:
+        raise ValueError(
+            "workspace case-sensitivity probe could not open the root safely"
+        ) from error
+    try:
+        exact = os.stat("rappid.json", dir_fd=descriptor, follow_symlinks=False)
+        try:
+            alias = os.stat("RAPPID.JSON", dir_fd=descriptor, follow_symlinks=False)
+        except FileNotFoundError:
+            return False
+        return exact.st_dev == alias.st_dev and exact.st_ino == alias.st_ino
+    finally:
+        os.close(descriptor)
+
+
+def safe_relative(raw: str, *, case_insensitive: bool = False) -> str:
     if (
         not isinstance(raw, str)
         or not raw
@@ -186,7 +311,11 @@ def safe_relative(raw: str) -> str:
     path = PurePosixPath(raw)
     if path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):
         raise ValueError(f"unsafe relative path: {raw}")
-    if path.parts[0] in EXCLUDED_ROOTS:
+    first = path.parts[0]
+    if first in EXCLUDED_ROOTS or (
+        case_insensitive
+        and first.casefold() in {name.casefold() for name in EXCLUDED_ROOTS}
+    ):
         raise ValueError(f"control or Git paths cannot be selected: {raw}")
     return str(path)
 
@@ -212,8 +341,18 @@ def read_json(path: Path) -> dict:
     return value
 
 
-def regular_file(root: Path, relative: str) -> Path:
-    relative = safe_relative(relative)
+def regular_file(
+    root: Path,
+    relative: str,
+    *,
+    reserve_control_aliases: bool = True,
+) -> Path:
+    relative = safe_relative(
+        relative,
+        case_insensitive=(
+            reserve_control_aliases and _case_insensitive_workspace(root)
+        ),
+    )
     cursor = root
     for part in PurePosixPath(relative).parts:
         cursor = cursor / part
@@ -227,10 +366,24 @@ def regular_file(root: Path, relative: str) -> Path:
     return resolved
 
 
-def read_regular_bytes(root: Path, relative: str) -> bytes:
-    relative = safe_relative(relative)
+def read_regular_bytes(
+    root: Path,
+    relative: str,
+    *,
+    reserve_control_aliases: bool = True,
+) -> bytes:
+    relative = safe_relative(
+        relative,
+        case_insensitive=(
+            reserve_control_aliases and _case_insensitive_workspace(root)
+        ),
+    )
     if os.name == "nt":
-        return regular_file(root, relative).read_bytes()
+        return regular_file(
+            root,
+            relative,
+            reserve_control_aliases=reserve_control_aliases,
+        ).read_bytes()
     flags_directory = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
     descriptor = os.open(root, flags_directory)
     try:
@@ -334,13 +487,26 @@ def validate_pii_receipt(
 
 def inventory(root: Path) -> list[dict]:
     entries = []
+    case_insensitive = _case_insensitive_workspace(root)
+    excluded = {
+        name.casefold() if case_insensitive else name
+        for name in EXCLUDED_ROOTS
+    }
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root)
-        if relative.parts and (
-            relative.parts[0] in EXCLUDED_ROOTS
-            or relative.parts[0].startswith(".rapp-hive")
-        ):
-            continue
+        if relative.parts:
+            first = (
+                relative.parts[0].casefold()
+                if case_insensitive
+                else relative.parts[0]
+            )
+            if (
+                first in excluded
+                or first == ".rapp-hive-prepare.lock"
+                or first.startswith(".rapp-hive.tmp-")
+                or first.startswith(".rapp-work.tmp-")
+            ):
+                continue
         if path.is_symlink():
             target = os.readlink(path).encode("utf-8")
             entries.append(
@@ -403,6 +569,7 @@ def control_root(root: Path) -> Path:
 def control_files(root: Path) -> tuple[dict, dict, dict]:
     base = control_root(root)
     _owned_private_directory(base)
+    case_insensitive = _case_insensitive_workspace(root)
     documents = {}
     for name, schema in CONTROL_SCHEMAS.items():
         path = base / name
@@ -470,7 +637,7 @@ def control_files(root: Path) -> tuple[dict, dict, dict]:
             or room["access"] not in {"repository", "sealed"}
         ):
             raise ValueError("Private Hive declaration room is invalid")
-        safe_relative(room["area"])
+        safe_relative(room["area"], case_insensitive=case_insensitive)
         room_access[room["id"]] = room["access"]
     files = baseline.get("files")
     if not isinstance(files, list):
@@ -482,7 +649,11 @@ def control_files(root: Path) -> tuple[dict, dict, dict]:
                 {"path", "sha256", "bytes"},
                 {"path", "sha256", "bytes", "type"},
             )
-            or safe_relative(entry["path"]) != entry["path"]
+            or safe_relative(
+                entry["path"],
+                case_insensitive=case_insensitive,
+            )
+            != entry["path"]
             or not isinstance(entry["sha256"], str)
             or not HEX64.fullmatch(entry["sha256"])
             or not isinstance(entry["bytes"], int)
@@ -520,7 +691,7 @@ def control_files(root: Path) -> tuple[dict, dict, dict]:
         }
         if not isinstance(entry, dict) or set(entry) != required_entry_keys:
             raise ValueError("Private Hive selection entry is invalid")
-        safe_relative(entry["path"])
+        safe_relative(entry["path"], case_insensitive=case_insensitive)
         selection_paths.append(entry["path"])
         if (
             not isinstance(entry["sha256"], str)
@@ -583,13 +754,56 @@ def trusted_scanners(root: Path) -> dict[str, str]:
     return {entry["rappid"]: entry["spki_sha256"] for entry in value["entries"]}
 
 
+def _resolved_private_world(*candidates: object) -> str:
+    worlds = [value for value in candidates if value is not None]
+    for value in worlds:
+        if (
+            not isinstance(value, str)
+            or len(value) > 64
+            or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", value)
+        ):
+            raise ValueError("world_id must be a lowercase RAPP label")
+    if not worlds:
+        raise ValueError(
+            "--world-id is required when native identity, installed Work SDK, "
+            "and Private Hive declaration do not record a world"
+        )
+    if len(set(worlds)) != 1:
+        raise ValueError("world_id sources conflict")
+    return worlds[0]
+
+
 def command_inspect(args) -> dict:
     root = workspace_root(args.workspace)
     record, identity = workspace_identity(root)
     entries = inventory(root)
     base = control_root(root)
+    declaration = None
     if base.exists():
-        control_files(root)
+        _, declaration, _ = control_files(root)
+    explicit_world = getattr(args, "world_id", None)
+    native_world = record.get("world_id")
+    declaration_world = (
+        declaration.get("world_id") if declaration is not None else None
+    )
+    known_worlds = [
+        value
+        for value in (explicit_world, native_world, declaration_world)
+        if value is not None
+    ]
+    if known_worlds and len(set(known_worlds)) != 1:
+        raise ValueError("world_id sources conflict")
+    work_world = known_worlds[0] if known_worlds else None
+    work_sdk = (
+        verify_work_sdk(root, work_world)
+        if (root / WORK_SDK_CONTROL).exists() or (root / WORK_SDK_CONTROL).is_symlink()
+        else {"status": "not-installed"}
+    )
+    resolved_world = (
+        work_sdk.get("world_id")
+        if work_sdk.get("status") == "verified"
+        else work_world
+    )
     return {
         "status": "ready" if not base.exists() else "prepared",
         "workspace": str(root),
@@ -599,6 +813,8 @@ def command_inspect(args) -> dict:
         "preexisting_bytes": sum(entry["bytes"] for entry in entries),
         "inventory_sha256": inventory_hash(entries),
         "control_path": str(base),
+        "world_id": resolved_world,
+        "work_sdk": work_sdk,
     }
 
 
@@ -608,13 +824,6 @@ def command_prepare(args) -> dict:
     if not R.rappid_valid(args.member_rappid):
         raise ValueError("--member-rappid must be a valid RAPP/1 identity")
     owner = R.rappid_parts(args.member_rappid)["owner"]
-    world_id = args.world_id or record.get("world_id")
-    if (
-        not isinstance(world_id, str)
-        or len(world_id) > 64
-        or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", world_id)
-    ):
-        raise ValueError("--world-id must be a lowercase RAPP label")
     if len(args.hive_name) > 64 or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", args.hive_name):
         raise ValueError("--hive-name must be a lowercase RAPP label")
 
@@ -622,20 +831,42 @@ def command_prepare(args) -> dict:
     with prepare_lock(root):
         if base.exists():
             state, declaration, selection = control_files(root)
+            world_id = _resolved_private_world(
+                args.world_id,
+                record.get("world_id"),
+                declaration.get("world_id"),
+            )
             if (
                 state.get("member_rappid") != args.member_rappid
                 or state.get("hive_name") != args.hive_name
                 or declaration.get("world_id") != world_id
             ):
                 raise ValueError("existing Private Hive preparation does not match requested configuration")
+            work_sdk = install_work_sdk(root, world_id)
             return {
                 "status": "already-prepared",
                 "workspace": str(root),
                 "hive_rappid": declaration["hive_rappid"],
                 "dimension_rappid": state["dimension_rappid"],
                 "selected": len(selection["entries"]),
+                "work_sdk": work_sdk,
             }
 
+        installed_world = None
+        if (
+            (root / WORK_SDK_CONTROL).exists()
+            or (root / WORK_SDK_CONTROL).is_symlink()
+        ):
+            installed_world = verify_work_sdk(
+                root,
+                args.world_id or record.get("world_id"),
+            )["world_id"]
+        world_id = _resolved_private_world(
+            args.world_id,
+            record.get("world_id"),
+            installed_world,
+        )
+        work_sdk = install_work_sdk(root, world_id)
         before = inventory(root)
         created = utc_now()
         hive_rappid = R.mint_rappid(owner, args.hive_name)
@@ -735,34 +966,63 @@ def command_prepare(args) -> dict:
             if temporary.exists():
                 shutil.rmtree(temporary)
         control_files(root)
-        return {"status": "prepared", "workspace": str(root), **receipt}
+        return {
+            "status": "prepared",
+            "workspace": str(root),
+            "work_sdk": work_sdk,
+            **receipt,
+        }
 
 
-def embed_project_skill(workspace: Path) -> dict:
-    destination = workspace / ".github" / "skills" / "rapp-private-hive"
+def _embed_locked_skill(workspace: Path, source_root: Path, name: str) -> dict:
+    if source_root.is_symlink() or not source_root.is_dir():
+        raise ValueError(f"source {name} skill directory is unsafe")
+    destination = workspace / ".github" / "skills" / name
     cursor = workspace
-    for part in (".github", "skills", "rapp-private-hive"):
+    for part in (".github", "skills", name):
         cursor = cursor / part
         if cursor.is_symlink():
             raise ValueError("project skill path cannot contain a symlink")
     try:
-        if destination.resolve() == ROOT.resolve():
+        if destination.resolve() == source_root.resolve():
             if not destination.is_dir():
                 raise ValueError("repository-native project skill path is not a directory")
             return {
                 "status": "repository-native",
-                "path": ".github/skills/rapp-private-hive",
+                "path": f".github/skills/{name}",
             }
     except FileNotFoundError:
         pass
-    lock = read_json(ROOT / "rapp" / "agent.lock.json")
-    expected = {
-        entry["path"]: entry["sha256"]
-        for entry in lock.get("files", [])
-    }
-    if len(expected) != len(lock.get("files", [])) or not expected:
-        raise ValueError("source Private Hive skill lock is invalid")
-    expected["rapp/agent.lock.json"] = sha256((ROOT / "rapp" / "agent.lock.json").read_bytes())
+    lock = read_json(source_root / "rapp" / "agent.lock.json")
+    if lock.get("schema") != "rapp-skill-lock/1" or lock.get("name") != name:
+        raise ValueError(f"source {name} skill lock is invalid")
+    entries = lock.get("files", [])
+    expected = {}
+    if not isinstance(entries, list):
+        raise ValueError(f"source {name} skill lock is invalid")
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != {"path", "sha256"}:
+            raise ValueError(f"source {name} skill lock is invalid")
+        relative = entry["path"]
+        if not isinstance(relative, str):
+            raise ValueError(f"source {name} skill lock is invalid")
+        parts = PurePosixPath(relative)
+        if (
+            not relative
+            or "\\" in relative
+            or parts.is_absolute()
+            or any(part in {"", ".", ".."} for part in parts.parts)
+            or relative in expected
+            or not isinstance(entry["sha256"], str)
+            or HEX64.fullmatch(entry["sha256"]) is None
+        ):
+            raise ValueError(f"source {name} skill lock is invalid")
+        expected[relative] = entry["sha256"]
+    if not expected or list(expected) != sorted(expected):
+        raise ValueError(f"source {name} skill lock is invalid")
+    expected["rapp/agent.lock.json"] = sha256(
+        (source_root / "rapp" / "agent.lock.json").read_bytes()
+    )
 
     if destination.exists() or destination.is_symlink():
         if destination.is_symlink() or not destination.is_dir():
@@ -780,7 +1040,7 @@ def embed_project_skill(workspace: Path) -> dict:
             raise ValueError("existing project skill differs; explicit reviewed upgrade is required")
         return {
             "status": "already-embedded",
-            "path": ".github/skills/rapp-private-hive",
+            "path": f".github/skills/{name}",
             "version": lock.get("version"),
             "files": len(expected),
         }
@@ -792,11 +1052,11 @@ def embed_project_skill(workspace: Path) -> dict:
         if cursor.is_symlink():
             raise ValueError("project skill parent cannot be a symlink")
         cursor.mkdir(exist_ok=True)
-    temporary = parent / f".rapp-private-hive.tmp-{os.getpid()}-{os.urandom(4).hex()}"
+    temporary = parent / f".{name}.tmp-{os.getpid()}-{os.urandom(4).hex()}"
     try:
         temporary.mkdir()
         for relative, expected_hash in sorted(expected.items()):
-            source = ROOT / relative
+            source = source_root / relative
             if source.is_symlink() or not source.is_file():
                 raise ValueError(f"source project skill file is unsafe: {relative}")
             data = source.read_bytes()
@@ -811,10 +1071,18 @@ def embed_project_skill(workspace: Path) -> dict:
             shutil.rmtree(temporary)
     return {
         "status": "embedded",
-        "path": ".github/skills/rapp-private-hive",
+        "path": f".github/skills/{name}",
         "version": lock.get("version"),
         "files": len(expected),
     }
+
+
+def embed_project_skill(workspace: Path) -> dict:
+    return _embed_locked_skill(workspace, ROOT, "rapp-private-hive")
+
+
+def embed_work_sdk_skill(workspace: Path) -> dict:
+    return _embed_locked_skill(workspace, WORK_SDK_SKILL, "rapp-work-sdk")
 
 
 def command_migrate(args) -> dict:
@@ -826,6 +1094,7 @@ def command_migrate(args) -> dict:
         baseline = read_json(control_root(root) / "baseline.json")["files"]
         verify_unchanged(root, baseline)
         embedded = embed_project_skill(root)
+        work_sdk_skill = embed_work_sdk_skill(root)
         source_spec = workspace_record.get("workspace_spec") or "legacy-unversioned"
         migration_identity = {
             "workspace_rappid": workspace_rappid,
@@ -856,6 +1125,9 @@ def command_migrate(args) -> dict:
                 "identity_preserved": True,
                 "original_bytes_unchanged": True,
                 "project_skill": embedded,
+                "work_sdk_skill": work_sdk_skill,
+                "work_sdk": prepare_result["work_sdk"],
+                "migration_path": "explicit-legacy-additive",
             }
         receipt = {
             "schema": "rapp-private-hive-migration-receipt/1",
@@ -873,6 +1145,9 @@ def command_migrate(args) -> dict:
             "original_bytes_unchanged": True,
             "migration_mode": "additive-sidecar",
             "project_skill": embedded,
+            "work_sdk_skill": work_sdk_skill,
+            "work_sdk": prepare_result["work_sdk"],
+            "migration_path": "explicit-legacy-additive",
         }
         atomic_write(path, canonical_bytes(receipt))
         verify_unchanged(root, baseline)
@@ -888,7 +1163,10 @@ def command_select(args) -> dict:
     root = workspace_root(args.workspace)
     with workspace_lock(root):
         _, declaration, selection = control_files(root)
-        relative = safe_relative(args.path)
+        relative = safe_relative(
+            args.path,
+            case_insensitive=_case_insensitive_workspace(root),
+        )
         source = regular_file(root, relative)
         rooms = {room["id"]: room for room in declaration["rooms"]}
         if args.room not in rooms:
@@ -950,7 +1228,10 @@ def command_unselect(args) -> dict:
     root = workspace_root(args.workspace)
     with workspace_lock(root):
         _, _, selection = control_files(root)
-        relative = safe_relative(args.path)
+        relative = safe_relative(
+            args.path,
+            case_insensitive=_case_insensitive_workspace(root),
+        )
         before = len(selection["entries"])
         selection["entries"] = [value for value in selection["entries"] if value["path"] != relative]
         if len(selection["entries"]) == before:
@@ -1084,7 +1365,11 @@ def command_stage(args) -> dict:
                     relative = "objects/" + item["path"]
                     expected_files.add(relative)
                     try:
-                        data = read_regular_bytes(generation, relative)
+                        data = read_regular_bytes(
+                            generation,
+                            relative,
+                            reserve_control_aliases=False,
+                        )
                     except (OSError, ValueError):
                         valid_generation = False
                         continue
@@ -1188,6 +1473,7 @@ def command_verify(args) -> dict:
             "stale_selection": stale_selection,
             "selection": checked,
             "local_only_default": selection["default"] == "local-only",
+            "work_sdk": verify_work_sdk(root, declaration["world_id"]),
         }
 
 
@@ -1195,6 +1481,7 @@ COMMANDS = {
     "inspect": command_inspect,
     "prepare": command_prepare,
     "migrate": command_migrate,
+    "legacy-migrate": command_migrate,
     "select": command_select,
     "unselect": command_unselect,
     "trust-scanner": command_trust_scanner,
@@ -1209,9 +1496,11 @@ def parser() -> argparse.ArgumentParser:
     for name in COMMANDS:
         command = commands.add_parser(name)
         command.add_argument("--workspace", required=True)
-        if name in {"prepare", "migrate"}:
+        if name in {"prepare", "migrate", "legacy-migrate"}:
             command.add_argument("--member-rappid", required=True)
             command.add_argument("--hive-name", required=True)
+            command.add_argument("--world-id")
+        elif name == "inspect":
             command.add_argument("--world-id")
         elif name == "select":
             command.add_argument("--path", required=True)

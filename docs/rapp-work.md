@@ -18,6 +18,41 @@ as:
 - portable storage and multi-channel projection; and
 - deterministic reconciliation of parallel work.
 
+## Additive Workspace SDK integration
+
+[`rapp-work-sdk/1`](../protocols/rapp-work-sdk/1/SPEC.md) is the additive
+Workspace integration profile. It pins the accepted exact `rapp-work/1` bytes
+at canonical `kody-w/rapp-1` commit
+`591e014ad39e223b00ab343ae26e5d9a867ebeee`, then installs an atomic,
+offline-first `.rapp-work/` sidecar beside an existing workspace. Earlier
+`kody-w/rapp-work` pins are retained only as verified migration sources.
+
+The sidecar preserves the native workspace RAPPID, world, workspace spec, and
+content. It does not copy native workspace files and it does not alter or
+relabel the normative `rapp-workspace/1` protocol. Organization entries point
+to existing Workspace/1 composite wave addresses. Hive endpoint/vector
+receipts, plugins, skills, and static APIs are discovery evidence only and
+grant no publication, activation, or execution authority.
+
+Same-pin installation is idempotent only after complete verification. Updates
+require explicit known `from_pin` and `to_pin` values plus the exact
+deterministic plan digest. Known historical pins retain their exact old profile
+artifacts, and each sidecar generation retains its profile and discovery bytes.
+The plan binds both source and target profile hashes; activation uses
+directory-fd no-follow reads, no-replace generation activation, and an atomic
+pointer compare-and-swap. Symlinks, races, conflicts, partial state,
+downgrades, unsupported filesystem primitives, and unknown pins fail closed.
+No branch, tag, latest-release, or network lookup is used by the scaffold.
+
+An installed sidecar can recover its recorded world for inspection and update
+when native identity omits it, while an explicit world must match. Native
+content is never changed. Private Hive inventory and selection also reserve
+case-fold aliases of both control sidecars on case-insensitive filesystems.
+
+Private Hive preparation now invokes this scaffold by default before creating
+or accepting `.rapp-hive/`. The historical Private Hive migration remains an
+explicit `legacy-migrate` lane.
+
 [`rapp-hive/1`](../protocols/rapp-hive/1/SPEC.md) is the first RAPP Work
 profile. It defines the RAPP Private Hive: an access-restricted workspace that
 can hold any verified RAPP/1 object, share explicitly selected GODD safely,

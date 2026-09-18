@@ -1,0 +1,97 @@
+{
+  "schema": "rapp-skill-lock/1",
+  "name": "rapp-work-sdk",
+  "version": "1.0.0",
+  "protocol": {
+    "name": "rapp-work-sdk/1",
+    "profile_sha256": "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc",
+    "manifest_sha256": "02059a7e3aa548da294eba9f963e2c68368424905814bab6af66217f2cad4c94",
+    "rapp_work_repository": "https://github.com/kody-w/rapp-1",
+    "rapp_work_commit": "591e014ad39e223b00ab343ae26e5d9a867ebeee",
+    "rapp_work_path": "protocols/rapp-work/1/SPEC.md",
+    "rapp_work_spec_sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e",
+    "rapp_work_spec_bytes": 11427
+  },
+  "files": [
+    {
+      "path": "SKILL.md",
+      "sha256": "f02788c06342a4c4cd02363c8b03cf30e336c78373d846dc24411e0bb47ac229"
+    },
+    {
+      "path": "scripts/scaffold.py",
+      "sha256": "910304159bfee6316083517b8821b8f358519dc5bfff0589aa68971d9718463c"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/SPEC.md",
+      "sha256": "4d404a1ad5267f0f1cfa6b31dc9617efaee871607fd103503d6d6047fec8a8fc"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release/.rapp-work/generations/4b4fc213c352de9157858041e57ab72bb5e17551/discovery.json",
+      "sha256": "136553cb6bd80bbff3a99a6d6a91ba5510440963804b5864dd44bd6828fc57ff"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release/.rapp-work/generations/4b4fc213c352de9157858041e57ab72bb5e17551/profile.json",
+      "sha256": "84b5afe5171b91202c96213de6767815ef1e22d743cdef97bd4ac9b4f5a66591"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release/.rapp-work/install.json",
+      "sha256": "6169c8a2ff04b3ebf75bea7f6f6ad3dd96c1dba90d2d449e1e92b4130d05d3b0"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release/fixture.json",
+      "sha256": "1a7b7ff9d3bed65bc2021b0512d21c95edb86b815e1386df47f8f9e675578392"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release/native/secret.txt",
+      "sha256": "79ab308a0774a03e14be413864d136636a7e1a17c3739f05878b2ac6191f3181"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release/rappid.json",
+      "sha256": "c1d092e9efecff3ea8c7d6c0c2f25b270be8ef4d800eba30bbe5ac49e2ad1f4c"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/history/1c0e0b7c33a857e3f5e99c64355a8b8f970a83bc/profile.json",
+      "sha256": "0add0b6c4adedcc569d137d6c6e243d47bc383cc29d955805dee13fbd048e21a"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/history/4b4fc213c352de9157858041e57ab72bb5e17551/profile.json",
+      "sha256": "84b5afe5171b91202c96213de6767815ef1e22d743cdef97bd4ac9b4f5a66591"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/manifest.json",
+      "sha256": "02059a7e3aa548da294eba9f963e2c68368424905814bab6af66217f2cad4c94"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/parent-pin.json",
+      "sha256": "2628c6fd6808cf58ed56b0aa95b8f33fed0fa1d92382f0400b005301f89f8f4f"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/profile.json",
+      "sha256": "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/reference/scaffold.py",
+      "sha256": "2e16ca0863a2cdea9b5e69b86feefd97ef536d32f41d7c31e084d72855e7a16d"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/schemas/discovery.schema.json",
+      "sha256": "824e0ed90da669b5fe315b142db7c4295831148a67a7593d3aea234349f0d309"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/schemas/install.schema.json",
+      "sha256": "53d9271fa1ceb586ad226711b34baeb58687834fa627006b6c6dbbdab511f023"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/schemas/profile.schema.json",
+      "sha256": "324db2d6138ab04c699f841ad5662d8918360bade047aaa874570a655fcd8a2d"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/schemas/update.schema.json",
+      "sha256": "b96eb6804e38199a7d1d7e95d9df11363abf1b84c39a00d1506503cd2028206a"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/vendor/rapp-work/1/SPEC.md",
+      "sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e"
+    }
+  ]
+}

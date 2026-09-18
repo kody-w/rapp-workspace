@@ -1,0 +1,136 @@
+{
+  "schema": "rapp-work-sdk-file-manifest/1",
+  "profile": "rapp-work-sdk/1",
+  "parent": "rapp-work/1",
+  "parent_pin": {
+    "path": "parent-pin.json",
+    "sha256": "2628c6fd6808cf58ed56b0aa95b8f33fed0fa1d92382f0400b005301f89f8f4f",
+    "bytes": 443
+  },
+  "workspace_sibling": {
+    "profile": "rapp-workspace/1",
+    "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
+    "manifest_sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370",
+    "identity_unchanged": true,
+    "normative_bytes_unchanged": true
+  },
+  "normative": [
+    {
+      "path": "SPEC.md",
+      "sha256": "4d404a1ad5267f0f1cfa6b31dc9617efaee871607fd103503d6d6047fec8a8fc",
+      "bytes": 8179
+    },
+    {
+      "path": "parent-pin.json",
+      "sha256": "2628c6fd6808cf58ed56b0aa95b8f33fed0fa1d92382f0400b005301f89f8f4f",
+      "bytes": 443
+    },
+    {
+      "path": "profile.json",
+      "sha256": "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc",
+      "bytes": 2342
+    },
+    {
+      "path": "schemas/discovery.schema.json",
+      "sha256": "824e0ed90da669b5fe315b142db7c4295831148a67a7593d3aea234349f0d309",
+      "bytes": 10404
+    },
+    {
+      "path": "schemas/install.schema.json",
+      "sha256": "53d9271fa1ceb586ad226711b34baeb58687834fa627006b6c6dbbdab511f023",
+      "bytes": 10453
+    },
+    {
+      "path": "schemas/profile.schema.json",
+      "sha256": "324db2d6138ab04c699f841ad5662d8918360bade047aaa874570a655fcd8a2d",
+      "bytes": 12975
+    },
+    {
+      "path": "schemas/update.schema.json",
+      "sha256": "b96eb6804e38199a7d1d7e95d9df11363abf1b84c39a00d1506503cd2028206a",
+      "bytes": 10405
+    }
+  ],
+  "historical_profiles": [
+    {
+      "path": "history/1c0e0b7c33a857e3f5e99c64355a8b8f970a83bc/profile.json",
+      "sha256": "0add0b6c4adedcc569d137d6c6e243d47bc383cc29d955805dee13fbd048e21a",
+      "bytes": 1880
+    },
+    {
+      "path": "history/4b4fc213c352de9157858041e57ab72bb5e17551/profile.json",
+      "sha256": "84b5afe5171b91202c96213de6767815ef1e22d743cdef97bd4ac9b4f5a66591",
+      "bytes": 1372
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "vendor/rapp-work/1/SPEC.md",
+      "sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e",
+      "bytes": 11427
+    }
+  ],
+  "reference": [
+    {
+      "path": "reference/README.md",
+      "sha256": "9019d43b7d4c5bfa132b717074f9dfc929ba424c8cb5ca3cd4b5231cc4aa23ec",
+      "bytes": 3368
+    },
+    {
+      "path": "reference/conformance.py",
+      "sha256": "a08e269253cb5d885abebad8486c4c42f1ce23ce2937f3707d521eeb911dd65c",
+      "bytes": 11819
+    },
+    {
+      "path": "reference/pins.py",
+      "sha256": "b117f692c36819f150790db41a1b5cc210b04a0fbc036201d3f3a29a203b5d01",
+      "bytes": 12594
+    },
+    {
+      "path": "reference/scaffold.py",
+      "sha256": "2e16ca0863a2cdea9b5e69b86feefd97ef536d32f41d7c31e084d72855e7a16d",
+      "bytes": 75229
+    },
+    {
+      "path": "reference/schema_source.py",
+      "sha256": "79cbc9720e666843a5d9b8114deeff39149745af2e5e57eb9c5a791b6066f9c7",
+      "bytes": 11627
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "fixtures/prior-release/.rapp-work/generations/4b4fc213c352de9157858041e57ab72bb5e17551/discovery.json",
+      "sha256": "136553cb6bd80bbff3a99a6d6a91ba5510440963804b5864dd44bd6828fc57ff",
+      "bytes": 510
+    },
+    {
+      "path": "fixtures/prior-release/.rapp-work/generations/4b4fc213c352de9157858041e57ab72bb5e17551/profile.json",
+      "sha256": "84b5afe5171b91202c96213de6767815ef1e22d743cdef97bd4ac9b4f5a66591",
+      "bytes": 1372
+    },
+    {
+      "path": "fixtures/prior-release/.rapp-work/install.json",
+      "sha256": "6169c8a2ff04b3ebf75bea7f6f6ad3dd96c1dba90d2d449e1e92b4130d05d3b0",
+      "bytes": 1010
+    },
+    {
+      "path": "fixtures/prior-release/fixture.json",
+      "sha256": "1a7b7ff9d3bed65bc2021b0512d21c95edb86b815e1386df47f8f9e675578392",
+      "bytes": 639
+    },
+    {
+      "path": "fixtures/prior-release/native/secret.txt",
+      "sha256": "79ab308a0774a03e14be413864d136636a7e1a17c3739f05878b2ac6191f3181",
+      "bytes": 27
+    },
+    {
+      "path": "fixtures/prior-release/rappid.json",
+      "sha256": "c1d092e9efecff3ea8c7d6c0c2f25b270be8ef4d800eba30bbe5ac49e2ad1f4c",
+      "bytes": 169
+    }
+  ],
+  "sidecar": ".rapp-work",
+  "network_default": "disabled",
+  "native_workspace_copy": false,
+  "publication_authority": false
+}

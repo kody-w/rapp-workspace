@@ -12,6 +12,7 @@ import sys
 import tempfile
 import types
 import unittest
+from unittest.mock import patch
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -121,12 +122,84 @@ class WorkspacePreparationTests(unittest.TestCase):
         self.assertEqual(second["status"], "already-prepared")
         self.assertEqual(first["hive_rappid"], second["hive_rappid"])
         self.assertEqual(first["workspace_rappid"], self.workspace_rappid)
+        self.assertEqual(first["work_sdk"]["status"], "installed")
+        self.assertEqual(second["work_sdk"]["status"], "already-installed")
+        self.assertTrue((self.workspace / ".rapp-work" / "install.json").is_file())
+        work_sdk = MODULE.verify_work_sdk(self.workspace, "alice-world")
+        self.assertEqual(work_sdk["current_pin"], MODULE._load_work_sdk().CURRENT_PIN)
+        self.assertFalse(work_sdk["native_workspace_copied"])
+        self.assertFalse(work_sdk["publication_authorized"])
         state = MODULE.read_json(self.workspace / ".rapp-hive" / "state.json")
         self.assertEqual(second["dimension_rappid"], state["dimension_rappid"])
         self.assert_original_bytes_unchanged()
         selection = MODULE.read_json(self.workspace / ".rapp-hive" / "selection.json")
         self.assertEqual(selection["default"], "local-only")
         self.assertEqual(selection["entries"], [])
+
+    def test_inspect_and_prepare_recover_installed_work_sdk_world(self):
+        native = (self.workspace / "rappid.json").read_bytes()
+        installed = MODULE.install_work_sdk(self.workspace, "alice-world")
+        self.assertEqual(installed["world_id"], "alice-world")
+        inspected = MODULE.command_inspect(
+            self.args(workspace=str(self.workspace), world_id=None)
+        )
+        self.assertEqual(inspected["world_id"], "alice-world")
+        self.assertEqual(inspected["work_sdk"]["world_id"], "alice-world")
+        prepared = MODULE.command_prepare(
+            self.args(
+                workspace=str(self.workspace),
+                member_rappid=self.member,
+                hive_name="alice-private-hive",
+                world_id=None,
+            )
+        )
+        self.assertEqual(prepared["work_sdk"]["world_id"], "alice-world")
+        declaration = MODULE.read_json(
+            self.workspace / ".rapp-hive" / "declaration.json"
+        )
+        self.assertEqual(declaration["world_id"], "alice-world")
+        self.assertEqual((self.workspace / "rappid.json").read_bytes(), native)
+        with self.assertRaisesRegex(ValueError, "world"):
+            MODULE.command_inspect(
+                self.args(workspace=str(self.workspace), world_id="other-world")
+            )
+        self.assertEqual((self.workspace / "rappid.json").read_bytes(), native)
+
+    def test_casefold_control_aliases_are_reserved_from_inventory_and_selection(self):
+        alias_workspace = self.temporary / "alias-workspace"
+        alias_workspace.mkdir()
+        (alias_workspace / "rappid.json").write_text(
+            json.dumps(
+                {
+                    "schema": "rapp/1",
+                    "rappid": "rappid:@alice/workspace:" + "9" * 64,
+                }
+            ),
+            encoding="utf-8",
+        )
+        for name in (".RAPP-WORK", ".RAPP-HIVE"):
+            control = alias_workspace / name
+            control.mkdir()
+            (control / "secret.txt").write_text("reserved", encoding="utf-8")
+        with patch.object(MODULE, "_case_insensitive_workspace", return_value=True):
+            paths = [entry["path"] for entry in MODULE.inventory(alias_workspace)]
+        self.assertEqual(paths, ["rappid.json"])
+
+        self.prepare()
+        with patch.object(MODULE, "_case_insensitive_workspace", return_value=True):
+            for path in (".RAPP-WORK/install.json", ".RAPP-HIVE/state.json"):
+                with self.subTest(path=path):
+                    with self.assertRaisesRegex(ValueError, "control"):
+                        MODULE.command_select(
+                            self.args(
+                                workspace=str(self.workspace),
+                                path=path,
+                                data_class="neutral",
+                                room="general",
+                                protection=None,
+                                pii_evidence=None,
+                            )
+                        )
 
     def test_dogg_requires_pii_evidence_and_stages_by_copy(self):
         self.prepare()
@@ -530,9 +603,13 @@ class WorkspacePreparationTests(unittest.TestCase):
         self.assertTrue(first["identity_preserved"])
         self.assertTrue(first["original_bytes_unchanged"])
         self.assertEqual(first["source_workspace_spec"], "legacy-unversioned")
+        self.assertEqual(first["migration_path"], "explicit-legacy-additive")
         self.assertEqual(first["project_skill"]["status"], "embedded")
+        self.assertEqual(first["work_sdk_skill"]["status"], "embedded")
         project_skill = self.workspace / ".github" / "skills" / "rapp-private-hive"
+        work_sdk_skill = self.workspace / ".github" / "skills" / "rapp-work-sdk"
         self.assertTrue((project_skill / "SKILL.md").is_file())
+        self.assertTrue((work_sdk_skill / "SKILL.md").is_file())
         preflight = subprocess.run(
             [sys.executable, str(project_skill / "scripts" / "deploy_hive.py"), "--preflight"],
             cwd=project_skill,
@@ -541,7 +618,40 @@ class WorkspacePreparationTests(unittest.TestCase):
             text=True,
         )
         self.assertEqual(preflight.returncode, 0, preflight.stderr)
+        sdk_preflight = subprocess.run(
+            [sys.executable, str(work_sdk_skill / "scripts" / "scaffold.py"), "--preflight"],
+            cwd=work_sdk_skill,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(sdk_preflight.returncode, 0, sdk_preflight.stderr)
         self.assert_original_bytes_unchanged()
+
+    def test_private_hive_refuses_conflicting_work_sdk_before_hive_sidecar(self):
+        sidecar = self.workspace / ".rapp-work"
+        sidecar.mkdir(mode=0o700)
+        (sidecar / "partial.json").write_text("{}", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "partial|unmanaged"):
+            self.prepare()
+        self.assertFalse((self.workspace / ".rapp-hive").exists())
+        self.assertTrue((sidecar / "partial.json").is_file())
+
+    def test_explicit_legacy_migrate_cli_name_is_retained(self):
+        parsed = MODULE.parser().parse_args(
+            [
+                "legacy-migrate",
+                "--workspace",
+                str(self.workspace),
+                "--member-rappid",
+                self.member,
+                "--hive-name",
+                "alice-private-hive",
+                "--world-id",
+                "alice-world",
+            ]
+        )
+        self.assertEqual(parsed.command, "legacy-migrate")
 
     def test_migration_refuses_workspace_changes_after_prior_preparation(self):
         MODULE.command_prepare(

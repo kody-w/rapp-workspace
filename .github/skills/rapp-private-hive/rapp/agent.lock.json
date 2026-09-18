@@ -1,7 +1,7 @@
 {
   "schema": "rapp-skill-lock/1",
   "name": "rapp-private-hive",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "protocol": {
     "name": "rapp-hive/1",
     "repository": "https://github.com/kody-w/RAPP",
@@ -11,11 +11,11 @@
   "files": [
     {
       "path": "DEPLOYMENT.md",
-      "sha256": "bd08dfe6267f514426496b020c9a2ce8604ed1b9098fc09456f07b04e4198bee"
+      "sha256": "a344ac31e538cb23d2fd122e418bbfaa5995ca6cf6b4428a05bf022c8c8c0e04"
     },
     {
       "path": "SKILL.md",
-      "sha256": "be66b7c13ef916c4ca3f698b051ac7fd2b1239ed78372cff521105e382a55124"
+      "sha256": "8cbc01be597d2e74354193ad60a6cd6a1bb3af78f33bc9a517ea0ca888d0ddc2"
     },
     {
       "path": "lib/private_hive/__init__.py",
@@ -47,7 +47,7 @@
     },
     {
       "path": "lib/private_hive/common.py",
-      "sha256": "87cc471a525a0a47c2c323e46e885329f19558b108cc7d3a442d1146df958e05"
+      "sha256": "2a64215fe2cc0cd8f6b34b8be7390b6308a82d08f053bf4249d349749612801b"
     },
     {
       "path": "lib/private_hive/keys.py",
@@ -79,7 +79,7 @@
     },
     {
       "path": "scripts/prepare_workspace.py",
-      "sha256": "07f8a34c8853a5e7a6335d0433d7a0052d4195abb8e245e5fbbfa51e63849e9d"
+      "sha256": "40bb7642e1481bb5e043322087308ef52e3c309aaf9ea8aaa254630090fe79e9"
     },
     {
       "path": "tests/_deployment_fixtures.py",
@@ -91,11 +91,11 @@
     },
     {
       "path": "tests/test_deployment_client.py",
-      "sha256": "b765cb5cc75681911a54516713e67aa24d1809565026c59335563dad04814e44"
+      "sha256": "4b8290f2365e2f65874e0b491e309aa1f8313456a01944a89bcbabc01c47c81c"
     },
     {
       "path": "tests/test_deployment_filesystem.py",
-      "sha256": "c9a120f51298ec9e533f85c3d78d788b5d2a5a33c3564f319aee84a54eb7d866"
+      "sha256": "e28878ad644f0a95cb7698ad32a9000d74ae699e350d1979bef7675a98fd34c8"
     },
     {
       "path": "tests/test_deployment_git.py",
@@ -111,7 +111,7 @@
     },
     {
       "path": "tests/test_prepare_workspace.py",
-      "sha256": "458ede96b4c6b98bab29f2c6a5827e89b4bf3a3b06a7920b26943ac421ecc74c"
+      "sha256": "41e2a3130b1d2639ca8be02eaf0e27f10bb6c7f1fc7a79214ef5b38143243f71"
     },
     {
       "path": "vendor/hive/SPEC.md",

@@ -1,0 +1,67 @@
+{
+  "schema": "rapp-work-sdk/1/profile",
+  "profile": "rapp-work-sdk/1",
+  "parent": {
+    "profile": "rapp-work/1",
+    "repository": "https://github.com/kody-w/rapp-1",
+    "commit": "591e014ad39e223b00ab343ae26e5d9a867ebeee",
+    "path": "protocols/rapp-work/1/SPEC.md",
+    "spec_sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e"
+  },
+  "workspace_sibling": {
+    "profile": "rapp-workspace/1",
+    "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
+    "manifest_sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370",
+    "identity_unchanged": true,
+    "normative_bytes_unchanged": true
+  },
+  "sidecar": {
+    "path": ".rapp-work",
+    "mode": "offline-first",
+    "network_default": "disabled",
+    "atomic_generation_pointer": true,
+    "native_workspace_copy": false
+  },
+  "pins": [
+    {
+      "pin": "4b4fc213c352de9157858041e57ab72bb5e17551",
+      "sequence": 0,
+      "spec_sha256": "861920ed31dd31412cc67064532ca855e3d9f842f1f63fa7f3daeab605fddf7e",
+      "status": "migration-source-only",
+      "fresh_install": false,
+      "profile_artifact": {
+        "path": "history/4b4fc213c352de9157858041e57ab72bb5e17551/profile.json",
+        "sha256": "84b5afe5171b91202c96213de6767815ef1e22d743cdef97bd4ac9b4f5a66591",
+        "bytes": 1372
+      }
+    },
+    {
+      "pin": "1c0e0b7c33a857e3f5e99c64355a8b8f970a83bc",
+      "sequence": 1,
+      "spec_sha256": "861920ed31dd31412cc67064532ca855e3d9f842f1f63fa7f3daeab605fddf7e",
+      "status": "migration-source-only",
+      "fresh_install": false,
+      "profile_artifact": {
+        "path": "history/1c0e0b7c33a857e3f5e99c64355a8b8f970a83bc/profile.json",
+        "sha256": "0add0b6c4adedcc569d137d6c6e243d47bc383cc29d955805dee13fbd048e21a",
+        "bytes": 1880
+      }
+    },
+    {
+      "pin": "591e014ad39e223b00ab343ae26e5d9a867ebeee",
+      "sequence": 2,
+      "spec_sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e",
+      "status": "current",
+      "fresh_install": true,
+      "profile_artifact": null
+    }
+  ],
+  "current_pin": "591e014ad39e223b00ab343ae26e5d9a867ebeee",
+  "authority": {
+    "discovery_only": true,
+    "hive_publication": false,
+    "plugin_activation": false,
+    "native_workspace_mutation": false,
+    "grants_authority": false
+  }
+}

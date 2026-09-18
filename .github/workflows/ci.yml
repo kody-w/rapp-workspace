@@ -28,7 +28,10 @@ jobs:
         env:
           RAPP1_PATH: ${{ github.workspace }}/rapp-1
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python3 -B -m unittest discover -s tests -v
+          TMPDIR: ${{ github.workspace }}/.validation/test-artifacts
+        run: |
+          mkdir -p "$TMPDIR"
+          python3 -B -m unittest discover -s tests -v
       - name: Core conformance
         run: >-
           python3 -B tools/frame_lens.py conformance
@@ -36,3 +39,55 @@ jobs:
           --output .validation/workspace1-core-ci
       - name: Compile
         run: python3 -m py_compile tools/*.py protocols/rapp-workspace/1/reference/*.py tests/*.py
+
+  work-sdk-private-hive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install Private Hive test dependencies
+        run: >-
+          python3 -m pip install
+          -r .github/skills/rapp-private-hive/requirements-test.txt
+      - name: Work SDK schemas, pins, and conformance
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          TMPDIR: ${{ github.workspace }}/.validation/test-artifacts
+        run: |
+          mkdir -p "$TMPDIR"
+          python3 -B protocols/rapp-work-sdk/1/reference/schema_source.py --check
+          python3 -B protocols/rapp-work-sdk/1/reference/pins.py
+          python3 -B protocols/rapp-work-sdk/1/reference/conformance.py
+          python3 -B .github/skills/rapp-work-sdk/scripts/scaffold.py --preflight
+          python3 -B - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema.validators import validator_for
+          for path in Path("protocols/rapp-work-sdk/1/schemas").glob("*.json"):
+              schema = json.loads(path.read_text(encoding="utf-8"))
+              validator_for(schema).check_schema(schema)
+          PY
+      - name: Work SDK adversarial tests
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          TMPDIR: ${{ github.workspace }}/.validation/test-artifacts
+        run: |
+          mkdir -p "$TMPDIR"
+          python3 -B -m unittest discover -s tests -p 'test_rapp_work_sdk.py' -v
+      - name: Private Hive full suite
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          TMPDIR: ${{ github.workspace }}/.validation/test-artifacts
+        run: |
+          mkdir -p "$TMPDIR"
+          python3 -B -m unittest discover \
+            -s .github/skills/rapp-private-hive/tests -p 'test_*.py' -v
+          python3 -B .github/skills/rapp-private-hive/vendor/hive/reference/authenticated_conformance.py
+      - name: Compile additive integration
+        run: >-
+          python3 -m py_compile
+          protocols/rapp-work-sdk/1/reference/*.py
+          .github/skills/rapp-work-sdk/scripts/*.py
+          .github/skills/rapp-private-hive/scripts/*.py

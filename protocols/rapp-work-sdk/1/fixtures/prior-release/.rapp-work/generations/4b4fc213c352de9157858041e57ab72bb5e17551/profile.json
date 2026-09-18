@@ -1,0 +1,43 @@
+{
+  "schema": "rapp-work-sdk/1/profile",
+  "profile": "rapp-work-sdk/1",
+  "parent": {
+    "profile": "rapp-work/1",
+    "repository": "https://github.com/kody-w/rapp-work",
+    "commit": "4b4fc213c352de9157858041e57ab72bb5e17551",
+    "path": "SPEC.md",
+    "spec_sha256": "861920ed31dd31412cc67064532ca855e3d9f842f1f63fa7f3daeab605fddf7e",
+    "temporary": true
+  },
+  "workspace_sibling": {
+    "profile": "rapp-workspace/1",
+    "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
+    "manifest_sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370",
+    "identity_unchanged": true,
+    "normative_bytes_unchanged": true
+  },
+  "sidecar": {
+    "path": ".rapp-work",
+    "mode": "offline-first",
+    "network_default": "disabled",
+    "atomic_generation_pointer": true,
+    "native_workspace_copy": false
+  },
+  "pins": [
+    {
+      "pin": "4b4fc213c352de9157858041e57ab72bb5e17551",
+      "sequence": 0,
+      "spec_sha256": "861920ed31dd31412cc67064532ca855e3d9f842f1f63fa7f3daeab605fddf7e",
+      "status": "current-temporary",
+      "fresh_install": true
+    }
+  ],
+  "current_pin": "4b4fc213c352de9157858041e57ab72bb5e17551",
+  "authority": {
+    "discovery_only": true,
+    "hive_publication": false,
+    "plugin_activation": false,
+    "native_workspace_mutation": false,
+    "grants_authority": false
+  }
+}

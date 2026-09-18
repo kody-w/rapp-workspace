@@ -1,0 +1,442 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-sdk/1/schemas/install.schema.json",
+  "$defs": {
+    "hex40": {
+      "type": "string",
+      "minLength": 40,
+      "maxLength": 40,
+      "pattern": "^[0-9a-f]{40}$(?![\\s\\S])"
+    },
+    "hex64": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "utc": {
+      "type": "string",
+      "minLength": 24,
+      "maxLength": 24,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$(?![\\s\\S])"
+    },
+    "rappid": {
+      "type": "string",
+      "minLength": 76,
+      "maxLength": 213,
+      "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "world": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$(?![\\s\\S])"
+    },
+    "wave": {
+      "type": "object",
+      "properties": {
+        "space": {
+          "const": "rapp/1:wave"
+        },
+        "hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "space",
+        "hash"
+      ],
+      "additionalProperties": false
+    },
+    "organization_pointer": {
+      "type": "object",
+      "properties": {
+        "workspace_profile": {
+          "const": "rapp-workspace/1"
+        },
+        "composite": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:wave"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "verification_status": {
+          "enum": [
+            "address-reference-only",
+            "verified-local-receipt"
+          ]
+        },
+        "verification_receipt": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:wave"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "routing_only": {
+          "const": true
+        },
+        "content_copied": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "workspace_profile",
+        "composite",
+        "verification_status",
+        "verification_receipt",
+        "routing_only",
+        "content_copied",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    },
+    "hive_endpoint": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "hive_rappid": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "world_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]+$(?![\\s\\S])"
+        },
+        "transport": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "locator_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "verification_status": {
+          "enum": [
+            "described-unverified",
+            "verified"
+          ]
+        },
+        "verification_receipt": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:wave"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "publication_authorized": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "hive_rappid",
+        "world_id",
+        "transport",
+        "locator_sha256",
+        "verification_status",
+        "verification_receipt",
+        "publication_authorized",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    },
+    "hive_vector": {
+      "type": "object",
+      "properties": {
+        "hive_rappid": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "vector_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "verification_status": {
+          "enum": [
+            "described-unverified",
+            "verified"
+          ]
+        },
+        "verification_receipt": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:wave"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "publication_authorized": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "hive_rappid",
+        "vector_sha256",
+        "verification_status",
+        "verification_receipt",
+        "publication_authorized",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    },
+    "capability": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "discovery_only": {
+          "const": true
+        },
+        "activation_authorized": {
+          "const": false
+        },
+        "execution_authorized": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "locator",
+        "sha256",
+        "discovery_only",
+        "activation_authorized",
+        "execution_authorized",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-sdk/1/install"
+    },
+    "profile": {
+      "const": "rapp-work-sdk/1"
+    },
+    "workspace_rappid": {
+      "$ref": "#/$defs/rappid"
+    },
+    "world_id": {
+      "$ref": "#/$defs/world"
+    },
+    "workspace_spec": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "workspace_identity_sha256": {
+      "$ref": "#/$defs/hex64"
+    },
+    "profile_sha256": {
+      "$ref": "#/$defs/hex64"
+    },
+    "installed_pin": {
+      "$ref": "#/$defs/hex40"
+    },
+    "current_pin": {
+      "$ref": "#/$defs/hex40"
+    },
+    "current_generation_sha256": {
+      "$ref": "#/$defs/hex64"
+    },
+    "discovery_sha256": {
+      "$ref": "#/$defs/hex64"
+    },
+    "installed_utc": {
+      "$ref": "#/$defs/utc"
+    },
+    "updated_utc": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/utc"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "last_update_plan_digest": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/hex64"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sidecar_path": {
+      "const": ".rapp-work"
+    },
+    "mode": {
+      "const": "offline-first"
+    },
+    "network_default": {
+      "const": "disabled"
+    },
+    "native_workspace_copied": {
+      "const": false
+    },
+    "workspace_identity_preserved": {
+      "const": true
+    },
+    "publication_authorized": {
+      "const": false
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "profile",
+    "workspace_rappid",
+    "world_id",
+    "workspace_spec",
+    "workspace_identity_sha256",
+    "profile_sha256",
+    "installed_pin",
+    "current_pin",
+    "current_generation_sha256",
+    "discovery_sha256",
+    "installed_utc",
+    "updated_utc",
+    "last_update_plan_digest",
+    "sidecar_path",
+    "mode",
+    "network_default",
+    "native_workspace_copied",
+    "workspace_identity_preserved",
+    "publication_authorized",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}
