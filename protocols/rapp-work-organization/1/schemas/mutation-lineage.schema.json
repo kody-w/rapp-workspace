@@ -1,0 +1,325 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-organization/1/schemas/mutation-lineage.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-organization/1/mutation-lineage"
+    },
+    "output_shape": {
+      "type": "string",
+      "enum": [
+        "sidecar",
+        "full-successor",
+        "hybrid"
+      ]
+    },
+    "source_parents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "frame": {
+            "$ref": "common.schema.json#/$defs/wave"
+          },
+          "inventory": {
+            "$ref": "common.schema.json#/$defs/particle"
+          },
+          "repository_commit": {
+            "oneOf": [
+              {
+                "$ref": "common.schema.json#/$defs/gitHash"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "repository_tree": {
+            "oneOf": [
+              {
+                "$ref": "common.schema.json#/$defs/gitHash"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "frame",
+          "inventory",
+          "repository_commit",
+          "repository_tree"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 8
+    },
+    "source_inventory": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "successor_inventory": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "successor_root": {
+      "$ref": "common.schema.json#/$defs/egg"
+    },
+    "forward": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "$ref": "common.schema.json#/$defs/contentHead"
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "retained",
+              "replaced",
+              "moved",
+              "removed"
+            ]
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "retain",
+              "metadata-change",
+              "move",
+              "rewrite",
+              "replace",
+              "remove",
+              "split",
+              "combine",
+              "reorganize"
+            ]
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/contentHead"
+            },
+            "minItems": 0,
+            "maxItems": 64
+          },
+          "mutation_receipts": {
+            "$ref": "common.schema.json#/$defs/receiptSet"
+          },
+          "inverse_material": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/egg"
+            },
+            "minItems": 0,
+            "maxItems": 16,
+            "uniqueItems": true
+          },
+          "loss": {
+            "$ref": "common.schema.json#/$defs/loss"
+          }
+        },
+        "required": [
+          "source",
+          "disposition",
+          "relation",
+          "targets",
+          "mutation_receipts",
+          "inverse_material",
+          "loss"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 10000
+    },
+    "reverse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "successor": {
+            "$ref": "common.schema.json#/$defs/contentHead"
+          },
+          "ancestry": {
+            "type": "string",
+            "enum": [
+              "inherited",
+              "derived",
+              "new"
+            ]
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/contentHead"
+            },
+            "minItems": 0,
+            "maxItems": 64
+          },
+          "derivation_receipts": {
+            "$ref": "common.schema.json#/$defs/receiptSet"
+          },
+          "inverse_material": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/egg"
+            },
+            "minItems": 0,
+            "maxItems": 16,
+            "uniqueItems": true
+          },
+          "loss": {
+            "$ref": "common.schema.json#/$defs/loss"
+          }
+        },
+        "required": [
+          "successor",
+          "ancestry",
+          "sources",
+          "derivation_receipts",
+          "inverse_material",
+          "loss"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 10000
+    },
+    "traits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "trait_id": {
+            "$ref": "common.schema.json#/$defs/label"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "retained",
+              "replaced",
+              "moved",
+              "removed",
+              "new"
+            ]
+          },
+          "source_evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/wave"
+            },
+            "minItems": 0,
+            "maxItems": 64,
+            "uniqueItems": true
+          },
+          "successor_evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/wave"
+            },
+            "minItems": 0,
+            "maxItems": 64,
+            "uniqueItems": true
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/label"
+            },
+            "minItems": 0,
+            "maxItems": 64,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "trait_id",
+          "status",
+          "source_evidence",
+          "successor_evidence",
+          "dependencies"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 4096
+    },
+    "directionality": {
+      "type": "string",
+      "enum": [
+        "bidirectional-lossless",
+        "bidirectional-partial",
+        "forward-only-lossy"
+      ]
+    },
+    "reconstruction": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "verified-contained",
+            "verified-external",
+            "unproven"
+          ]
+        },
+        "inverse_material": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/egg"
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "reconstructor_sha256": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runtime_manifest_sha256": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "inverse_material",
+        "reconstructor_sha256",
+        "runtime_manifest_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "output_shape",
+    "source_parents",
+    "source_inventory",
+    "successor_inventory",
+    "successor_root",
+    "forward",
+    "reverse",
+    "traits",
+    "directionality",
+    "reconstruction",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

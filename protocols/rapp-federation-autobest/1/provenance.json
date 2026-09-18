@@ -1,0 +1,73 @@
+{
+  "schema": "rapp-federation-autobest/1-provenance",
+  "profile": "rapp-federation-autobest/1",
+  "parent": "rapp/1",
+  "base_repository_commit": "1f07ac98cd0cfdc45b30fce92c3e5fb6a12a0eb5",
+  "wild_handshake": {
+    "source_repository": "https://github.com/billwhalenmsft/softwarecoellc-vteam-hive",
+    "source_commit": "f66da3d879b53a439bc87de764d79f68ceec048a",
+    "profile_sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+    "source_agent_sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+    "target_finalizer_sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+    "raw_private_repository_content_included": false,
+    "role": "approved-private-fixture-binding"
+  },
+  "generic_ceo_agent": {
+    "source_worktree": "microsol-wild-hive-release-20260917",
+    "source_commit": "e8b1a1ffc795b48a854c31d76bb478adba583915",
+    "agent_path": ".github/skills/microsol-autobest/agent.py",
+    "agent_sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "agent_bytes": 430291,
+    "skill_path": ".github/skills/microsol-autobest/SKILL.md",
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "profile_copy_is_byte_identical": true,
+    "activation": "external-host-only",
+    "authority_from_presence": false
+  },
+  "conceptual_prior_art": {
+    "repository": "https://github.com/kody-w/UniversalDataConnectorAI",
+    "commit": "f2a978b9f85b65b9815b69d99c67e51c56732251",
+    "role": "conceptual-provenance-only",
+    "code_imported": false,
+    "runtime_dependency": false,
+    "authority_source": false,
+    "rapp1_conformance_claim": false,
+    "files": [
+      {
+        "path": "agents/connector_learning_orchestrator.py",
+        "blob_sha": "1542986362f27598c224327e1372350d81ead56a"
+      },
+      {
+        "path": "agents/schema_learner_agent.py",
+        "blob_sha": "edf4c8bb146c478b77c24f6d1330a07ca79586ba"
+      },
+      {
+        "path": "agents/cx_format_synthesis_agent.py",
+        "blob_sha": "548b88840321de0a56af9d0ea78b36a44dcb49bd"
+      },
+      {
+        "path": "agents/data_connector_registry_agent.py",
+        "blob_sha": "87c99950029ecae3ccc1c5143c9f45efab1f9127"
+      }
+    ],
+    "adopted_concepts": [
+      "unknown-source-analysis",
+      "schema-learning",
+      "transformation-synthesis",
+      "generated-agent",
+      "test-before-catalog",
+      "connector-catalog"
+    ],
+    "rejected_mechanisms": [
+      "ambient-azure-storage-or-network",
+      "broad-exception-success-fallback",
+      "time-random-md5-identity",
+      "floating-confidence-authority",
+      "auto-approval",
+      "simulated-tests",
+      "mutable-in-memory-session-authority",
+      "unqualified-generated-code"
+    ]
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "spec_id": "rapp-work-compatibility/1",
+  "parent": "rapp-workspace/1",
+  "substrate": "rapp/1",
+  "blocking": true,
+  "requirements": [
+    {
+      "id": "C0-PARENT",
+      "gate": "unchanged-rapp1-and-workspace1-pins",
+      "status": "implemented",
+      "vectors": ["wrong-parent-pin", "wrong-profile", "zero-frame-proof"]
+    },
+    {
+      "id": "C0-AUTHORITY",
+      "gate": "candidate-and-compatibility-data-grant-nothing",
+      "status": "implemented",
+      "vectors": ["authority-smuggling", "membership-smuggling", "effect-smuggling"]
+    },
+    {
+      "id": "C0-DOUBLE-HOTLOAD",
+      "gate": "exact-source-then-target-agent-receipts",
+      "status": "fixture-implemented-production-host-external",
+      "vectors": ["swapped-agents", "wrong-pass-order", "target-input-substitution", "ambient-session-refusal"]
+    },
+    {
+      "id": "C0-STATIC",
+      "gate": "deterministic-captured-byte-static-program",
+      "status": "fixture-implemented-production-runtime-external",
+      "vectors": ["compiler-pin", "frame-pin", "agent-byte-mutation", "model-call-during-static"]
+    },
+    {
+      "id": "C0-EXHAUST",
+      "gate": "typed-privacy-safe-exhaust-before-jit-reopen",
+      "status": "implemented",
+      "vectors": ["unmapped-operation", "lossy-reverse", "budget-exhaust", "raw-private-diagnostic"]
+    },
+    {
+      "id": "C0-LINEAGE",
+      "gate": "complete-forward-and-reverse-repository-partition",
+      "status": "implemented",
+      "vectors": ["missing-source-entry", "missing-target-entry", "ambiguous-move", "false-lossless"]
+    },
+    {
+      "id": "C0-TRACE",
+      "gate": "sanitized-ordered-correction-trace",
+      "status": "implemented",
+      "vectors": ["missing-correction", "forged-user-authority", "summary-drift", "privacy-leak"]
+    },
+    {
+      "id": "C0-TEST-INDEPENDENCE",
+      "gate": "producer-tests-cannot-self-certify",
+      "status": "implemented",
+      "vectors": ["generated-tests-only", "surviving-critical-mutant", "holdout-contamination"]
+    },
+    {
+      "id": "C0-SEARCH",
+      "gate": "bounded-n-lens-and-cross-search",
+      "status": "schema-and-policy-implemented",
+      "vectors": ["lens-limit", "candidate-limit", "cross-limit", "equivalence-amplification", "no-progress"]
+    },
+    {
+      "id": "C0-EVOLUTION",
+      "gate": "separate-evidence-promotion-and-adoption-levels",
+      "status": "implemented",
+      "vectors": ["automatic-seed-promotion", "automatic-protocol-promotion", "catastrophic-forgetting", "echo-amplification"]
+    },
+    {
+      "id": "C0-TRANSPORT",
+      "gate": "pr-hive-federation-transport-is-not-adoption",
+      "status": "implemented",
+      "vectors": ["merge-as-authority", "force-push-substitution", "private-projection-leak", "trait-cherry-pick-without-retest"]
+    },
+    {
+      "id": "C0-BILL",
+      "gate": "exact-first-wild-handshake-package-pins",
+      "status": "implemented-with-synthetic-frame-proof",
+      "vectors": ["handshake-pin", "source-agent-pin", "target-agent-pin", "fixture-package-mutation"]
+    },
+    {
+      "id": "C0-AUTOBEST",
+      "gate": "exact-inert-autobest-capability-and-successor-only-seed-binding",
+      "status": "implemented",
+      "vectors": ["agent-pin", "skill-pin", "capability-particle", "presence-not-execution", "descendant-binding", "successor-only-mutation"]
+    }
+  ]
+}

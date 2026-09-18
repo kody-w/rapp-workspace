@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-organization/1/schemas/generic-ceo-artifact.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-organization/1/generic-ceo-artifact"
+    },
+    "id": {
+      "const": "autobest:generic"
+    },
+    "name": {
+      "const": "@kody-w/microsol_autobest"
+    },
+    "version": {
+      "const": "3.0.0"
+    },
+    "status": {
+      "const": "verified"
+    },
+    "content_address": {
+      "type": "object",
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "subject": {
+          "const": "exact-agent.py-bytes"
+        },
+        "hash": {
+          "const": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c"
+        }
+      },
+      "required": [
+        "algorithm",
+        "subject",
+        "hash"
+      ],
+      "additionalProperties": false
+    },
+    "entrypoint": {
+      "const": "agent.py"
+    },
+    "files": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "object",
+          "properties": {
+            "path": {
+              "const": "agent.py"
+            },
+            "role": {
+              "const": "brainstem-hotload-entrypoint"
+            },
+            "sha256": {
+              "const": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c"
+            },
+            "bytes": {
+              "const": 430291
+            }
+          },
+          "required": [
+            "path",
+            "role",
+            "sha256",
+            "bytes"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "path": {
+              "const": "SKILL.md"
+            },
+            "role": {
+              "const": "human-and-agent-operating-guide"
+            },
+            "sha256": {
+              "const": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8"
+            },
+            "bytes": {
+              "const": 39139
+            }
+          },
+          "required": [
+            "path",
+            "role",
+            "sha256",
+            "bytes"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "aggregate_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "runtime": {
+      "type": "object",
+      "properties": {
+        "stdlib_only": {
+          "const": true
+        },
+        "deterministic": {
+          "const": true
+        },
+        "single_file_entrypoint": {
+          "const": true
+        },
+        "requires_environment": {
+          "const": false
+        },
+        "reads_files": {
+          "const": false
+        },
+        "reads_stdin": {
+          "const": false
+        },
+        "uses_clock": {
+          "const": false
+        },
+        "uses_randomness": {
+          "const": false
+        },
+        "uses_network": {
+          "const": false
+        },
+        "uses_subprocess": {
+          "const": false
+        }
+      },
+      "required": [
+        "stdlib_only",
+        "deterministic",
+        "single_file_entrypoint",
+        "requires_environment",
+        "reads_files",
+        "reads_stdin",
+        "uses_clock",
+        "uses_randomness",
+        "uses_network",
+        "uses_subprocess"
+      ],
+      "additionalProperties": false
+    },
+    "binding": {
+      "type": "object",
+      "properties": {
+        "api": {
+          "const": "bind_implementation_sha256"
+        },
+        "required_before_activation": {
+          "const": true
+        },
+        "external_host_only": {
+          "const": true
+        }
+      },
+      "required": [
+        "api",
+        "required_before_activation",
+        "external_host_only"
+      ],
+      "additionalProperties": false
+    },
+    "operations": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": "delegate"
+        },
+        {
+          "const": "cross"
+        },
+        {
+          "const": "run"
+        },
+        {
+          "const": "compatibility"
+        },
+        {
+          "const": "compatibility_exhaust"
+        },
+        {
+          "const": "compatibility_successor"
+        },
+        {
+          "const": "double_hotload"
+        },
+        {
+          "const": "compile_static_agent"
+        },
+        {
+          "const": "self_host_repository"
+        },
+        {
+          "const": "artifact_bundle"
+        },
+        {
+          "const": "mutation_offer"
+        },
+        {
+          "const": "mutation_offer_decision"
+        },
+        {
+          "const": "meta_evolution"
+        },
+        {
+          "const": "n_lens_search"
+        },
+        {
+          "const": "translate_hive"
+        },
+        {
+          "const": "ceo"
+        },
+        {
+          "const": "microsol-ceo"
+        }
+      ],
+      "items": false,
+      "minItems": 17,
+      "maxItems": 17
+    },
+    "authority": {
+      "const": false
+    },
+    "authority_from_presence": {
+      "const": false
+    },
+    "brainstem_modified": {
+      "const": false
+    },
+    "estate_activation": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "version",
+    "status",
+    "content_address",
+    "entrypoint",
+    "files",
+    "aggregate_sha256",
+    "runtime",
+    "binding",
+    "operations",
+    "authority",
+    "authority_from_presence",
+    "brainstem_modified",
+    "estate_activation"
+  ],
+  "additionalProperties": false
+}

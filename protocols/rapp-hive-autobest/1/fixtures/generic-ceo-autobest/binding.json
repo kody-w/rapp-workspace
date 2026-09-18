@@ -1,0 +1,53 @@
+{
+  "schema": "rapp-hive-autobest/1-ceo-binding",
+  "capability_id": "autobest:generic",
+  "profile": "microsol-ceo",
+  "source": {
+    "repository": "https://github.com/kody-w/microsol-organization",
+    "commit": "e8b1a1ffc795b48a854c31d76bb478adba583915",
+    "skill_path": ".github/skills/microsol-autobest"
+  },
+  "profile_artifact": {
+    "space": "rapp/1:particle",
+    "hash": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271"
+  },
+  "manifest": {
+    "path": "manifest.json",
+    "sha256": "b8a5272cd1de0c0a82ed1727f001c88ec056dccf36afecd9574c4432873d4686",
+    "bytes": 1605
+  },
+  "agent": {
+    "path": "agent.py",
+    "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "bytes": 430291
+  },
+  "skill": {
+    "path": "SKILL.md",
+    "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "bytes": 39139
+  },
+  "implementation_binding": {
+    "algorithm": "sha256",
+    "subject": "exact-agent.py-bytes",
+    "binding_api": "bind_implementation_sha256",
+    "required_before_activation": true,
+    "self_digest_embedded": false
+  },
+  "properties": {
+    "version": "3.0.0",
+    "single_file": true,
+    "stdlib_only": true,
+    "deterministic": true,
+    "inert": true,
+    "authority_source": "external-host",
+    "activation": "external-host-only",
+    "mutation": "successor-only",
+    "normal_traffic_model_calls": 0,
+    "canonical_rapp1_envelope_owned_by_host": true
+  },
+  "grants_authority": false,
+  "authority_from_presence": false,
+  "shared_brain": false,
+  "private_state_transfer": "none",
+  "key_transfer": "none"
+}

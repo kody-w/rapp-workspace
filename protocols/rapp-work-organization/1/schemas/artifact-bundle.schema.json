@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-organization/1/schemas/artifact-bundle.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-organization/1/artifact-bundle"
+    },
+    "bundle_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "compatibility_frame": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "entrypoint": {
+      "const": "agent.py"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "$ref": "common.schema.json#/$defs/path"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "hotload-entrypoint",
+              "code",
+              "data",
+              "schema",
+              "fixture",
+              "candidate-test",
+              "documentation",
+              "migration",
+              "manifest",
+              "compatibility-metadata"
+            ]
+          },
+          "sha256": {
+            "$ref": "common.schema.json#/$defs/hash"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1073741824
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "100644",
+              "100755"
+            ]
+          },
+          "media_type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "lineage": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/wave"
+            },
+            "minItems": 0,
+            "maxItems": 64,
+            "uniqueItems": true
+          },
+          "generation_receipt": {
+            "oneOf": [
+              {
+                "$ref": "common.schema.json#/$defs/wave"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "path",
+          "role",
+          "sha256",
+          "bytes",
+          "mode",
+          "media_type",
+          "lineage",
+          "generation_receipt"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 4096
+    },
+    "runtime_manifest_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "aggregate_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "source_mutation_manifest": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "generation_receipt": {
+      "type": "object",
+      "properties": {
+        "compatibility_frame": {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        "compatibility_frame_octets_sha256": {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        "compiler_sha256": {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        "compiler_runtime_manifest_sha256": {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        "template_sha256": {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        "output_agent_sha256": {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        "output_agent_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        },
+        "generation_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "model_calls": {
+          "const": 0
+        },
+        "deterministic": {
+          "const": true
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "compatibility_frame",
+        "compatibility_frame_octets_sha256",
+        "compiler_sha256",
+        "compiler_runtime_manifest_sha256",
+        "template_sha256",
+        "output_agent_sha256",
+        "output_agent_bytes",
+        "generation_version",
+        "model_calls",
+        "deterministic",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    },
+    "candidate_tests_are_independent_proof": {
+      "const": false
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "bundle_rappid",
+    "compatibility_frame",
+    "entrypoint",
+    "files",
+    "runtime_manifest_sha256",
+    "aggregate_sha256",
+    "source_mutation_manifest",
+    "generation_receipt",
+    "candidate_tests_are_independent_proof",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

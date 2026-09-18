@@ -1,0 +1,141 @@
+{
+  "schema": "rapp-work-compatibility-source-provenance/1",
+  "profile": "rapp-work-compatibility/1",
+  "authority": false,
+  "inspected_utc": "2026-09-17T21:36:39.047Z",
+  "parent_workspace": {
+    "profile": "rapp-workspace/1",
+    "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
+    "manifest_sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370",
+    "provenance_sha256": "f2b830739105b45cf04ab1780a5d3fa6cabe877bd1bf966a51cd4b1505c220af",
+    "role": "closed-parent-profile-unchanged"
+  },
+  "rapp1": {
+    "repository": "https://github.com/kody-w/rapp-1",
+    "commit": "dda32d741c7218f41443a5bd17eebfe0eae82cb7",
+    "revision_wave": "83ca275f35cca96e43d75c99d338326c1a39b2240eabf57eb7c29ac96cc90818",
+    "role": "canonical-envelope-identity-hash-signature-registry-and-egg-substrate"
+  },
+  "generic_compatibility_prototype": {
+    "role": "candidate-source-material-only",
+    "authority": false,
+    "runtime_dependency": false,
+    "schema_adopted_verbatim": false,
+    "files": [
+      {
+        "path": "session-artifact:generic-compatibility-core/hive_socket.py",
+        "sha256": "264f1754fd441d9e48ed164f18a081e4016369ad4c3a4b7a012da7b2346de0e7",
+        "bytes": 17938
+      },
+      {
+        "path": "session-artifact:generic-compatibility-core/test_hive_socket.py",
+        "sha256": "14e3ee48a744fadc7c07b09ee05bd307d90eaeaa00ba16891d41acb34fb4a957",
+        "bytes": 11368
+      }
+    ],
+    "tests_observed": 7
+  },
+  "conceptual_prior_art": {
+    "repository": "https://github.com/kody-w/UniversalDataConnectorAI",
+    "commit": "f2a978b9f85b65b9815b69d99c67e51c56732251",
+    "role": "conceptual-provenance-only",
+    "copied_code": false,
+    "imported_runtime": false,
+    "rapp1_conformance_evidence": false,
+    "files": [
+      {
+        "path": "agents/connector_learning_orchestrator.py",
+        "git_blob": "1542986362f27598c224327e1372350d81ead56a"
+      },
+      {
+        "path": "agents/schema_learner_agent.py",
+        "git_blob": "edf4c8bb146c478b77c24f6d1330a07ca79586ba"
+      },
+      {
+        "path": "agents/cx_format_synthesis_agent.py",
+        "git_blob": "548b88840321de0a56af9d0ea78b36a44dcb49bd"
+      },
+      {
+        "path": "agents/data_connector_registry_agent.py",
+        "git_blob": "87c99950029ecae3ccc1c5143c9f45efab1f9127"
+      }
+    ],
+    "excluded_patterns": [
+      "ambient-azure-storage-or-network",
+      "broad-catches-and-success-shaped-fallback",
+      "time-random-md5-identity",
+      "floating-confidence-or-auto-approval",
+      "simulated-tests",
+      "mutable-native-sessions-or-registries",
+      "unqualified-generated-code"
+    ]
+  },
+  "bill_handshake_source": {
+    "role": "approved-concrete-fixture-and-private-product-source",
+    "runtime_dependency": false,
+    "source_workspace": "microsol-hive-socket-integrated-20260917",
+    "source_repository": "https://github.com/billwhalenmsft/softwarecoellc-vteam-hive",
+    "source_commit": "f66da3d879b53a439bc87de764d79f68ceec048a",
+    "files": [
+      {
+        "path": "HIVE-INTEROPERABILITY.md",
+        "sha256": "4ca6674ee491af0a09b6c333c9f24763face5f22462ce0b454a0ce4c84793932",
+        "bytes": 34226
+      },
+      {
+        "path": "handshakes/softwarecoellc-vteam-hive/1.json",
+        "sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+        "bytes": 5351
+      },
+      {
+        "path": "handshakes/softwarecoellc-vteam-hive/agent.py",
+        "sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+        "bytes": 11302
+      },
+      {
+        "path": "handshakes/microsol-target-finalizer/agent.py",
+        "sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+        "bytes": 11461
+      }
+    ],
+    "live_qualification_summary": {
+      "verified_signed_frames": 2,
+      "verified_artifacts": 9,
+      "raw_private_frames_bundled": false,
+      "authority": false
+    }
+  },
+  "product_schema_boundary": {
+    "generic_profile_owner": "rapp-work-compatibility/1",
+    "microsol_distribution": "concrete-live-subscription-profile-only",
+    "competing_generic_microsol_schema": false
+  },
+  "generic_ceo_agent": {
+    "status": "verified-exact-bytes-included",
+    "source_workspace": "microsol-wild-hive-release-20260917",
+    "capability_id": "autobest:generic",
+    "capability_particle": {
+      "space": "rapp/1:particle",
+      "hash": "aca19fb14f2d96d6456bcbaa2c8c5bd542758a699e473eb5490b3c22c1c66401"
+    },
+    "capability_path": "capabilities/rapp-particle/aca19fb14f2d96d6456bcbaa2c8c5bd542758a699e473eb5490b3c22c1c66401/capability.json",
+    "tile_schema": "rapp-work-capability-tile/1",
+    "activation": "external-host-only",
+    "mutation": "successor-only",
+    "authority_from_presence": false,
+    "files": [
+      {
+        "source_path": ".github/skills/microsol-autobest/agent.py",
+        "profile_path": "artifacts/sha256/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/agent.py",
+        "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+        "bytes": 430291
+      },
+      {
+        "source_path": ".github/skills/microsol-autobest/SKILL.md",
+        "profile_path": "artifacts/sha256/5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8/SKILL.md",
+        "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+        "bytes": 39139
+      }
+    ]
+  }
+}

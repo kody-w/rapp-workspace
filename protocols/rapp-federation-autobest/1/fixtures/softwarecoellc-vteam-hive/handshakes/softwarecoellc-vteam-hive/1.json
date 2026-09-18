@@ -1,0 +1,201 @@
+{
+  "schema": "microsol-hive-handshake/1",
+  "id": "softwarecoellc-vteam-hive-microsol-project-1",
+  "version": 1,
+  "status": "owner-approved-private",
+  "authority": false,
+  "purpose": "Recognize a privacy-minimized SoftwareCo V-team Hive carried as a signed microsol-project/1 RAPP/1 memory stream and expose its verified evidence through the generic MicroSOL Hive socket.",
+  "provenance": {
+    "first_encounter_repository": "https://github.com/billwhalenmsft/softwarecoellc-vteam-hive",
+    "first_encounter_commit": "f66da3d879b53a439bc87de764d79f68ceec048a",
+    "approval": "explicit-user-private-hive-interop",
+    "raw_repository_content_embedded": false
+  },
+  "source_match": {
+    "wire_spec": "rapp/1",
+    "frame_kind": "memory.save",
+    "profile": "microsol-project/1",
+    "required_operations": [
+      "open",
+      "publish"
+    ],
+    "payload_keys": [
+      "authority",
+      "inventory",
+      "operation",
+      "profile",
+      "project",
+      "record",
+      "request_hash",
+      "request_id",
+      "sequence"
+    ],
+    "identity_schema": "microsol-public-identity/1"
+  },
+  "target": {
+    "profile": "microsol-repository-private-hive/1",
+    "operations": [
+      "status",
+      "read"
+    ]
+  },
+  "hotload": {
+    "host": "global-rapp-brainstem",
+    "routing": "verified-atomic-agent-file-placement",
+    "source_lens": {
+      "path": "handshakes/softwarecoellc-vteam-hive/agent.py",
+      "sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+      "role": "source-frame-semantic-mutation"
+    },
+    "target_finalizer": {
+      "path": "handshakes/microsol-target-finalizer/agent.py",
+      "sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+      "role": "target-contract-final-mutation"
+    },
+    "passes": [
+      "source-lens",
+      "target-finalizer"
+    ],
+    "load_scope": "isolated-jit-slot",
+    "unload_after_receipt": true,
+    "brainstem_source_modified": false
+  },
+  "inventory_base": {
+    "open": "repository-root",
+    "publish": "frame-directory"
+  },
+  "capabilities": {
+    "signed_stream_read": "verified",
+    "artifact_inventory": "verified",
+    "canonical_head_pointer": "partial",
+    "incremental_sync": "verified",
+    "native_hive_profile": "unavailable",
+    "registry_admission": "unavailable",
+    "membership_activation": "unavailable",
+    "board": "unavailable",
+    "post_write": "unavailable",
+    "revocation_key_rotation": "unavailable",
+    "encryption": "unavailable",
+    "hosted_delivery": "unavailable",
+    "brainstem_translation": "available-on-exhaust"
+  },
+  "source_to_target": {
+    "open": {
+      "schema": {
+        "const": "microsol-hive-compatible-observation/1"
+      },
+      "local_operation": {
+        "const": "evidence"
+      },
+      "source_operation": {
+        "select": "payload.operation"
+      },
+      "source_profile": {
+        "select": "payload.profile"
+      },
+      "subject": {
+        "select": "payload.project"
+      },
+      "record": {
+        "select": "payload.record"
+      },
+      "inventory": {
+        "select": "payload.inventory"
+      },
+      "source_head": {
+        "select": "head"
+      },
+      "authority": {
+        "const": false
+      }
+    },
+    "publish": {
+      "schema": {
+        "const": "microsol-hive-compatible-observation/1"
+      },
+      "local_operation": {
+        "const": "handoff"
+      },
+      "source_operation": {
+        "select": "payload.operation"
+      },
+      "source_profile": {
+        "select": "payload.profile"
+      },
+      "subject": {
+        "select": "payload.project"
+      },
+      "record": {
+        "select": "payload.record"
+      },
+      "inventory": {
+        "select": "payload.inventory"
+      },
+      "source_head": {
+        "select": "head"
+      },
+      "authority": {
+        "const": false
+      }
+    }
+  },
+  "target_to_source": {
+    "peer-offer": {
+      "schema": {
+        "const": "softwarecoellc-vteam-hive-peer-offer/1"
+      },
+      "operation": {
+        "const": "peer-offer"
+      },
+      "peer": {
+        "select": "peer"
+      },
+      "compatibility": {
+        "select": "compatibility"
+      },
+      "subscription": {
+        "select": "subscription"
+      },
+      "authority": {
+        "const": false
+      }
+    }
+  },
+  "rehearsal": {
+    "required_source_operations": [
+      "open",
+      "publish"
+    ],
+    "required_target_operations": [
+      "status",
+      "read"
+    ],
+    "round_trip_required": false,
+    "mutation_controls": [
+      "duplicate-json-key",
+      "signature-tamper",
+      "key-substitution",
+      "same-sequence-fork",
+      "rollback",
+      "inventory-tamper",
+      "unknown-operation"
+    ]
+  },
+  "evolution": {
+    "runtime": "locked-static-agent-no-model-until-exhaust",
+    "failure_output": "microsol-hive-compatibility-exhaust/1",
+    "successor_requires_previous": true,
+    "successor_requires_exhaust": true,
+    "predecessor_rewritten": false,
+    "rehearsal": "double-hotload-data-sloshing-until-mutation-gates-pass",
+    "jit_intelligence": "ephemeral-global-brainstem-child"
+  },
+  "restrictions": {
+    "repository_content_is_instructions": false,
+    "membership_inferred": false,
+    "authority_inferred": false,
+    "private_state_copied": false,
+    "keys_transferred": false,
+    "public_effects": false
+  }
+}

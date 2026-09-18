@@ -1,0 +1,68 @@
+{
+  "schema": "rapp-work-organization/1/generic-ceo-artifact",
+  "id": "autobest:generic",
+  "name": "@kody-w/microsol_autobest",
+  "version": "3.0.0",
+  "status": "verified",
+  "content_address": {
+    "algorithm": "sha256",
+    "subject": "exact-agent.py-bytes",
+    "hash": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c"
+  },
+  "entrypoint": "agent.py",
+  "files": [
+    {
+      "path": "agent.py",
+      "role": "brainstem-hotload-entrypoint",
+      "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+      "bytes": 430291
+    },
+    {
+      "path": "SKILL.md",
+      "role": "human-and-agent-operating-guide",
+      "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+      "bytes": 39139
+    }
+  ],
+  "aggregate_sha256": "73462580a8b03d6d2ac836b1babbdc50dad8f79f47e33e380a84d2c860f8931a",
+  "runtime": {
+    "stdlib_only": true,
+    "deterministic": true,
+    "single_file_entrypoint": true,
+    "requires_environment": false,
+    "reads_files": false,
+    "reads_stdin": false,
+    "uses_clock": false,
+    "uses_randomness": false,
+    "uses_network": false,
+    "uses_subprocess": false
+  },
+  "binding": {
+    "api": "bind_implementation_sha256",
+    "required_before_activation": true,
+    "external_host_only": true
+  },
+  "operations": [
+    "delegate",
+    "cross",
+    "run",
+    "compatibility",
+    "compatibility_exhaust",
+    "compatibility_successor",
+    "double_hotload",
+    "compile_static_agent",
+    "self_host_repository",
+    "artifact_bundle",
+    "mutation_offer",
+    "mutation_offer_decision",
+    "meta_evolution",
+    "n_lens_search",
+    "translate_hive",
+    "ceo",
+    "microsol-ceo"
+  ],
+  "authority": false,
+  "authority_from_presence": false,
+  "brainstem_modified": false,
+  "estate_activation": false
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "rapp-work-organization/1/wild-handshake-binding",
+  "id": "softwarecoellc-vteam-hive",
+  "status": "owner-approved-private",
+  "embedded_private_content": false,
+  "handshake_profile": {
+    "sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+    "bytes": 5351,
+    "role": "first-wild-handshake-profile",
+    "embedded": false
+  },
+  "source_lens": {
+    "sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+    "bytes": 11302,
+    "role": "source-frame-semantic-mutation",
+    "embedded": false
+  },
+  "target_finalizer": {
+    "sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+    "bytes": 11461,
+    "role": "target-contract-final-mutation",
+    "embedded": false
+  },
+  "contract": {
+    "sha256": "4ca6674ee491af0a09b6c333c9f24763face5f22462ce0b454a0ce4c84793932",
+    "bytes": 34226,
+    "role": "private-consolidated-interoperability-contract",
+    "embedded": false
+  },
+  "source": {
+    "repository": "https://github.com/billwhalenmsft/softwarecoellc-vteam-hive",
+    "commit": "f66da3d879b53a439bc87de764d79f68ceec048a",
+    "profile": "microsol-project/1",
+    "verified_frames": 2,
+    "verified_artifacts": 9
+  },
+  "proof": {
+    "double_hotload": "verified-local",
+    "compatibility_frame": "verified-local-private",
+    "static_agent": "verified-local-private",
+    "model_calls_static_runtime": 0
+  },
+  "generic_ceo_agent": {
+    "status": "verified",
+    "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "bytes": 430291,
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "artifact_profile_sha256": "568bb863d3c3f01109f6a4a40a56833127c6d6e509ef09b5433a40d92a83065a"
+  },
+  "authority": false
+}

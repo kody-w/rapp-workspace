@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-organization/1/schemas/search.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-organization/1/search"
+    },
+    "ancestor_frames": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true
+    },
+    "ancestor_inventory": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "declared_use_case": {
+      "$ref": "common.schema.json#/$defs/label"
+    },
+    "scenario_corpus": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "holdout_commitment": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "bounds": {
+      "$ref": "common.schema.json#/$defs/bounds"
+    },
+    "lens_dimensions": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/rappid"
+      },
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "candidate_id": {
+            "$ref": "common.schema.json#/$defs/hash"
+          },
+          "dimension": {
+            "$ref": "common.schema.json#/$defs/rappid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "complete-successor",
+              "trait-successor",
+              "repair",
+              "compatibility-agent",
+              "compiler",
+              "test-or-verifier"
+            ]
+          },
+          "artifact": {
+            "$ref": "common.schema.json#/$defs/egg"
+          },
+          "parents": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/wave"
+            },
+            "minItems": 1,
+            "maxItems": 8,
+            "uniqueItems": true
+          },
+          "traits": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/label"
+            },
+            "minItems": 0,
+            "maxItems": 64,
+            "uniqueItems": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "pareto",
+              "pruned",
+              "selected",
+              "crossed",
+              "refused"
+            ]
+          }
+        },
+        "required": [
+          "candidate_id",
+          "dimension",
+          "kind",
+          "artifact",
+          "parents",
+          "traits",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 256
+    },
+    "pareto_frontier": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/hash"
+      },
+      "minItems": 0,
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "selected": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stop_reason": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "budget-exhausted",
+            "candidate-cap",
+            "round-cap",
+            "depth-cap",
+            "all-candidates-pruned",
+            "no-progress",
+            "equivalence-saturation",
+            "critical-invariant-failure",
+            "holdout-exhaustion",
+            "privacy-refusal",
+            "user-interrupt",
+            "authority-expired"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "ancestor_frames",
+    "ancestor_inventory",
+    "declared_use_case",
+    "scenario_corpus",
+    "holdout_commitment",
+    "bounds",
+    "lens_dimensions",
+    "candidates",
+    "pareto_frontier",
+    "selected",
+    "stop_reason",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,177 @@
+{
+  "schema": "rapp-federation-autobest-file-manifest/1",
+  "profile": "rapp-federation-autobest/1",
+  "parent": "rapp/1",
+  "status": "candidate",
+  "activation": "not-activated",
+  "generic_ceo_agent": {
+    "status": "verified",
+    "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "activation": "external-host-only"
+  },
+  "carrier": "rapp/1 memory.save",
+  "closed_sibling_profiles_modified": false,
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "13968c0bd636034180290603de634e0a39c48e4c28d50df173b1a5f9a032e172",
+      "bytes": 88
+    },
+    {
+      "path": "SPEC.md",
+      "sha256": "e11bd7aa9423531888a15047eef9ee50898b5081968801d9f7f08130a5bd4b6d",
+      "bytes": 16471
+    },
+    {
+      "path": "bindings.json",
+      "sha256": "1ecb3c1287f4a3b79d5a0e0046291298f71bf3ba7dc7e892edf8422efdd32bbb",
+      "bytes": 2120
+    },
+    {
+      "path": "fixtures/generic-ceo/SKILL.md",
+      "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+      "bytes": 39139
+    },
+    {
+      "path": "fixtures/generic-ceo/agent.py",
+      "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+      "bytes": 430291
+    },
+    {
+      "path": "fixtures/generic-ceo/implementation-binding.json",
+      "sha256": "3aeda1a4b6d7b7f8c6c5c6dbac9d430dc0f343e1b4a52214dc4e5c6159ff514d",
+      "bytes": 899
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/compatibility/exhaust.json",
+      "sha256": "77cd355d9d17ce1206f6dcf0f497b5730b122cfc57d2e6fb8c6653dbead0e69d",
+      "bytes": 2295
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/compatibility/frame.json",
+      "sha256": "d10c73dd0de7ecfb1527e2de136858d8a72d50fe2b7c00b4bfba9d1b318cee40",
+      "bytes": 9258
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/fixture.json",
+      "sha256": "1067dfe4bda0194126b0c9efc63d0e49d061aeee31481d67b80f2631f3df53b1",
+      "bytes": 24522
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/handshakes/microsol-target-finalizer/agent.py",
+      "sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+      "bytes": 11461
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/handshakes/softwarecoellc-vteam-hive/1.json",
+      "sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+      "bytes": 5351
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/handshakes/softwarecoellc-vteam-hive/agent.py",
+      "sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+      "bytes": 11302
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/learning-trace.json",
+      "sha256": "d637e13603239c8b1551d8c85ae48442c532df19426902a21dfafbe743ed78c0",
+      "bytes": 2834
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/lens-search.json",
+      "sha256": "ecdfa3ae0fcc80225ec45684e43a865ec9e7be0a7b8af171552f99dde4a2a7cc",
+      "bytes": 705
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/mutation-offer.json",
+      "sha256": "58019377201eaeab1f3ab7b462c380de98966d79c58878cb4a23b4a20ef28768",
+      "bytes": 868
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/mutation-tests.json",
+      "sha256": "1293138abc85ff7053920e71caa675c354e223fba603b98bf37ba84a3ef88160",
+      "bytes": 735
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/package-manifest.json",
+      "sha256": "09e7c1419b80e736b1f68e9e62c05bdd81f6d72cc28c7865c4244acaec916389",
+      "bytes": 7546
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/qualification.json",
+      "sha256": "a165ac5089974801bdf1f67445693824e8887e6a007440cf75f6cdc623480295",
+      "bytes": 518
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/schemas/rapp-federation-autobest-1.schema.json",
+      "sha256": "8c079c0d224ad330784613018ecef04dfd3a160d4729d2a403df838a8d4784b1",
+      "bytes": 40505
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/static/agent.py",
+      "sha256": "6908a9147de6247b639c06784ded2b3789b3501e3ff1c304bb0b4e50c87b34e5",
+      "bytes": 6364
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/static/generation-receipt.json",
+      "sha256": "4e75f155a1325ec211a9895b996c57959532d43af4a13a1779914b610eac5e0e",
+      "bytes": 830
+    },
+    {
+      "path": "parent-wire-results.json",
+      "sha256": "baa38a43465dde58f77ade58a565f01690f0bc81bd859da6ee1e742379c1cfcd",
+      "bytes": 866
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "502f9620b4c0232575250b08d34161b20bd8740b10ae92a19222aa6a2f52bb7a",
+      "bytes": 2817
+    },
+    {
+      "path": "reference/README.md",
+      "sha256": "19e9e788491dca768af1dcb347b13a3ad49bad6d11f14772a92c723f1674bc14",
+      "bytes": 1970
+    },
+    {
+      "path": "reference/compatibility.py",
+      "sha256": "5da7d9d70a2be8abfd350948516ed8912b8fff1bd34e6d575c1dee2429297793",
+      "bytes": 22263
+    },
+    {
+      "path": "reference/conformance.py",
+      "sha256": "d19b4b4c73eed6d14f4c876d349cf11441dd4e79d7142b7f2b16889d25a81ade",
+      "bytes": 23647
+    },
+    {
+      "path": "reference/manifest_source.py",
+      "sha256": "be3f5987c245baf6f0af27e27d86aaec51abdac90813f217980243c2b59bd812",
+      "bytes": 2105
+    },
+    {
+      "path": "reference/schema_source.py",
+      "sha256": "7564aed4caf6363a65308dadaf91577424b68108735bb9fb28dacab4df48e474",
+      "bytes": 21276
+    },
+    {
+      "path": "reference/vectors.py",
+      "sha256": "7f8f999f41a8035a1b4be50577f2517f10bab327c4e44b0037c21cc726751529",
+      "bytes": 31727
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "f2661695af26aedec09b6f1ac907c2cc6aa821ca04483396fed0cc2bfc83dd3f",
+      "bytes": 40
+    },
+    {
+      "path": "safety-matrix.json",
+      "sha256": "7bab0459a5f23757d14b38d780e4664082250aaadbc26d141ea451011e8f655b",
+      "bytes": 5915
+    },
+    {
+      "path": "schema.json",
+      "sha256": "8c079c0d224ad330784613018ecef04dfd3a160d4729d2a403df838a8d4784b1",
+      "bytes": 40505
+    }
+  ]
+}

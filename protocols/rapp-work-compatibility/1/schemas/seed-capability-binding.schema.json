@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-work/raw/main/protocols/rapp-work-compatibility/1/schemas/seed-capability-binding.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-compatibility/1/seed-capability-binding"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "activation_mode": {
+      "enum": [
+        "live",
+        "synthetic"
+      ]
+    },
+    "activation": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "workspace_seed": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "workspace_profile": {
+      "const": "rapp-workspace/1"
+    },
+    "workspace_spec_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "capability": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "agent": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "skill": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "relation": {
+      "enum": [
+        "ancestor-seed",
+        "descendant-seed",
+        "capability-successor"
+      ]
+    },
+    "ancestor_binding": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "parent_binding": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "previous_binding": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "inheritance": {
+      "const": "reference-only"
+    },
+    "executable": {
+      "const": false
+    },
+    "host_activation": {
+      "const": "external-host-only"
+    },
+    "mutation": {
+      "const": "successor-only"
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "activation_mode",
+    "activation",
+    "restrictions",
+    "workspace_seed",
+    "workspace_profile",
+    "workspace_spec_sha256",
+    "capability",
+    "agent",
+    "skill",
+    "relation",
+    "ancestor_binding",
+    "parent_binding",
+    "previous_binding",
+    "inheritance",
+    "executable",
+    "host_activation",
+    "mutation",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

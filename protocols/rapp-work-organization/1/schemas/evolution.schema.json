@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-organization/1/schemas/evolution.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-organization/1/evolution"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "handshake",
+        "implementation",
+        "seed-trait",
+        "protocol-successor"
+      ]
+    },
+    "parents": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/wave"
+      },
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "candidate": {
+      "$ref": "common.schema.json#/$defs/egg"
+    },
+    "scenario_corpus": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "hidden_holdout": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "controlled_mutants": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "canonical_evaluation": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "canary": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "promotion": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "adoption": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/wave"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rollback_target": {
+      "$ref": "common.schema.json#/$defs/wave"
+    },
+    "automatic_promotion": {
+      "const": false
+    },
+    "generated_tests_self_certify": {
+      "const": false
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "level",
+    "parents",
+    "candidate",
+    "scenario_corpus",
+    "hidden_holdout",
+    "controlled_mutants",
+    "canonical_evaluation",
+    "canary",
+    "promotion",
+    "adoption",
+    "rollback_target",
+    "automatic_promotion",
+    "generated_tests_self_certify",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

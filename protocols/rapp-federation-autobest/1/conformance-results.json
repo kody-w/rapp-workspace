@@ -1,0 +1,123 @@
+{
+  "activation": "candidate-not-activated-ceo-pinned",
+  "changed_inputs": [],
+  "errors": 0,
+  "failures": 0,
+  "input_tree_stable": true,
+  "negative_checks": 19,
+  "negative_vectors": [
+    {
+      "refusal": "schema",
+      "test": "test_candidate_tests_cannot_self_certify"
+    },
+    {
+      "refusal": "ceo-agent-pin",
+      "test": "test_ceo_agent_skill_and_binding_mutations_refuse"
+    },
+    {
+      "refusal": "ceo-skill-pin",
+      "test": "test_ceo_agent_skill_and_binding_mutations_refuse"
+    },
+    {
+      "refusal": "ceo-implementation-binding",
+      "test": "test_ceo_agent_skill_and_binding_mutations_refuse"
+    },
+    {
+      "refusal": "duplicate-json-key",
+      "test": "test_duplicate_json_keys_and_floats_refuse"
+    },
+    {
+      "refusal": "number",
+      "test": "test_duplicate_json_keys_and_floats_refuse"
+    },
+    {
+      "refusal": "trace-authority",
+      "test": "test_forged_user_authority_is_refused"
+    },
+    {
+      "refusal": "trace-correction-missing",
+      "test": "test_learning_trace_preserves_corrections_without_raw_history"
+    },
+    {
+      "refusal": "schema",
+      "test": "test_lens_search_is_explicitly_bounded_and_not_universal_truth"
+    },
+    {
+      "refusal": "schema",
+      "test": "test_mutation_offer_is_transport_only"
+    },
+    {
+      "refusal": "schema",
+      "test": "test_path_escape_and_lineage_gap_refuse"
+    },
+    {
+      "refusal": "lineage-successor-coverage",
+      "test": "test_path_escape_and_lineage_gap_refuse"
+    },
+    {
+      "refusal": "handshake-revoked",
+      "test": "test_revoked_handshake_and_changed_mapping_refuse"
+    },
+    {
+      "refusal": "mapping-pin",
+      "test": "test_revoked_handshake_and_changed_mapping_refuse"
+    },
+    {
+      "refusal": "schema",
+      "test": "test_schema_is_closed_and_generated_exactly"
+    },
+    {
+      "refusal": "signature",
+      "test": "test_signature_tamper_rollback_and_same_sequence_fork_refuse"
+    },
+    {
+      "refusal": "chain",
+      "test": "test_signature_tamper_rollback_and_same_sequence_fork_refuse"
+    },
+    {
+      "refusal": "stream-fork",
+      "test": "test_signature_tamper_rollback_and_same_sequence_fork_refuse"
+    },
+    {
+      "refusal": "successor-causality",
+      "test": "test_successor_requires_previous_and_exhaust_together"
+    }
+  ],
+  "profile": "rapp-federation-autobest/1",
+  "skipped": 0,
+  "source_sha256": {
+    "SPEC.md": "e11bd7aa9423531888a15047eef9ee50898b5081968801d9f7f08130a5bd4b6d",
+    "bindings.json": "1ecb3c1287f4a3b79d5a0e0046291298f71bf3ba7dc7e892edf8422efdd32bbb",
+    "fixtures/generic-ceo/SKILL.md": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "fixtures/generic-ceo/agent.py": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "fixtures/generic-ceo/implementation-binding.json": "3aeda1a4b6d7b7f8c6c5c6dbac9d430dc0f343e1b4a52214dc4e5c6159ff514d",
+    "fixtures/softwarecoellc-vteam-hive/compatibility/exhaust.json": "77cd355d9d17ce1206f6dcf0f497b5730b122cfc57d2e6fb8c6653dbead0e69d",
+    "fixtures/softwarecoellc-vteam-hive/compatibility/frame.json": "d10c73dd0de7ecfb1527e2de136858d8a72d50fe2b7c00b4bfba9d1b318cee40",
+    "fixtures/softwarecoellc-vteam-hive/fixture.json": "1067dfe4bda0194126b0c9efc63d0e49d061aeee31481d67b80f2631f3df53b1",
+    "fixtures/softwarecoellc-vteam-hive/handshakes/microsol-target-finalizer/agent.py": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+    "fixtures/softwarecoellc-vteam-hive/handshakes/softwarecoellc-vteam-hive/1.json": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+    "fixtures/softwarecoellc-vteam-hive/handshakes/softwarecoellc-vteam-hive/agent.py": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+    "fixtures/softwarecoellc-vteam-hive/learning-trace.json": "d637e13603239c8b1551d8c85ae48442c532df19426902a21dfafbe743ed78c0",
+    "fixtures/softwarecoellc-vteam-hive/lens-search.json": "ecdfa3ae0fcc80225ec45684e43a865ec9e7be0a7b8af171552f99dde4a2a7cc",
+    "fixtures/softwarecoellc-vteam-hive/mutation-offer.json": "58019377201eaeab1f3ab7b462c380de98966d79c58878cb4a23b4a20ef28768",
+    "fixtures/softwarecoellc-vteam-hive/mutation-tests.json": "1293138abc85ff7053920e71caa675c354e223fba603b98bf37ba84a3ef88160",
+    "fixtures/softwarecoellc-vteam-hive/package-manifest.json": "09e7c1419b80e736b1f68e9e62c05bdd81f6d72cc28c7865c4244acaec916389",
+    "fixtures/softwarecoellc-vteam-hive/qualification.json": "a165ac5089974801bdf1f67445693824e8887e6a007440cf75f6cdc623480295",
+    "fixtures/softwarecoellc-vteam-hive/schemas/rapp-federation-autobest-1.schema.json": "8c079c0d224ad330784613018ecef04dfd3a160d4729d2a403df838a8d4784b1",
+    "fixtures/softwarecoellc-vteam-hive/static/agent.py": "6908a9147de6247b639c06784ded2b3789b3501e3ff1c304bb0b4e50c87b34e5",
+    "fixtures/softwarecoellc-vteam-hive/static/generation-receipt.json": "4e75f155a1325ec211a9895b996c57959532d43af4a13a1779914b610eac5e0e",
+    "manifest.json": "0a508b09b242485dc5aaaa83c0464a2d558384d9cac0824da4fd922f03278099",
+    "parent-wire-results.json": "baa38a43465dde58f77ade58a565f01690f0bc81bd859da6ee1e742379c1cfcd",
+    "provenance.json": "502f9620b4c0232575250b08d34161b20bd8740b10ae92a19222aa6a2f52bb7a",
+    "reference/README.md": "19e9e788491dca768af1dcb347b13a3ad49bad6d11f14772a92c723f1674bc14",
+    "reference/compatibility.py": "5da7d9d70a2be8abfd350948516ed8912b8fff1bd34e6d575c1dee2429297793",
+    "reference/conformance.py": "d19b4b4c73eed6d14f4c876d349cf11441dd4e79d7142b7f2b16889d25a81ade",
+    "reference/manifest_source.py": "be3f5987c245baf6f0af27e27d86aaec51abdac90813f217980243c2b59bd812",
+    "reference/schema_source.py": "7564aed4caf6363a65308dadaf91577424b68108735bb9fb28dacab4df48e474",
+    "reference/vectors.py": "7f8f999f41a8035a1b4be50577f2517f10bab327c4e44b0037c21cc726751529",
+    "safety-matrix.json": "7bab0459a5f23757d14b38d780e4664082250aaadbc26d141ea451011e8f655b",
+    "schema.json": "8c079c0d224ad330784613018ecef04dfd3a160d4729d2a403df838a8d4784b1"
+  },
+  "tests_run": 27,
+  "verified_fixture_frames": 4
+}

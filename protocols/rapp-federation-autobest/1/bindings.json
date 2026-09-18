@@ -1,0 +1,47 @@
+{
+  "schema": "rapp-federation-autobest/1-bindings",
+  "parent": {
+    "profile": "rapp/1",
+    "inspected_commit": "dda32d741c7218f41443a5bd17eebfe0eae82cb7",
+    "revision_wave": "83ca275f35cca96e43d75c99d338326c1a39b2240eabf57eb7c29ac96cc90818",
+    "authority": "external-estate-registry-required"
+  },
+  "workspace": {
+    "profile": "rapp-workspace/1",
+    "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
+    "manifest_sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370"
+  },
+  "hive": {
+    "profile": "rapp-hive/1",
+    "spec_sha256": "79aeef7bc5000f4a7b09483844b035c66adf817475540e583138f2e6b432c822",
+    "schema_sha256": "9b383535d6a2ad379e8c70b1a1cb3ab6ed3f9ca71114c37695e24fd8560415e0"
+  },
+  "federation": {
+    "profile": "rapp-federation/1",
+    "spec_sha256": "ec5560a639a2283213c71ded658920008024d2e705b010c0c4b8fdd74736bcd3",
+    "schema_sha256": "d5ae3a3af3030632171db9cbb139d05e589116fb0e6a3a585e86d0c83e4f155a",
+    "conformance_class": "interval-local-receiver"
+  },
+  "wild_handshake": {
+    "id": "softwarecoellc-vteam-hive-microsol-project-1",
+    "profile_sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+    "source_agent_sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+    "target_finalizer_sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+    "source_commit": "f66da3d879b53a439bc87de764d79f68ceec048a",
+    "verified_frames": 2,
+    "verified_artifacts": 9
+  },
+  "generic_ceo_agent": {
+    "status": "verified",
+    "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "bytes": 430291,
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "source_commit": "e8b1a1ffc795b48a854c31d76bb478adba583915",
+    "profile_agent_path": "fixtures/generic-ceo/agent.py",
+    "profile_skill_path": "fixtures/generic-ceo/SKILL.md",
+    "activation": "external-host-only",
+    "authority_from_presence": false,
+    "dynamic_successor_mutation_eligible": true
+  }
+}

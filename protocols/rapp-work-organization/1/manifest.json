@@ -1,0 +1,213 @@
+{
+  "schema": "rapp-work-organization-file-manifest/1",
+  "profile": "rapp-work-organization/1",
+  "brand": "RAPP Work Organization/1",
+  "parent": "rapp/1",
+  "status": "candidate",
+  "conformance_class": "single-host-locked-handshake",
+  "brainstem_modified": false,
+  "host_authority": "external",
+  "generic_ceo_agent": {
+    "status": "verified",
+    "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+    "bytes": 430291,
+    "skill_sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+    "skill_bytes": 39139,
+    "artifact_profile_sha256": "568bb863d3c3f01109f6a4a40a56833127c6d6e509ef09b5433a40d92a83065a"
+  },
+  "live_activation": false,
+  "normative": [
+    {
+      "path": "SPEC.md",
+      "sha256": "e86c155decf0a66edccc821703e5f4172dd8dfb64828c1e53f009ff16c63bd7b",
+      "bytes": 15757
+    },
+    {
+      "path": "limits.json",
+      "sha256": "b42b139e358d16c656727309b86dc586c014d6cb68e8accb450a243657b3e6dc",
+      "bytes": 1170
+    },
+    {
+      "path": "safety-matrix.json",
+      "sha256": "0d8eca9b6b7231e32724267eec1eff290ee975ef9e514318eda48b5b0de4f9e6",
+      "bytes": 4312
+    },
+    {
+      "path": "schemas/activation-document.schema.json",
+      "sha256": "0ee5e6c540ee52f9395b9345cb8aa5e2adcf59a75ddf4015fc95e93019a4c2de",
+      "bytes": 1861
+    },
+    {
+      "path": "schemas/artifact-bundle.schema.json",
+      "sha256": "575fab7052e8790587dd268d2ce9345bbe74ab914e457b7def1404093628f113",
+      "bytes": 4619
+    },
+    {
+      "path": "schemas/common.schema.json",
+      "sha256": "852ed337721db1f1ea347168d29dea6230cacb7b96c587ce1139ab9483bd44e0",
+      "bytes": 6564
+    },
+    {
+      "path": "schemas/compatibility.schema.json",
+      "sha256": "3f7f5de2983ffd1c8ab673b5ac16814d2038e549a71296979228faaac81fa94f",
+      "bytes": 5312
+    },
+    {
+      "path": "schemas/evolution.schema.json",
+      "sha256": "a5f61805c66562ba5a9430d8125b2d81bfbbf012989242af1fa278fc5d46d540",
+      "bytes": 2103
+    },
+    {
+      "path": "schemas/frame.schema.json",
+      "sha256": "a8b3ef3012b2b861fd6add98d50882051e9fcf8873bfb293dfd6b2baaeed5d10",
+      "bytes": 3099
+    },
+    {
+      "path": "schemas/generic-ceo-artifact.schema.json",
+      "sha256": "27e6e4bdafe87b6f7dd4a94a99d4839e9b4ef4849dda3fd9ac303558dd8e3383",
+      "bytes": 5640
+    },
+    {
+      "path": "schemas/learning-trace.schema.json",
+      "sha256": "9135572e4d26d437e0948a5ba5a7bd4e1305c6b390611f598445aaeaec05d807",
+      "bytes": 4951
+    },
+    {
+      "path": "schemas/mutation-lineage.schema.json",
+      "sha256": "328fa7bf9da79298f038a5512cbca0daec9f369fa2cf9e3ff0b9ad776d509cce",
+      "bytes": 7851
+    },
+    {
+      "path": "schemas/mutation-offer.schema.json",
+      "sha256": "df70de7133031e439f8f155a6256c361a70f6bdb96bf8b6715a46653f127ea57",
+      "bytes": 3043
+    },
+    {
+      "path": "schemas/search.schema.json",
+      "sha256": "cc3f3e63852ab20fa3841db46c5565545c8089a67460bd79415c1f39bb8a4d4b",
+      "bytes": 4118
+    },
+    {
+      "path": "schemas/wild-handshake-binding.schema.json",
+      "sha256": "52e58c8aadc1d1454ccca93635cae56d54c0a1581c8a6b14d41b870e09f53639",
+      "bytes": 3249
+    }
+  ],
+  "reference": [
+    {
+      "path": "reference/atomic_agent.py",
+      "sha256": "ee202ef3926be30564734ab9993e0f3cfdd78a58eca2af1db75303a6581d78cb",
+      "bytes": 4011
+    },
+    {
+      "path": "reference/compiler.py",
+      "sha256": "b50c429e9fd3e207a63dc8055153bd30d299c608f3cfd0de0484255c4fa17292",
+      "bytes": 5006
+    },
+    {
+      "path": "reference/conformance.py",
+      "sha256": "adf6b12370379b9315ec45fc69d923a68938a620f512b5f3416296fab339931a",
+      "bytes": 4063
+    },
+    {
+      "path": "reference/pins.py",
+      "sha256": "ae9acce182ba505d600831ec2b26be4f8a9eba261bb2b28e74819ba4d230336e",
+      "bytes": 6532
+    },
+    {
+      "path": "reference/protocol.py",
+      "sha256": "08daf990605e842ae1a2ca032b568080c87f8101021e8fe27952d2be3846fe75",
+      "bytes": 22532
+    },
+    {
+      "path": "reference/workorg_artifact.py",
+      "sha256": "a1d125fb27c211d6e9f318cf39392525a431f84cb05b300e28382e5d51f49081",
+      "bytes": 5636
+    },
+    {
+      "path": "reference/workorg_common.py",
+      "sha256": "46a920ff4d679ff05b8d58ca2a4edd1133b24619207ef8c5d07be101b56fe90d",
+      "bytes": 6356
+    },
+    {
+      "path": "reference/workorg_schema_source.py",
+      "sha256": "11e8d32ffe79ea581a4208a9d4efeda418c4767d9d9651196622247384dc46b3",
+      "bytes": 29891
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive-1.json",
+      "sha256": "7196f9b191d502bfc686969491dfa626faa1ef37766ca3c0312a5b4c438e2143",
+      "bytes": 1810
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "artifacts/generic-ceo/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/agent.py",
+      "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+      "bytes": 430291
+    },
+    {
+      "path": "artifacts/generic-ceo/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/SKILL.md",
+      "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+      "bytes": 39139
+    },
+    {
+      "path": "artifacts/generic-ceo/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/profile.json",
+      "sha256": "568bb863d3c3f01109f6a4a40a56833127c6d6e509ef09b5433a40d92a83065a",
+      "bytes": 1819
+    }
+  ],
+  "repository_evidence": [
+    {
+      "path": "docs/rapp-work.md",
+      "sha256": "073c63e8d40264761dd534d9114109de89b5b999f23083a677984b5580b58ba1",
+      "bytes": 5398
+    },
+    {
+      "path": "docs/rapp-work-organization.md",
+      "sha256": "a4b086a72a65677b314465e94232957ac605bbc11edf457dbc0afd57fbb6adb1",
+      "bytes": 2761
+    },
+    {
+      "path": "tools/work_organization.py",
+      "sha256": "e841fde785eee6d805794842f83e9d7edd3a1970e1c1778589eaa0fe69bbcb2e",
+      "bytes": 1055
+    },
+    {
+      "path": "tests/test_work_organization.py",
+      "sha256": "38edbbfea5f04cabef289dd875cb2f3adda3635965e97cd26c995dc62d40132e",
+      "bytes": 15342
+    },
+    {
+      "path": "tests/test_work_organization_p0.py",
+      "sha256": "d8f31671d51157be41dffed45aa1b6b720547cf02ed209c5506a58bca60f0a8a",
+      "bytes": 6364
+    },
+    {
+      "path": ".github/skills/rapp-work-organization/SKILL.md",
+      "sha256": "74dde682ffb5f2a6acac0f00b779d12a0ce75100834941bcd8c0cbeffa558519",
+      "bytes": 3140
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "8b987767e7777513097b3fc6b1501798263c2706c378c97ab936c18915368e83",
+      "bytes": 5217
+    }
+  ],
+  "provenance": {
+    "path": "provenance.json",
+    "sha256": "3e962bb398343d09d7c81148cc8f18aa88af7b92999eca8f6f05a834d634f02f",
+    "bytes": 3582
+  },
+  "first_wild_handshake": {
+    "id": "softwarecoellc-vteam-hive",
+    "fixture": {
+      "path": "fixtures/softwarecoellc-vteam-hive-1.json",
+      "sha256": "7196f9b191d502bfc686969491dfa626faa1ef37766ca3c0312a5b4c438e2143",
+      "bytes": 1810
+    },
+    "private_source_bytes_embedded": false
+  }
+}

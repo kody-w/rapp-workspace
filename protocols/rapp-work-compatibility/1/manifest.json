@@ -1,0 +1,313 @@
+{
+  "schema": "rapp-work-compatibility-file-manifest/1",
+  "profile": "rapp-work-compatibility/1",
+  "human_name": "RAPP Work Compatibility/1",
+  "parent": "rapp-workspace/1",
+  "substrate": "rapp/1",
+  "authority": false,
+  "status": "optional-application-profile",
+  "signed_activation": false,
+  "normative": [
+    {
+      "path": "SPEC.md",
+      "sha256": "e39f214fa0252b4995a427c227e4c5f976c076a208c9a85cb380126d0cd60bcb",
+      "bytes": 15187
+    },
+    {
+      "path": "safety-matrix.json",
+      "sha256": "66c2ad63aa384900e189bab3ecb48e0c9e52ff986688db0058017c211b6c3c1c",
+      "bytes": 3346
+    },
+    {
+      "path": "runtime-manifest.json",
+      "sha256": "169cde589f5dda1539f12c188e85e713a197e01f6fc26d583413efe8637dad36",
+      "bytes": 455
+    },
+    {
+      "path": "schemas/artifact-bundle.schema.json",
+      "sha256": "7230c85c3262d90c8c06fbd42818297fe879c7378ecf9f54556eca4eff84f2fc",
+      "bytes": 6702
+    },
+    {
+      "path": "schemas/candidate-cross.schema.json",
+      "sha256": "6ffa3b77d4203e5503376278b6218aeab03e823610db8c6215e6438f3070811b",
+      "bytes": 2301
+    },
+    {
+      "path": "schemas/capability-manifest.schema.json",
+      "sha256": "1a81e9a1a80b0c923d5fcf0778edaa2604e2839dc7b3c381172db0a43b86094b",
+      "bytes": 4787
+    },
+    {
+      "path": "schemas/causal-mutation-manifest.schema.json",
+      "sha256": "a12b59940704dfdfcf8c39305c5e586ecba6bf7b40775a6e2c07aa33d4fb7842",
+      "bytes": 8972
+    },
+    {
+      "path": "schemas/common.schema.json",
+      "sha256": "96953d1ff332ca572c8b1ca2ae65acaef4761b3a14685ed75b137b0a82e4ddff",
+      "bytes": 9031
+    },
+    {
+      "path": "schemas/compatibility-exhaust.schema.json",
+      "sha256": "f02e0d39799d8ad90e24b010dcc7211b59d16b9ea9d0d89bd6c945b420331dd2",
+      "bytes": 6352
+    },
+    {
+      "path": "schemas/compatibility.schema.json",
+      "sha256": "bfbe78798c577fd00901d216c367a37068706b7072cfa26d9b404d8b871b74bd",
+      "bytes": 18175
+    },
+    {
+      "path": "schemas/evaluation-receipt.schema.json",
+      "sha256": "55f7ee97d0c610d906a7f5e5cc819df2a5afc6082092bf32fb26181a57340d47",
+      "bytes": 6913
+    },
+    {
+      "path": "schemas/evolution-proposal.schema.json",
+      "sha256": "8ed1c676586a7414f01eefcfea56802a543d3c2532e87cfb6458c1ef9d00f3d5",
+      "bytes": 2401
+    },
+    {
+      "path": "schemas/handshake-package.schema.json",
+      "sha256": "e66c6a957a4700eec9a9a066050018e6c55eac730b1be74631420b87f9c681cd",
+      "bytes": 9080
+    },
+    {
+      "path": "schemas/learning-trace.schema.json",
+      "sha256": "aba9976a4b2f68cbfa3cc698323925fdfdfadb5c3c092c64b288332093a4d0a7",
+      "bytes": 7887
+    },
+    {
+      "path": "schemas/lens-dimension.schema.json",
+      "sha256": "ef15de81f491aeaf660ca4ea3310064aa2b69090c51b3f2802ee2639b657f443",
+      "bytes": 6853
+    },
+    {
+      "path": "schemas/mutation-offer.schema.json",
+      "sha256": "faf90144ec8310e51d1726887866fc62894fee8fbf6c9588eba32efc3faf70a1",
+      "bytes": 3281
+    },
+    {
+      "path": "schemas/promotion-decision.schema.json",
+      "sha256": "d0cf4184d28986183676a3d95b62f8d28660e022dcb6b4877497cecb6d5f8811",
+      "bytes": 2122
+    },
+    {
+      "path": "schemas/seed-capability-binding.schema.json",
+      "sha256": "f87ebd27c213977048e4b7b191bd4049d755370ff7e7a01083adeaa4c11d5c14",
+      "bytes": 2693
+    },
+    {
+      "path": "schemas/source-qualification.schema.json",
+      "sha256": "adcfb55d5949b4f895099b6db7efab11314aa09a263c3f564487a556c16a63f0",
+      "bytes": 1276
+    },
+    {
+      "path": "schemas/static-agent-generation.schema.json",
+      "sha256": "70c09adbd0517862142ff386fa55aebc31322d8cace37e428c1853788b5b6f7c",
+      "bytes": 4445
+    },
+    {
+      "path": "schemas/transformation-receipt.schema.json",
+      "sha256": "7806f3e6f0cda6393c7a3935a8cbddc879ca7f559dd63cfc887d5ee34ec95764",
+      "bytes": 3933
+    }
+  ],
+  "reference": [
+    {
+      "path": "reference/common.py",
+      "sha256": "1fc64b0e007939eb165f7fe43e287f6e31a2578acf6e4098786c89db50c1c28d",
+      "bytes": 11125
+    },
+    {
+      "path": "reference/conformance.py",
+      "sha256": "2611fb98f98e2a01010044e25b539bdcdd932a28c20027113b4eebe4fc4bb42f",
+      "bytes": 6466
+    },
+    {
+      "path": "reference/import_autobest_capability.py",
+      "sha256": "346231aecc93ab6ecbba21f1c334d0249005c4ed7ee81785916e551ed0b4cca3",
+      "bytes": 8188
+    },
+    {
+      "path": "reference/import_bill_fixture.py",
+      "sha256": "82871dd6066b85875e57c0f2e58136f85a8a09b2f75977d95149d3aa5e638ab8",
+      "bytes": 16938
+    },
+    {
+      "path": "reference/pins.py",
+      "sha256": "20d0201ed59ab45329df07c3f5947eb645e8daef2046467c88e50ec85d0b1397",
+      "bytes": 6461
+    },
+    {
+      "path": "reference/schema_source.py",
+      "sha256": "8305d3f5bf24bad454d8b32229119c708af1d01824b0b947fc9b976090e4c0d7",
+      "bytes": 21585
+    },
+    {
+      "path": "reference/validator.py",
+      "sha256": "64fee0d69583310fd6da4014968a6f57c39d2f4f11135a3208a870a72a7d30bd",
+      "bytes": 19890
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_profile.py",
+      "sha256": "d7a57f51ea73c750ca35d66b78363af657b602136cdfdd97fecf71d981443551",
+      "bytes": 22254
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "fixtures/generic-autobest-capability/fixture-index.json",
+      "sha256": "37a1d0dd447a3cfc9e6228734efd221e98fc0e9593a510201573cf4ab485d1da",
+      "bytes": 823
+    },
+    {
+      "path": "fixtures/generic-autobest-capability/seed-capability-binding.json",
+      "sha256": "6efad7de9888ebc038a8a738948554a9c3b4e37b25b1762053c8c15867557e6b",
+      "bytes": 2046
+    },
+    {
+      "path": "fixtures/generic-autobest-capability/workspace-seed.json",
+      "sha256": "9d82ac4e765a563220867b1acd2dcd67200c40526410eeb7b729bf4b331b0f32",
+      "bytes": 1350
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/compatibility-frame.json",
+      "sha256": "8e4afcfe3f44579dc64b8c8d2b3b81cd3471ef267368463bd10d0e51c49eb4b3",
+      "bytes": 5442
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/fixture-index.json",
+      "sha256": "29c901cc9382b3e97fb09268344e677d596607cef662feb644a9f3ca6f09dd3f",
+      "bytes": 2022
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/generation-receipt.json",
+      "sha256": "72d0298b20615b06b09d325c77c45999bd4bc4ad3c4d26e826520d4a27f8552f",
+      "bytes": 1347
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/handshake.json",
+      "sha256": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882",
+      "bytes": 5351
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/package.json",
+      "sha256": "0d3aeb1585f656f3518f5d2c27d8273a7648ae18a9ce892b4fd54f006914c76a",
+      "bytes": 2512
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/source-agent.py",
+      "sha256": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671",
+      "bytes": 11302
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/source-frames/00000000.json",
+      "sha256": "acc15bbc941c95431dcafbb746a45be92285734201f9e6b3f23dab8be12b52e5",
+      "bytes": 960
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/source-frames/00000001.json",
+      "sha256": "f1b9e9e52e0be4f6d15ef20380253f670ced328dd19b71c5199a0620adaa9d58",
+      "bytes": 1037
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/source-qualification.json",
+      "sha256": "14f800ab22772b7b36b576f7fa86f8a11db1552773eddfa073e26fea01ffa0e6",
+      "bytes": 329
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/static-agent.py",
+      "sha256": "cbc03c8059ec831a388d0b99dd3950453b711adb09d5e9e066fdbc785ff4c82f",
+      "bytes": 6026
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/target-finalizer.py",
+      "sha256": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296",
+      "bytes": 11461
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/transformation-receipts/00000000-source.json",
+      "sha256": "d299a459d90ec54a59c8ac85de5f8ae5450dd3bd02e3a16237184c89954423e1",
+      "bytes": 1727
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/transformation-receipts/00000000-target.json",
+      "sha256": "b5a010a8a636d8712ee3c243f1635ffcd274e0c3232dc21f97e585f7227559e1",
+      "bytes": 1741
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/transformation-receipts/00000001-source.json",
+      "sha256": "6d36b8a9ba87837e8eb7f01f4bdfb0e08768bdb7829fff0ce97ac2e1f9743823",
+      "bytes": 1727
+    },
+    {
+      "path": "fixtures/softwarecoellc-vteam-hive/transformation-receipts/00000001-target.json",
+      "sha256": "c18a5b07bd1e7f77b9b51bacf9269a05d859004dcfbba6c598486dadaee4f015",
+      "bytes": 1741
+    }
+  ],
+  "capabilities": [
+    {
+      "path": "capabilities/index.json",
+      "sha256": "dc5e106d5b390f704090a06384d15dd05614022983ccece031f3410e7058b727",
+      "bytes": 802
+    },
+    {
+      "path": "capabilities/rapp-particle/aca19fb14f2d96d6456bcbaa2c8c5bd542758a699e473eb5490b3c22c1c66401/capability.json",
+      "sha256": "cc99af76d259c67c1703a483c00cf4c4c3ce25c6b45b559f232b6dbea7a879d5",
+      "bytes": 1237
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "artifacts/sha256/5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8/SKILL.md",
+      "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+      "bytes": 39139
+    },
+    {
+      "path": "artifacts/sha256/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/agent.py",
+      "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+      "bytes": 430291
+    }
+  ],
+  "documentation": [
+    {
+      "path": "README.md",
+      "sha256": "738bfcfd4d1664da8d0b2eeefdbde037b1ec7c31ad1299cafde4600ce05eb365",
+      "bytes": 1459
+    }
+  ],
+  "provenance": {
+    "path": "provenance.json",
+    "sha256": "4ce127909ca3d8d9efb8968ad226c6d3b50dc3e507c7f36656236895d0ed23bc",
+    "bytes": 5461
+  },
+  "authority_boundary": "local-validation-and-external-controller-adoption-required",
+  "dynamic_execution": "external-global-brainstem-only",
+  "static_execution": "captured-byte-isolated-host-qualification-required",
+  "generic_ceo_agent": {
+    "capability_index": {
+      "path": "capabilities/index.json",
+      "sha256": "dc5e106d5b390f704090a06384d15dd05614022983ccece031f3410e7058b727",
+      "bytes": 802
+    },
+    "agent": {
+      "path": "artifacts/sha256/827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c/agent.py",
+      "sha256": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c",
+      "bytes": 430291
+    },
+    "skill": {
+      "path": "artifacts/sha256/5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8/SKILL.md",
+      "sha256": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8",
+      "bytes": 39139
+    },
+    "activation": "external-host-only",
+    "mutation": "successor-only",
+    "authority_from_presence": false
+  },
+  "microsol_schema_boundary": "concrete-live-subscription-profile-only"
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "rapp-work-organization-safety-matrix/1",
+  "profile": "rapp-work-organization/1",
+  "status": "candidate",
+  "requirements": [
+    {
+      "id": "P0-RAPP",
+      "gate": "canonical-rapp1-envelope-remains-host-owned",
+      "status": "specified-and-structurally-tested",
+      "vectors": ["lens-envelope-shaped-output-inert", "ancestor-frame-unchanged", "host-successor-only"]
+    },
+    {
+      "id": "P0-AUTHORITY",
+      "gate": "external-current-authority-and-interrupt-frontier",
+      "status": "exact-generic-ceo-artifact-bound-estate-activation-external",
+      "vectors": ["proposal-not-authority", "stale-policy", "user-interrupt", "wrong-ceo-pin"]
+    },
+    {
+      "id": "P0-HOTLOAD",
+      "gate": "captured-byte-atomic-bundle-placement",
+      "status": "reference-implemented",
+      "vectors": ["path-escape", "file-substitution", "aggregate-mismatch", "idempotent-replay"]
+    },
+    {
+      "id": "P0-UNIVERSAL-LENS",
+      "gate": "operation-universal-application-mutation-with-host-envelope-separation",
+      "status": "specified",
+      "vectors": ["full-tree-rewrite", "arbitrary-program", "source-and-target-double-pass"]
+    },
+    {
+      "id": "P0-STATIC-OUTPUT",
+      "gate": "deterministic-static-agent-and-artifact-bundle",
+      "status": "reference-implemented",
+      "vectors": ["same-inputs-same-bytes", "changed-frame-new-agent", "zero-model-runtime"]
+    },
+    {
+      "id": "P0-INDEPENDENT-TESTS",
+      "gate": "candidate-tests-never-self-certify",
+      "status": "specified-and-schema-closed",
+      "vectors": ["candidate-pass-canonical-fail", "critical-mutant-survives", "runner-substitution"]
+    },
+    {
+      "id": "P0-LINEAGE",
+      "gate": "complete-forward-and-reverse-entry-accounting",
+      "status": "reference-implemented",
+      "vectors": ["orphan-source", "orphan-successor", "false-retain", "missing-inverse-material"]
+    },
+    {
+      "id": "P0-TRACE",
+      "gate": "sanitized-authority-separated-learning-trace",
+      "status": "reference-implemented",
+      "vectors": ["forged-user-correction", "summary-drift", "missing-invariant", "private-path-leak"]
+    },
+    {
+      "id": "P0-PRIVACY",
+      "gate": "private-payload-and-hidden-reasoning-exclusion",
+      "status": "specified-and-structurally-tested",
+      "vectors": ["raw-transcript", "credential-shaped-trace", "private-hive-package-withheld"]
+    },
+    {
+      "id": "P0-BILL-PINS",
+      "gate": "first-wild-handshake-exact-private-safe-binding",
+      "status": "implemented",
+      "vectors": ["profile-pin", "source-lens-pin", "target-finalizer-pin", "generic-ceo-exact-binding"]
+    },
+    {
+      "id": "P1-SEARCH",
+      "gate": "bounded-n-lens-search-crossing-and-no-progress",
+      "status": "reference-implemented",
+      "vectors": ["candidate-cap", "pareto-bound", "selected-missing", "no-progress-stop"]
+    },
+    {
+      "id": "P1-EVOLUTION",
+      "gate": "recursive-improvement-with-promotion-firewall",
+      "status": "reference-implemented",
+      "vectors": ["self-certifying-tests", "automatic-promotion", "missing-rollback", "holdout-required"]
+    },
+    {
+      "id": "P1-CATALOG",
+      "gate": "signed-private-hive-catalog-before-jit",
+      "status": "specified",
+      "vectors": ["matcher-collision", "catalog-rollback", "poisoned-entry", "revoked-entry"]
+    },
+    {
+      "id": "P1-OFFER",
+      "gate": "mutation-offer-pr-is-transport-not-authority",
+      "status": "specified-and-schema-closed",
+      "vectors": ["git-merge-not-adoption", "force-push-new-projection", "trait-selection-new-lineage"]
+    },
+    {
+      "id": "P1-PRIOR-ART",
+      "gate": "universal-data-connector-ai-is-provenance-only",
+      "status": "implemented",
+      "vectors": ["no-azure-runtime", "no-md5-identity", "no-floating-auto-approval", "no-simulated-tests"]
+    },
+    {
+      "id": "P1-PEERS",
+      "gate": "sovereign-offers-and-nontransitive-subscriptions",
+      "status": "specified",
+      "vectors": ["foreign-root-import", "key-transfer", "quadratic-remote-writes", "revoked-peer"]
+    },
+    {
+      "id": "P1-UNKNOWN-UNKNOWNS",
+      "gate": "explicit-fail-closed-register",
+      "status": "specified",
+      "vectors": ["lfs-pointer", "submodule", "unicode-path-collision", "prompt-injection", "compiler-bootstrap"]
+    }
+  ]
+}

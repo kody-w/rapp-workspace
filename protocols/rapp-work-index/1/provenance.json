@@ -1,0 +1,67 @@
+{
+  "schema": "rapp-work-index-source-provenance/1",
+  "profile": "rapp-work-index/1",
+  "generated_utc": "2026-09-17T21:36:39.234Z",
+  "authority": false,
+  "activation": "not-activated",
+  "activation_authority": "external-host-only",
+  "closed_sibling_profiles_modified": false,
+  "rapp1": {
+    "role": "explicit-canonical-wire-checkout-not-estate-activation",
+    "repository": "https://github.com/kody-w/rapp-1",
+    "commit": "dda32d741c7218f41443a5bd17eebfe0eae82cb7",
+    "anchor_stream": "rappid:@kody-w/rapp-1-anchor:a4298c417789ecff68b7be3df4d8b90d397c43f972eaf839977db16dbe02acc6",
+    "selected_head": "83ca275f35cca96e43d75c99d338326c1a39b2240eabf57eb7c29ac96cc90818",
+    "files": [
+      {
+        "path": "SPEC.md",
+        "sha256": "348e7d5baa94aaf2ce4c5354f3cb261f389298a04af65e271a686d3b62f7c384",
+        "bytes": 79692
+      },
+      {
+        "path": "rapp.py",
+        "sha256": "1a04362b02f14c1e37b70c6b4f72d79e92df1cc9c2b5b394e8e1b141fc0b6050",
+        "bytes": 39186
+      },
+      {
+        "path": "rapp_check.py",
+        "sha256": "a8dbc2dc242b2faabc959a917c23c37db3bd3d28b95dc57891cc8f623698b7c2",
+        "bytes": 7702
+      },
+      {
+        "path": "anchor/chain.jsonl",
+        "sha256": "4d9b0e389395bfb2a61ff907e58efd12241c78e167ffd9be0f7f1452cd05b523",
+        "bytes": 290463
+      },
+      {
+        "path": "anchor/bootstrap/index.json",
+        "sha256": "6237f88d91c5932f761159ed052b0c058f58e29a6ef9b166e2f927a5280c1881",
+        "bytes": 434
+      },
+      {
+        "path": "anchor/bootstrap_verify.py",
+        "sha256": "4a4c19912063d5ce15cec69b1aca0cebf5df122fb1c481f357f1cf21bc0a07ff",
+        "bytes": 15802
+      }
+    ]
+  },
+  "patterns": [
+    "protocols/rapp-work-compatibility/1",
+    "protocols/rapp-hive-autobest/1",
+    "protocols/rapp-federation-autobest/1"
+  ],
+  "fixture_policy": {
+    "classification": "public-synthetic-only",
+    "signing_material": "publicly reproducible test-only Ed25519 seed labels; never live credentials",
+    "registry_and_policy_roots": "synthetic external test trust; not an authenticated estate registry",
+    "source_observation": "synthetic fixture bytes only",
+    "semantic_fidelity": "not-inferred",
+    "current_authorization": "not-inferred",
+    "safe_deployment": "not-qualified"
+  },
+  "runtime_dependencies": "Python 3.11+ standard library and SQLite",
+  "conformance_dependency": "cryptography, required by the canonical RAPP/1 detached-JWS verifier",
+  "wire_implementation_copied": false,
+  "network_access": false,
+  "ambient_discovery": false
+}

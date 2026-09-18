@@ -1,0 +1,3345 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/kody-w/rapp-work/main/protocols/rapp-hive-autobest/1/schema.json",
+  "title": "RAPP Hive AutoBest/1 records",
+  "description": "Closed structural schemas for compatibility Frames, typed exhaust, program bundles, exact mutation lineage, sanitized learning traces, bounded N-Lens search, mutation offers, handshake catalogs, and recursive evolution proposals.",
+  "$comment": "Schema validity never grants authority, activates an agent, proves semantic truth, or replaces RAPP/1 signature and registry checks.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/compatibility"
+    },
+    {
+      "$ref": "#/$defs/exhaust"
+    },
+    {
+      "$ref": "#/$defs/assignment"
+    },
+    {
+      "$ref": "#/$defs/checkpoint"
+    },
+    {
+      "$ref": "#/$defs/decision"
+    },
+    {
+      "$ref": "#/$defs/view"
+    },
+    {
+      "$ref": "#/$defs/artifactBundle"
+    },
+    {
+      "$ref": "#/$defs/mutationLineage"
+    },
+    {
+      "$ref": "#/$defs/learningTrace"
+    },
+    {
+      "$ref": "#/$defs/nLensSearch"
+    },
+    {
+      "$ref": "#/$defs/mutationOffer"
+    },
+    {
+      "$ref": "#/$defs/handshakeCatalog"
+    },
+    {
+      "$ref": "#/$defs/evolution"
+    },
+    {
+      "$ref": "#/$defs/fixtureBinding"
+    },
+    {
+      "$ref": "#/$defs/ceoBinding"
+    }
+  ],
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z0-9](?:[a-z0-9._-]{0,126}[a-z0-9])?$(?![\\s\\S])"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[^/]+(?:/[^/]+)*$(?![\\s\\S])",
+      "allOf": [
+        {
+          "pattern": "^[^\\\\:\\u0000-\\u001f\\u007f]+$(?![\\s\\S])"
+        },
+        {
+          "not": {
+            "pattern": "(?:^|/)[^/]*[ .](?:/|$)"
+          }
+        }
+      ]
+    },
+    "rappid": {
+      "type": "string",
+      "pattern": "^rappid:@(?=[a-z0-9-]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[a-z0-9-]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}(?::[a-z0-9]+(?:-[a-z0-9]+)*)?$(?![\\s\\S])"
+    },
+    "utc": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$(?![\\s\\S])",
+      "format": "date-time"
+    },
+    "uint53": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "bps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "address": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "space": {
+          "enum": [
+            "rapp/1:particle",
+            "rapp/1:wave",
+            "rapp/1:egg-manifest"
+          ]
+        },
+        "hash": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "required": [
+        "space",
+        "hash"
+      ]
+    },
+    "waveAddress": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "space": {
+          "const": "rapp/1:wave"
+        },
+        "hash": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "required": [
+        "space",
+        "hash"
+      ]
+    },
+    "frameSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "stream_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "seq": {
+          "$ref": "#/$defs/uint53"
+        },
+        "utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "payload_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "frame_hash": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "required": [
+        "stream_id",
+        "seq",
+        "utc",
+        "payload_hash",
+        "frame_hash"
+      ]
+    },
+    "commitPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "enum": [
+            "sha1",
+            "sha256"
+          ]
+        },
+        "oid": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "algorithm",
+        "oid"
+      ]
+    },
+    "repositoryPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "commit": {
+          "$ref": "#/$defs/commitPin"
+        },
+        "inventory_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "file_count": {
+          "$ref": "#/$defs/uint53"
+        },
+        "total_bytes": {
+          "$ref": "#/$defs/uint53"
+        }
+      },
+      "required": [
+        "repository",
+        "branch",
+        "commit",
+        "inventory_hash",
+        "file_count",
+        "total_bytes"
+      ]
+    },
+    "pinnedValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "verified",
+            "unavailable",
+            "not-applicable"
+          ]
+        },
+        "value": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "value"
+      ]
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/label"
+        },
+        "status": {
+          "enum": [
+            "verified",
+            "partial",
+            "unproven",
+            "unavailable",
+            "revoked"
+          ]
+        },
+        "method": {
+          "enum": [
+            "native-protocol",
+            "declared-descriptor",
+            "signed-stream-inference",
+            "deterministic-static-repository-compiler",
+            "brainstem-translation-candidate"
+          ]
+        },
+        "coverage_bps": {
+          "$ref": "#/$defs/bps"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 64
+        },
+        "reason_code": {
+          "$ref": "#/$defs/label"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "method",
+        "coverage_bps",
+        "evidence",
+        "reason_code"
+      ]
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "endpoint_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "profile_pin": {
+          "$ref": "#/$defs/pinnedValue"
+        },
+        "head_status": {
+          "enum": [
+            "verified",
+            "unavailable",
+            "not-applicable"
+          ]
+        },
+        "head": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/frameSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snapshot": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/repositoryPin"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/capability"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256
+        }
+      },
+      "required": [
+        "endpoint_rappid",
+        "profile",
+        "profile_pin",
+        "head_status",
+        "head",
+        "snapshot",
+        "capabilities"
+      ]
+    },
+    "agentPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "source-lens",
+            "target-finalizer",
+            "static-agent",
+            "verifier",
+            "autobest-controller"
+          ]
+        },
+        "artifact": {
+          "$ref": "#/$defs/address"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "bytes": {
+          "$ref": "#/$defs/uint53"
+        },
+        "runtime_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "policy_sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "required": [
+        "role",
+        "artifact",
+        "sha256",
+        "bytes",
+        "runtime_sha256",
+        "policy_sha256"
+      ]
+    },
+    "ceoController": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "capability_id": {
+          "const": "autobest:generic"
+        },
+        "profile": {
+          "const": "microsol-ceo"
+        },
+        "artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "const": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ]
+        },
+        "binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "const": "cdba8330dcfad77e9e2804ab1bff573a405424ab94bfd2a512c7a2ac3784cf40"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ]
+        },
+        "agent_sha256": {
+          "const": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c"
+        },
+        "agent_bytes": {
+          "const": 430291
+        },
+        "skill_sha256": {
+          "const": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8"
+        },
+        "skill_bytes": {
+          "const": 39139
+        },
+        "runtime_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "policy_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "activation": {
+          "const": "external-host-only"
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "capability_id",
+        "profile",
+        "artifact",
+        "binding",
+        "agent_sha256",
+        "agent_bytes",
+        "skill_sha256",
+        "skill_bytes",
+        "runtime_sha256",
+        "policy_sha256",
+        "activation",
+        "grants_authority"
+      ]
+    },
+    "slotContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-workspace-autobest/1-hotload-slot"
+        },
+        "relative_paths": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "source": {
+              "const": "source/agent.py"
+            },
+            "target": {
+              "const": "target/agent.py"
+            },
+            "locked": {
+              "const": "locked/agent.py"
+            }
+          },
+          "required": [
+            "source",
+            "target",
+            "locked"
+          ]
+        },
+        "regular_files_only": {
+          "const": true
+        },
+        "mode": {
+          "const": "0600"
+        },
+        "no_symlink": {
+          "const": true
+        },
+        "no_hardlink": {
+          "const": true
+        },
+        "no_overwrite": {
+          "const": true
+        },
+        "captured_bytes_executed": {
+          "const": true
+        },
+        "brainstem_source_modified": {
+          "const": false
+        },
+        "daemon_created": {
+          "const": false
+        },
+        "plugin_registered": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "relative_paths",
+        "regular_files_only",
+        "mode",
+        "no_symlink",
+        "no_hardlink",
+        "no_overwrite",
+        "captured_bytes_executed",
+        "brainstem_source_modified",
+        "daemon_created",
+        "plugin_registered"
+      ]
+    },
+    "runtimeBounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_input_bytes": {
+          "$ref": "#/$defs/uint53"
+        },
+        "max_output_bytes": {
+          "$ref": "#/$defs/uint53"
+        },
+        "max_depth": {
+          "$ref": "#/$defs/uint53"
+        },
+        "max_members": {
+          "$ref": "#/$defs/uint53"
+        },
+        "max_seconds": {
+          "$ref": "#/$defs/uint53"
+        },
+        "max_model_calls": {
+          "$ref": "#/$defs/uint53"
+        },
+        "max_tool_calls": {
+          "$ref": "#/$defs/uint53"
+        }
+      },
+      "required": [
+        "max_input_bytes",
+        "max_output_bytes",
+        "max_depth",
+        "max_members",
+        "max_seconds",
+        "max_model_calls",
+        "max_tool_calls"
+      ]
+    },
+    "sourceVectorEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dimension_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "work_group_id": {
+          "$ref": "#/$defs/label"
+        },
+        "branch_id": {
+          "$ref": "#/$defs/label"
+        },
+        "branch_kind": {
+          "enum": [
+            "shared-trunk",
+            "temporary-difference",
+            "crossing-parent",
+            "crossing-output"
+          ]
+        },
+        "head": {
+          "$ref": "#/$defs/frameSummary"
+        },
+        "workspace_binding": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "observation_receipt": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "checkpoint_receipt": {
+          "$ref": "#/$defs/waveAddress"
+        }
+      },
+      "required": [
+        "dimension_rappid",
+        "work_group_id",
+        "branch_id",
+        "branch_kind",
+        "head",
+        "workspace_binding",
+        "observation_receipt",
+        "checkpoint_receipt"
+      ]
+    },
+    "hiveCheckpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "registry_seq": {
+          "$ref": "#/$defs/uint53"
+        },
+        "registry_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "declaration_frame_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "mother_head_frame_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "catalog_hash": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "required": [
+        "registry_seq",
+        "registry_hash",
+        "declaration_frame_hash",
+        "mother_head_frame_hash",
+        "catalog_hash"
+      ]
+    },
+    "verificationSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "candidate_tests": {
+          "$ref": "#/$defs/address"
+        },
+        "host_tests": {
+          "$ref": "#/$defs/address"
+        },
+        "canonical_tests": {
+          "$ref": "#/$defs/address"
+        },
+        "controlled_mutants": {
+          "$ref": "#/$defs/address"
+        },
+        "replay_receipt": {
+          "$ref": "#/$defs/address"
+        },
+        "privacy_receipt": {
+          "$ref": "#/$defs/address"
+        },
+        "authority_receipt": {
+          "$ref": "#/$defs/address"
+        }
+      },
+      "required": [
+        "candidate_tests",
+        "host_tests",
+        "canonical_tests",
+        "controlled_mutants",
+        "replay_receipt",
+        "privacy_receipt",
+        "authority_receipt"
+      ]
+    },
+    "mappingContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "directions": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "source-to-target",
+              "target-to-source"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 2
+        },
+        "coverage_bps": {
+          "$ref": "#/$defs/bps"
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "restrictions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "bounds": {
+          "$ref": "#/$defs/runtimeBounds"
+        },
+        "loss_class": {
+          "enum": [
+            "exact-lossless",
+            "declared-lossy",
+            "unproven"
+          ]
+        },
+        "forward_complete": {
+          "type": "boolean"
+        },
+        "reverse_complete": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "directions",
+        "coverage_bps",
+        "gaps",
+        "restrictions",
+        "bounds",
+        "loss_class",
+        "forward_complete",
+        "reverse_complete"
+      ]
+    },
+    "staticAgent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "package": {
+          "$ref": "#/$defs/address"
+        },
+        "entrypoint": {
+          "const": "agent.py"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "bytes": {
+          "$ref": "#/$defs/uint53"
+        },
+        "compiler_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "runtime_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "generation_receipt": {
+          "$ref": "#/$defs/address"
+        },
+        "model_calls_per_operation": {
+          "const": 0
+        },
+        "directions": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "source-to-target",
+              "target-to-source"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 2
+        },
+        "deterministic": {
+          "const": true
+        },
+        "coverage_bps": {
+          "$ref": "#/$defs/bps"
+        }
+      },
+      "required": [
+        "package",
+        "entrypoint",
+        "sha256",
+        "bytes",
+        "compiler_sha256",
+        "runtime_sha256",
+        "generation_receipt",
+        "model_calls_per_operation",
+        "directions",
+        "deterministic",
+        "coverage_bps"
+      ]
+    },
+    "trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "initial-handshake",
+            "typed-exhaust",
+            "requested-mutation",
+            "scheduled-rehearsal"
+          ]
+        },
+        "exhaust": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/waveAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "exhaust"
+      ]
+    },
+    "fileHead": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "mode": {
+          "enum": [
+            "100644",
+            "100755"
+          ]
+        },
+        "bytes": {
+          "$ref": "#/$defs/uint53"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "content": {
+          "$ref": "#/$defs/address"
+        }
+      },
+      "required": [
+        "path",
+        "mode",
+        "bytes",
+        "sha256",
+        "content"
+      ]
+    },
+    "trait": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/label"
+        },
+        "status": {
+          "enum": [
+            "retained",
+            "replaced",
+            "moved",
+            "removed",
+            "new",
+            "omitted"
+          ]
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "successor_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "reason_code": {
+          "$ref": "#/$defs/label"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "source_refs",
+        "successor_refs",
+        "reason_code"
+      ]
+    },
+    "generation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frame": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "repository": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/repositoryPin"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inventory_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "file_count": {
+          "$ref": "#/$defs/uint53"
+        },
+        "total_bytes": {
+          "$ref": "#/$defs/uint53"
+        }
+      },
+      "required": [
+        "frame",
+        "repository",
+        "inventory_hash",
+        "file_count",
+        "total_bytes"
+      ]
+    },
+    "forwardMutation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/fileHead"
+        },
+        "disposition": {
+          "enum": [
+            "retained",
+            "replaced",
+            "moved",
+            "moved-and-replaced",
+            "removed",
+            "split",
+            "composed"
+          ]
+        },
+        "successors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fileHead"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "receipt": {
+          "$ref": "#/$defs/address"
+        }
+      },
+      "required": [
+        "source",
+        "disposition",
+        "successors",
+        "receipt"
+      ]
+    },
+    "reverseMutation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "successor": {
+          "$ref": "#/$defs/fileHead"
+        },
+        "origin": {
+          "enum": [
+            "inherited",
+            "derived",
+            "new",
+            "split",
+            "composed"
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fileHead"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "inverse_method": {
+          "enum": [
+            "identity",
+            "path-restore",
+            "retained-delta",
+            "inverse-program",
+            "unavailable"
+          ]
+        },
+        "inverse_artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        }
+      },
+      "required": [
+        "successor",
+        "origin",
+        "sources",
+        "inverse_method",
+        "inverse_artifacts"
+      ]
+    },
+    "reconstruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "implementation": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/address"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retained_deltas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 512
+        },
+        "receipt": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/address"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "required",
+        "implementation",
+        "retained_deltas",
+        "receipt"
+      ]
+    },
+    "traceEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "$ref": "#/$defs/uint53"
+        },
+        "previous_event_hash": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event_type": {
+          "enum": [
+            "user-intent",
+            "assistant-proposal",
+            "user-correction",
+            "tool-result",
+            "agent-result",
+            "measured-failure",
+            "assumption-superseded",
+            "successor-invariant"
+          ]
+        },
+        "actor_class": {
+          "enum": [
+            "user",
+            "assistant",
+            "tool",
+            "agent",
+            "host"
+          ]
+        },
+        "authority_class": {
+          "enum": [
+            "observed-user-input",
+            "user-decision",
+            "proposal-only",
+            "measured-evidence",
+            "host-validation"
+          ]
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 128
+        },
+        "result_code": {
+          "$ref": "#/$defs/label"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 128
+        },
+        "supersedes_event_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/uint53"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 128
+        },
+        "successor_invariant_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 128
+        },
+        "event_hash": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "required": [
+        "index",
+        "previous_event_hash",
+        "event_type",
+        "actor_class",
+        "authority_class",
+        "source_refs",
+        "result_code",
+        "evidence_refs",
+        "supersedes_event_ids",
+        "successor_invariant_ids",
+        "event_hash"
+      ]
+    },
+    "searchBounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_lenses": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "max_candidates": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 128
+        },
+        "max_cross_size": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 8
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "max_rounds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "max_evaluations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "max_generated_bytes": {
+          "$ref": "#/$defs/uint53"
+        },
+        "max_tool_calls": {
+          "$ref": "#/$defs/uint53"
+        },
+        "beam_width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "pareto_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "reserved_stop_frames": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        }
+      },
+      "required": [
+        "max_lenses",
+        "max_candidates",
+        "max_cross_size",
+        "max_depth",
+        "max_rounds",
+        "max_evaluations",
+        "max_generated_bytes",
+        "max_tool_calls",
+        "beam_width",
+        "pareto_limit",
+        "reserved_stop_frames"
+      ]
+    },
+    "lensDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/label"
+        },
+        "agent": {
+          "$ref": "#/$defs/agentPin"
+        },
+        "prompt_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "policy_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "source_vector": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceVectorEntry"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "budget_units": {
+          "$ref": "#/$defs/uint53"
+        }
+      },
+      "required": [
+        "id",
+        "agent",
+        "prompt_sha256",
+        "policy_sha256",
+        "source_vector",
+        "budget_units"
+      ]
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/label"
+        },
+        "lens_id": {
+          "$ref": "#/$defs/label"
+        },
+        "kind": {
+          "enum": [
+            "complete-successor",
+            "trait-delta"
+          ]
+        },
+        "artifact": {
+          "$ref": "#/$defs/address"
+        },
+        "trait_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "scenario_evidence": {
+          "$ref": "#/$defs/address"
+        },
+        "coverage_bps": {
+          "$ref": "#/$defs/bps"
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        }
+      },
+      "required": [
+        "id",
+        "lens_id",
+        "kind",
+        "artifact",
+        "trait_ids",
+        "parents",
+        "scenario_evidence",
+        "coverage_bps",
+        "unknowns"
+      ]
+    },
+    "cross": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/label"
+        },
+        "candidate_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 2,
+          "uniqueItems": true,
+          "maxItems": 8
+        },
+        "trait_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "output_candidate_id": {
+          "$ref": "#/$defs/label"
+        },
+        "crossing_lens": {
+          "$ref": "#/$defs/waveAddress"
+        }
+      },
+      "required": [
+        "id",
+        "candidate_ids",
+        "trait_ids",
+        "output_candidate_id",
+        "crossing_lens"
+      ]
+    },
+    "corpus": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "manifest": {
+          "$ref": "#/$defs/address"
+        },
+        "case_count": {
+          "$ref": "#/$defs/uint53"
+        },
+        "bytes": {
+          "$ref": "#/$defs/uint53"
+        },
+        "private": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "manifest",
+        "case_count",
+        "bytes",
+        "private"
+      ]
+    },
+    "canary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/label"
+        },
+        "candidate": {
+          "$ref": "#/$defs/address"
+        },
+        "result": {
+          "$ref": "#/$defs/address"
+        },
+        "rollback": {
+          "$ref": "#/$defs/address"
+        },
+        "passed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "scope",
+        "candidate",
+        "result",
+        "rollback",
+        "passed"
+      ]
+    },
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-assignment"
+        },
+        "hive_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "world_id": {
+          "$ref": "#/$defs/label"
+        },
+        "created_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "root_compatibility": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "assignment_id": {
+          "$ref": "#/$defs/label"
+        },
+        "revision": {
+          "$ref": "#/$defs/uint53"
+        },
+        "previous_assignment": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/waveAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "publisher_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "worker_dimension_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "work_group_id": {
+          "$ref": "#/$defs/label"
+        },
+        "branch_id": {
+          "$ref": "#/$defs/label"
+        },
+        "branch_kind": {
+          "enum": [
+            "shared-trunk",
+            "temporary-difference",
+            "crossing-output"
+          ]
+        },
+        "operation": {
+          "enum": [
+            "assign",
+            "tighten",
+            "pause",
+            "resume",
+            "cancel",
+            "complete",
+            "prune"
+          ]
+        },
+        "workspace_assignment": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "base_checkpoint": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/waveAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_vector": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceVectorEntry"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "constraint_relation": {
+          "const": "equal-or-tighter"
+        },
+        "request_only": {
+          "const": true
+        },
+        "authorizes_execution": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "hive_rappid",
+        "world_id",
+        "created_utc",
+        "root_compatibility",
+        "assignment_id",
+        "revision",
+        "previous_assignment",
+        "publisher_rappid",
+        "worker_dimension_rappid",
+        "work_group_id",
+        "branch_id",
+        "branch_kind",
+        "operation",
+        "workspace_assignment",
+        "base_checkpoint",
+        "source_vector",
+        "constraint_relation",
+        "request_only",
+        "authorizes_execution",
+        "grants_authority"
+      ]
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-checkpoint"
+        },
+        "hive_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "world_id": {
+          "$ref": "#/$defs/label"
+        },
+        "created_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "root_compatibility": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "assignment": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "previous_checkpoint": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/waveAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "worker_dimension_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "checkpoint_seq": {
+          "$ref": "#/$defs/uint53"
+        },
+        "observation_receipt": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "workspace_checkpoint_receipt": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "status": {
+          "enum": [
+            "running",
+            "completed",
+            "failed",
+            "cancelled",
+            "timed-out",
+            "pruned"
+          ]
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 4096
+        },
+        "source_vector": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceVectorEntry"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "hive_rappid",
+        "world_id",
+        "created_utc",
+        "root_compatibility",
+        "assignment",
+        "previous_checkpoint",
+        "worker_dimension_rappid",
+        "checkpoint_seq",
+        "observation_receipt",
+        "workspace_checkpoint_receipt",
+        "status",
+        "outputs",
+        "source_vector",
+        "grants_authority"
+      ]
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-decision"
+        },
+        "hive_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "world_id": {
+          "$ref": "#/$defs/label"
+        },
+        "created_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "root_compatibility": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "work_group_id": {
+          "$ref": "#/$defs/label"
+        },
+        "autobest_evidence": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "crossing_lens": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/waveAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceVectorEntry"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "mode": {
+          "enum": [
+            "select-one",
+            "compose-compatible",
+            "retain-parallel",
+            "unresolved",
+            "prune-all"
+          ]
+        },
+        "selected_checkpoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waveAddress"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "rejected_checkpoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waveAddress"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "result_checkpoint": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/waveAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coverage_bps": {
+          "$ref": "#/$defs/bps"
+        },
+        "status": {
+          "enum": [
+            "verified",
+            "unproven",
+            "refused"
+          ]
+        },
+        "authorizes_adoption": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "hive_rappid",
+        "world_id",
+        "created_utc",
+        "root_compatibility",
+        "work_group_id",
+        "autobest_evidence",
+        "crossing_lens",
+        "parents",
+        "mode",
+        "selected_checkpoints",
+        "rejected_checkpoints",
+        "result_checkpoint",
+        "coverage_bps",
+        "status",
+        "authorizes_adoption",
+        "grants_authority"
+      ]
+    },
+    "topologyNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/label"
+        },
+        "kind": {
+          "enum": [
+            "shared-trunk",
+            "temporary-difference",
+            "crossing-rejoin"
+          ]
+        },
+        "parent_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "checkpoint_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waveAddress"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "decision_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/waveAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "parent_ids",
+        "checkpoint_refs",
+        "decision_ref"
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-view"
+        },
+        "hive_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "world_id": {
+          "$ref": "#/$defs/label"
+        },
+        "created_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "compatibility": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "view_kind": {
+          "enum": [
+            "board",
+            "chat"
+          ]
+        },
+        "basis": {
+          "$ref": "#/$defs/hiveCheckpoint"
+        },
+        "source_vector": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceVectorEntry"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "artifact": {
+          "$ref": "#/$defs/address"
+        },
+        "topology": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/topologyNode"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 4096
+        },
+        "omissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "rebuildable": {
+          "const": true
+        },
+        "authoritative": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "hive_rappid",
+        "world_id",
+        "created_utc",
+        "compatibility",
+        "view_kind",
+        "basis",
+        "source_vector",
+        "artifact",
+        "topology",
+        "omissions",
+        "rebuildable",
+        "authoritative",
+        "grants_authority"
+      ]
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-compatibility"
+        },
+        "hive_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "world_id": {
+          "$ref": "#/$defs/label"
+        },
+        "compatibility_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "created_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "previous_compatibility": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/waveAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trigger": {
+          "$ref": "#/$defs/trigger"
+        },
+        "source": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "target": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "source_lens": {
+          "$ref": "#/$defs/agentPin"
+        },
+        "target_finalizer": {
+          "$ref": "#/$defs/agentPin"
+        },
+        "autobest_controller": {
+          "$ref": "#/$defs/ceoController"
+        },
+        "hotload_slot": {
+          "$ref": "#/$defs/slotContract"
+        },
+        "intent_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "source_vector": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceVectorEntry"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "mapping": {
+          "$ref": "#/$defs/mappingContract"
+        },
+        "artifact_bundle": {
+          "$ref": "#/$defs/address"
+        },
+        "mutation_lineage": {
+          "$ref": "#/$defs/address"
+        },
+        "learning_trace": {
+          "$ref": "#/$defs/address"
+        },
+        "n_lens_search": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/address"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verification": {
+          "$ref": "#/$defs/verificationSet"
+        },
+        "static_agent": {
+          "$ref": "#/$defs/staticAgent"
+        },
+        "hive_checkpoint": {
+          "$ref": "#/$defs/hiveCheckpoint"
+        },
+        "status": {
+          "enum": [
+            "candidate",
+            "locked",
+            "superseded",
+            "revoked"
+          ]
+        },
+        "repository_content_is_instructions": {
+          "const": false
+        },
+        "host_constructs_rapp1_envelope": {
+          "const": true
+        },
+        "grants_authority": {
+          "const": false
+        },
+        "shared_brain": {
+          "const": false
+        },
+        "private_state_transfer": {
+          "const": "none"
+        },
+        "key_transfer": {
+          "const": "none"
+        }
+      },
+      "required": [
+        "schema",
+        "hive_rappid",
+        "world_id",
+        "compatibility_rappid",
+        "created_utc",
+        "previous_compatibility",
+        "trigger",
+        "source",
+        "target",
+        "source_lens",
+        "target_finalizer",
+        "autobest_controller",
+        "hotload_slot",
+        "intent_hash",
+        "source_vector",
+        "mapping",
+        "artifact_bundle",
+        "mutation_lineage",
+        "learning_trace",
+        "n_lens_search",
+        "verification",
+        "static_agent",
+        "hive_checkpoint",
+        "status",
+        "repository_content_is_instructions",
+        "host_constructs_rapp1_envelope",
+        "grants_authority",
+        "shared_brain",
+        "private_state_transfer",
+        "key_transfer"
+      ]
+    },
+    "exhaust": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-exhaust"
+        },
+        "hive_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "world_id": {
+          "$ref": "#/$defs/label"
+        },
+        "created_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "compatibility": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "source_head": {
+          "$ref": "#/$defs/frameSummary"
+        },
+        "target_head": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/frameSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "direction": {
+          "enum": [
+            "source-to-target",
+            "target-to-source"
+          ]
+        },
+        "operation": {
+          "$ref": "#/$defs/label"
+        },
+        "input": {
+          "$ref": "#/$defs/address"
+        },
+        "output": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/address"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "failure_code": {
+          "$ref": "#/$defs/label"
+        },
+        "satisfied_coverage_bps": {
+          "$ref": "#/$defs/bps"
+        },
+        "missing_capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "loss_class": {
+          "enum": [
+            "none",
+            "bounded",
+            "unavailable-source",
+            "unknown"
+          ]
+        },
+        "restrictions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "bounds_consumed": {
+          "$ref": "#/$defs/runtimeBounds"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "privacy_safe": {
+          "const": true
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "hive_rappid",
+        "world_id",
+        "created_utc",
+        "compatibility",
+        "source_head",
+        "target_head",
+        "direction",
+        "operation",
+        "input",
+        "output",
+        "failure_code",
+        "satisfied_coverage_bps",
+        "missing_capabilities",
+        "loss_class",
+        "restrictions",
+        "bounds_consumed",
+        "retryable",
+        "privacy_safe",
+        "grants_authority"
+      ]
+    },
+    "artifactBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-artifact-bundle"
+        },
+        "bundle_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "created_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "compatibility": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "entrypoint": {
+          "const": "agent.py"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/relativePath"
+              },
+              "role": {
+                "enum": [
+                  "entrypoint",
+                  "code",
+                  "schema",
+                  "fixture",
+                  "candidate-test",
+                  "documentation",
+                  "migration",
+                  "manifest",
+                  "data"
+                ]
+              },
+              "bytes": {
+                "$ref": "#/$defs/uint53"
+              },
+              "sha256": {
+                "$ref": "#/$defs/hash"
+              },
+              "content": {
+                "$ref": "#/$defs/address"
+              }
+            },
+            "required": [
+              "path",
+              "role",
+              "bytes",
+              "sha256",
+              "content"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 4096
+        },
+        "lineage": {
+          "$ref": "#/$defs/address"
+        },
+        "contracts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "generated_tests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "docs_are_instructions": {
+          "const": false
+        },
+        "migrations_auto_execute": {
+          "const": false
+        },
+        "authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "bundle_rappid",
+        "created_utc",
+        "compatibility",
+        "entrypoint",
+        "files",
+        "lineage",
+        "contracts",
+        "generated_tests",
+        "docs_are_instructions",
+        "migrations_auto_execute",
+        "authority"
+      ]
+    },
+    "mutationLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-mutation-lineage"
+        },
+        "source": {
+          "$ref": "#/$defs/generation"
+        },
+        "successor": {
+          "$ref": "#/$defs/generation"
+        },
+        "forward": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/forwardMutation"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 10000
+        },
+        "reverse": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reverseMutation"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 10000
+        },
+        "selected_traits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trait"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 4096
+        },
+        "omitted_traits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trait"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 4096
+        },
+        "loss_class": {
+          "enum": [
+            "exact-lossless",
+            "declared-lossy",
+            "unproven"
+          ]
+        },
+        "reconstruction": {
+          "$ref": "#/$defs/reconstruction"
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "source_total": {
+              "$ref": "#/$defs/uint53"
+            },
+            "source_mapped": {
+              "$ref": "#/$defs/uint53"
+            },
+            "successor_total": {
+              "$ref": "#/$defs/uint53"
+            },
+            "successor_mapped": {
+              "$ref": "#/$defs/uint53"
+            }
+          },
+          "required": [
+            "source_total",
+            "source_mapped",
+            "successor_total",
+            "successor_mapped"
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "source",
+        "successor",
+        "forward",
+        "reverse",
+        "selected_traits",
+        "omitted_traits",
+        "loss_class",
+        "reconstruction",
+        "coverage"
+      ]
+    },
+    "learningTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-learning-trace"
+        },
+        "trace_id": {
+          "$ref": "#/$defs/label"
+        },
+        "compatibility_predecessor": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/waveAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sanitizer_policy_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "source_commitments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/address"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 512
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/traceEvent"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 4096
+        },
+        "correction_coverage_bps": {
+          "$ref": "#/$defs/bps"
+        },
+        "trace_root_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "privacy_status": {
+          "const": "sanitized-sealed-default"
+        }
+      },
+      "required": [
+        "schema",
+        "trace_id",
+        "compatibility_predecessor",
+        "sanitizer_policy_sha256",
+        "source_commitments",
+        "events",
+        "correction_coverage_bps",
+        "trace_root_hash",
+        "privacy_status"
+      ]
+    },
+    "nLensSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-n-lens-search"
+        },
+        "root_id": {
+          "$ref": "#/$defs/label"
+        },
+        "ancestor": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "bounds": {
+          "$ref": "#/$defs/searchBounds"
+        },
+        "lenses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/lensDescriptor"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 32
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/candidate"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 128
+        },
+        "crosses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cross"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 128
+        },
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "enum": [
+                "select-complete",
+                "recombine-traits",
+                "retain-pareto",
+                "unresolved"
+              ]
+            },
+            "selected_candidates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/label"
+              },
+              "minItems": 0,
+              "uniqueItems": true,
+              "maxItems": 32
+            },
+            "selected_traits": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/label"
+              },
+              "minItems": 0,
+              "uniqueItems": true,
+              "maxItems": 4096
+            },
+            "scenario": {
+              "$ref": "#/$defs/address"
+            },
+            "coverage_bps": {
+              "$ref": "#/$defs/bps"
+            },
+            "unknowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/label"
+              },
+              "minItems": 0,
+              "uniqueItems": true,
+              "maxItems": 256
+            }
+          },
+          "required": [
+            "mode",
+            "selected_candidates",
+            "selected_traits",
+            "scenario",
+            "coverage_bps",
+            "unknowns"
+          ]
+        },
+        "stop": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "reason_code": {
+                  "$ref": "#/$defs/label"
+                },
+                "frontier": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/label"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true,
+                  "maxItems": 128
+                },
+                "remaining_unknowns": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/label"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true,
+                  "maxItems": 256
+                }
+              },
+              "required": [
+                "reason_code",
+                "frontier",
+                "remaining_unknowns"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "root_id",
+        "ancestor",
+        "bounds",
+        "lenses",
+        "candidates",
+        "crosses",
+        "selection",
+        "stop",
+        "grants_authority"
+      ]
+    },
+    "mutationOffer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-mutation-offer"
+        },
+        "offer_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "created_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "source_organization": {
+          "$ref": "#/$defs/rappid"
+        },
+        "target_organization": {
+          "$ref": "#/$defs/rappid"
+        },
+        "source_parents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waveAddress"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "successor_frame": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "successor_bundle": {
+          "$ref": "#/$defs/address"
+        },
+        "mutation_lineage": {
+          "$ref": "#/$defs/address"
+        },
+        "compatibility": {
+          "$ref": "#/$defs/waveAddress"
+        },
+        "static_agent": {
+          "$ref": "#/$defs/address"
+        },
+        "selected_traits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 4096
+        },
+        "omitted_traits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 4096
+        },
+        "tests": {
+          "$ref": "#/$defs/verificationSet"
+        },
+        "pr_projection": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "repository": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "base_commit": {
+              "$ref": "#/$defs/commitPin"
+            },
+            "head_commit": {
+              "$ref": "#/$defs/commitPin"
+            },
+            "base_inventory_hash": {
+              "$ref": "#/$defs/hash"
+            },
+            "head_inventory_hash": {
+              "$ref": "#/$defs/hash"
+            },
+            "provider_pr_id": {
+              "$ref": "#/$defs/label"
+            },
+            "locator": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "projection_receipt": {
+              "$ref": "#/$defs/address"
+            }
+          },
+          "required": [
+            "repository",
+            "base_commit",
+            "head_commit",
+            "base_inventory_hash",
+            "head_inventory_hash",
+            "provider_pr_id",
+            "locator",
+            "projection_receipt"
+          ]
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "offer_rappid",
+        "created_utc",
+        "source_organization",
+        "target_organization",
+        "source_parents",
+        "successor_frame",
+        "successor_bundle",
+        "mutation_lineage",
+        "compatibility",
+        "static_agent",
+        "selected_traits",
+        "omitted_traits",
+        "tests",
+        "pr_projection",
+        "grants_authority"
+      ]
+    },
+    "handshakeCatalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-handshake-catalog"
+        },
+        "hive_rappid": {
+          "$ref": "#/$defs/rappid"
+        },
+        "world_id": {
+          "$ref": "#/$defs/label"
+        },
+        "created_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "base_catalog_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/label"
+              },
+              "version": {
+                "$ref": "#/$defs/uint53"
+              },
+              "status": {
+                "enum": [
+                  "locked",
+                  "superseded",
+                  "revoked"
+                ]
+              },
+              "source_profile": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "target_profile": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "compatibility": {
+                "$ref": "#/$defs/waveAddress"
+              },
+              "package": {
+                "$ref": "#/$defs/address"
+              },
+              "static_agent_sha256": {
+                "$ref": "#/$defs/hash"
+              },
+              "coverage_bps": {
+                "$ref": "#/$defs/bps"
+              },
+              "gaps": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/label"
+                },
+                "minItems": 0,
+                "uniqueItems": true,
+                "maxItems": 256
+              }
+            },
+            "required": [
+              "id",
+              "version",
+              "status",
+              "source_profile",
+              "target_profile",
+              "compatibility",
+              "package",
+              "static_agent_sha256",
+              "coverage_bps",
+              "gaps"
+            ]
+          },
+          "minItems": 0,
+          "uniqueItems": true,
+          "maxItems": 4096
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "hive_rappid",
+        "world_id",
+        "created_utc",
+        "base_catalog_hash",
+        "entries",
+        "grants_authority"
+      ]
+    },
+    "evolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-evolution-proposal"
+        },
+        "level": {
+          "enum": [
+            "handshake",
+            "toolchain",
+            "organization-seed-trait",
+            "protocol-successor"
+          ]
+        },
+        "created_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waveAddress"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256
+        },
+        "candidate": {
+          "$ref": "#/$defs/address"
+        },
+        "generator": {
+          "$ref": "#/$defs/agentPin"
+        },
+        "scenario_corpus": {
+          "$ref": "#/$defs/corpus"
+        },
+        "hidden_holdout": {
+          "$ref": "#/$defs/corpus"
+        },
+        "controlled_mutants": {
+          "$ref": "#/$defs/address"
+        },
+        "candidate_tests": {
+          "$ref": "#/$defs/address"
+        },
+        "independent_tests": {
+          "$ref": "#/$defs/address"
+        },
+        "verifier": {
+          "$ref": "#/$defs/agentPin"
+        },
+        "canary": {
+          "$ref": "#/$defs/canary"
+        },
+        "rollback": {
+          "$ref": "#/$defs/address"
+        },
+        "promotion_target": {
+          "$ref": "#/$defs/label"
+        },
+        "status": {
+          "enum": [
+            "proposed",
+            "verified",
+            "canary",
+            "accepted",
+            "rejected",
+            "revoked"
+          ]
+        },
+        "adoption_authorized": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "level",
+        "created_utc",
+        "parents",
+        "candidate",
+        "generator",
+        "scenario_corpus",
+        "hidden_holdout",
+        "controlled_mutants",
+        "candidate_tests",
+        "independent_tests",
+        "verifier",
+        "canary",
+        "rollback",
+        "promotion_target",
+        "status",
+        "adoption_authorized"
+      ]
+    },
+    "fixtureBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-fixture-binding"
+        },
+        "private_fixture": {
+          "const": true
+        },
+        "contract": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "const": "HIVE-INTEROPERABILITY.md"
+            },
+            "sha256": {
+              "$ref": "#/$defs/hash"
+            },
+            "bytes": {
+              "$ref": "#/$defs/uint53"
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ]
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "repository": {
+              "const": "https://github.com/billwhalenmsft/softwarecoellc-vteam-hive"
+            },
+            "commit": {
+              "const": "f66da3d879b53a439bc87de764d79f68ceec048a"
+            },
+            "verified_frames": {
+              "const": 2
+            },
+            "verified_artifacts": {
+              "const": 9
+            }
+          },
+          "required": [
+            "repository",
+            "commit",
+            "verified_frames",
+            "verified_artifacts"
+          ]
+        },
+        "handshake": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "const": "handshake.json"
+            },
+            "sha256": {
+              "const": "0c52264b81bf88dd8555defa9363a23d8eb8ef85c3c12f66ddcaaabfc85a8882"
+            },
+            "bytes": {
+              "const": 5351
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ]
+        },
+        "source_lens": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "const": "source-agent.py"
+            },
+            "sha256": {
+              "const": "679fff9531c0c8b13457d594f746c45da28925a7c1be40473e8ca00823db8671"
+            },
+            "bytes": {
+              "const": 11302
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ]
+        },
+        "target_finalizer": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "const": "target-finalizer.py"
+            },
+            "sha256": {
+              "const": "c056339f90fdd4e604dbefa40291f1b7b22946d26749b36230bb3b29dd8e2296"
+            },
+            "bytes": {
+              "const": 11461
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ]
+        },
+        "static_package": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "manifest_sha256": {
+              "$ref": "#/$defs/hash"
+            },
+            "agent_sha256": {
+              "$ref": "#/$defs/hash"
+            },
+            "compatibility_frame_sha256": {
+              "$ref": "#/$defs/hash"
+            },
+            "generation_receipt_sha256": {
+              "$ref": "#/$defs/hash"
+            },
+            "public_identity_sha256": {
+              "$ref": "#/$defs/hash"
+            }
+          },
+          "required": [
+            "manifest_sha256",
+            "agent_sha256",
+            "compatibility_frame_sha256",
+            "generation_receipt_sha256",
+            "public_identity_sha256"
+          ]
+        },
+        "authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "private_fixture",
+        "contract",
+        "source",
+        "handshake",
+        "source_lens",
+        "target_finalizer",
+        "static_package",
+        "authority"
+      ]
+    },
+    "ceoBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "rapp-hive-autobest/1-ceo-binding"
+        },
+        "capability_id": {
+          "const": "autobest:generic"
+        },
+        "profile": {
+          "const": "microsol-ceo"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "repository": {
+              "const": "https://github.com/kody-w/microsol-organization"
+            },
+            "commit": {
+              "const": "e8b1a1ffc795b48a854c31d76bb478adba583915"
+            },
+            "skill_path": {
+              "const": ".github/skills/microsol-autobest"
+            }
+          },
+          "required": [
+            "repository",
+            "commit",
+            "skill_path"
+          ]
+        },
+        "profile_artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "const": "cadfa00974630cee1ddc614df7790815577e14bc90f035e0e826dffa7a225271"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ]
+        },
+        "manifest": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "const": "manifest.json"
+            },
+            "sha256": {
+              "const": "b8a5272cd1de0c0a82ed1727f001c88ec056dccf36afecd9574c4432873d4686"
+            },
+            "bytes": {
+              "const": 1605
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ]
+        },
+        "agent": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "const": "agent.py"
+            },
+            "sha256": {
+              "const": "827f637c024e3fa1229148e5dcd78230a84ea3214283f899d22603741350f23c"
+            },
+            "bytes": {
+              "const": 430291
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ]
+        },
+        "skill": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "const": "SKILL.md"
+            },
+            "sha256": {
+              "const": "5f8bd5b3c48858329f87ae3812dbc30ee604cb664985dc3d42a79e69d8bdfda8"
+            },
+            "bytes": {
+              "const": 39139
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ]
+        },
+        "implementation_binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "algorithm": {
+              "const": "sha256"
+            },
+            "subject": {
+              "const": "exact-agent.py-bytes"
+            },
+            "binding_api": {
+              "const": "bind_implementation_sha256"
+            },
+            "required_before_activation": {
+              "const": true
+            },
+            "self_digest_embedded": {
+              "const": false
+            }
+          },
+          "required": [
+            "algorithm",
+            "subject",
+            "binding_api",
+            "required_before_activation",
+            "self_digest_embedded"
+          ]
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "version": {
+              "const": "3.0.0"
+            },
+            "single_file": {
+              "const": true
+            },
+            "stdlib_only": {
+              "const": true
+            },
+            "deterministic": {
+              "const": true
+            },
+            "inert": {
+              "const": true
+            },
+            "authority_source": {
+              "const": "external-host"
+            },
+            "activation": {
+              "const": "external-host-only"
+            },
+            "mutation": {
+              "const": "successor-only"
+            },
+            "normal_traffic_model_calls": {
+              "const": 0
+            },
+            "canonical_rapp1_envelope_owned_by_host": {
+              "const": true
+            }
+          },
+          "required": [
+            "version",
+            "single_file",
+            "stdlib_only",
+            "deterministic",
+            "inert",
+            "authority_source",
+            "activation",
+            "mutation",
+            "normal_traffic_model_calls",
+            "canonical_rapp1_envelope_owned_by_host"
+          ]
+        },
+        "grants_authority": {
+          "const": false
+        },
+        "authority_from_presence": {
+          "const": false
+        },
+        "shared_brain": {
+          "const": false
+        },
+        "private_state_transfer": {
+          "const": "none"
+        },
+        "key_transfer": {
+          "const": "none"
+        }
+      },
+      "required": [
+        "schema",
+        "capability_id",
+        "profile",
+        "source",
+        "profile_artifact",
+        "manifest",
+        "agent",
+        "skill",
+        "implementation_binding",
+        "properties",
+        "grants_authority",
+        "authority_from_presence",
+        "shared_brain",
+        "private_state_transfer",
+        "key_transfer"
+      ]
+    }
+  }
+}

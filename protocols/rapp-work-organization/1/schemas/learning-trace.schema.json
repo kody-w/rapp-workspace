@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-organization/1/schemas/learning-trace.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-organization/1/learning-trace"
+    },
+    "trace_id": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "sanitizer_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "reducer_sha256": {
+      "$ref": "common.schema.json#/$defs/hash"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "event_id": {
+            "$ref": "common.schema.json#/$defs/hash"
+          },
+          "trace_seq": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4096
+          },
+          "previous_event": {
+            "oneOf": [
+              {
+                "$ref": "common.schema.json#/$defs/wave"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "intent",
+              "proposal",
+              "user-correction",
+              "tool-result",
+              "tool-failure",
+              "agent-result",
+              "agent-failure",
+              "assumption-superseded",
+              "successor-invariant",
+              "user-interrupt",
+              "trace-closure"
+            ]
+          },
+          "actor_role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant",
+              "host",
+              "tool",
+              "agent",
+              "compiler"
+            ]
+          },
+          "authority": {
+            "type": "string",
+            "enum": [
+              "user-signed",
+              "host-attested-user-authority",
+              "proposal-only",
+              "measured-evidence",
+              "derived-history",
+              "derived-from-authoritative-correction"
+            ]
+          },
+          "supersedes": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/hash"
+            },
+            "minItems": 0,
+            "maxItems": 64,
+            "uniqueItems": true
+          },
+          "source_receipts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "assurance": {
+                  "type": "string",
+                  "enum": [
+                    "user-signed",
+                    "host-attested-authenticated-user-input",
+                    "host-measured-tool-result",
+                    "host-measured-agent-result",
+                    "withheld-private-source"
+                  ]
+                },
+                "receipt": {
+                  "$ref": "common.schema.json#/$defs/wave"
+                }
+              },
+              "required": [
+                "assurance",
+                "receipt"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 0,
+            "maxItems": 64
+          },
+          "structured_content": {
+            "type": "object"
+          },
+          "raw_content_persisted": {
+            "const": false
+          },
+          "hidden_reasoning_present": {
+            "const": false
+          }
+        },
+        "required": [
+          "event_id",
+          "trace_seq",
+          "previous_event",
+          "event_type",
+          "actor_role",
+          "authority",
+          "supersedes",
+          "source_receipts",
+          "structured_content",
+          "raw_content_persisted",
+          "hidden_reasoning_present"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 4096
+    },
+    "ordered_event_hashes": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/hash"
+      },
+      "minItems": 1,
+      "maxItems": 4096
+    },
+    "active_successor_invariants": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/hash"
+      },
+      "minItems": 0,
+      "maxItems": 1024,
+      "uniqueItems": true
+    },
+    "unresolved_corrections": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/hash"
+      },
+      "minItems": 0,
+      "maxItems": 1024,
+      "uniqueItems": true
+    },
+    "correction_fixture_set": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "trace_id",
+    "sanitizer_sha256",
+    "reducer_sha256",
+    "events",
+    "ordered_event_hashes",
+    "active_successor_invariants",
+    "unresolved_corrections",
+    "correction_fixture_set",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}

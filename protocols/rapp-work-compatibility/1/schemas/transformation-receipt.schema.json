@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-work/raw/main/protocols/rapp-work-compatibility/1/schemas/transformation-receipt.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-compatibility/1/transformation-receipt"
+    },
+    "instance_rappid": {
+      "$ref": "common.schema.json#/$defs/rappid"
+    },
+    "world_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+    },
+    "activation_mode": {
+      "enum": [
+        "live",
+        "synthetic"
+      ]
+    },
+    "activation": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "restrictions": {
+      "$ref": "common.schema.json#/$defs/restrictions"
+    },
+    "pass_role": {
+      "enum": [
+        "source-lens",
+        "target-finalizer",
+        "static-agent"
+      ]
+    },
+    "agent": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "particle": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:particle"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$(?![\\s\\S])"
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$(?![\\s\\S])"
+        },
+        "executable": {
+          "const": false
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "particle",
+        "role",
+        "media_type",
+        "executable"
+      ],
+      "additionalProperties": false
+    },
+    "request": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "result": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "policy": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "runtime": {
+      "$ref": "common.schema.json#/$defs/particle"
+    },
+    "model_receipt": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/particle"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "atomic_file_placement": {
+      "const": true
+    },
+    "captured_bytes_executed": {
+      "const": true
+    },
+    "model_calls": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 128
+    },
+    "tool_calls": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4096
+    },
+    "executed_effects": {
+      "const": 0
+    },
+    "unloaded": {
+      "const": true
+    },
+    "grants_authority": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "instance_rappid",
+    "world_id",
+    "activation_mode",
+    "activation",
+    "restrictions",
+    "pass_role",
+    "agent",
+    "request",
+    "result",
+    "policy",
+    "runtime",
+    "model_receipt",
+    "atomic_file_placement",
+    "captured_bytes_executed",
+    "model_calls",
+    "tool_calls",
+    "executed_effects",
+    "unloaded",
+    "grants_authority"
+  ],
+  "additionalProperties": false
+}
