@@ -1,0 +1,536 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kody-w/rapp-workspace/raw/main/protocols/rapp-work-sdk/1/schemas/profile.schema.json",
+  "$defs": {
+    "hex40": {
+      "type": "string",
+      "minLength": 40,
+      "maxLength": 40,
+      "pattern": "^[0-9a-f]{40}$(?![\\s\\S])"
+    },
+    "hex64": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "utc": {
+      "type": "string",
+      "minLength": 24,
+      "maxLength": 24,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$(?![\\s\\S])"
+    },
+    "rappid": {
+      "type": "string",
+      "minLength": 76,
+      "maxLength": 213,
+      "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "world": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$(?![\\s\\S])"
+    },
+    "wave": {
+      "type": "object",
+      "properties": {
+        "space": {
+          "const": "rapp/1:wave"
+        },
+        "hash": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "space",
+        "hash"
+      ],
+      "additionalProperties": false
+    },
+    "organization_pointer": {
+      "type": "object",
+      "properties": {
+        "workspace_profile": {
+          "const": "rapp-workspace/1"
+        },
+        "composite": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:wave"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "verification_status": {
+          "enum": [
+            "address-reference-only",
+            "verified-local-receipt"
+          ]
+        },
+        "verification_receipt": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:wave"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "routing_only": {
+          "const": true
+        },
+        "content_copied": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "workspace_profile",
+        "composite",
+        "verification_status",
+        "verification_receipt",
+        "routing_only",
+        "content_copied",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    },
+    "hive_endpoint": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "hive_rappid": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "world_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]+$(?![\\s\\S])"
+        },
+        "transport": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "locator_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "verification_status": {
+          "enum": [
+            "described-unverified",
+            "verified"
+          ]
+        },
+        "verification_receipt": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "space": {
+                  "const": "rapp/1:wave"
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "space",
+                "hash"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "publication_authorized": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "hive_rappid",
+        "world_id",
+        "transport",
+        "locator_sha256",
+        "verification_status",
+        "verification_receipt",
+        "publication_authorized",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    },
+    "hive_vector": {
+      "type": "object",
+      "properties": {
+        "hive_rappid": {
+          "type": "string",
+          "minLength": 76,
+          "maxLength": 213,
+          "pattern": "^rappid:@(?=[^/]{1,39}/)[a-z0-9]+(?:-[a-z0-9]+)*/(?=[^:]{1,100}:)[a-z0-9]+(?:-[a-z0-9]+)*:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "vector_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "verification_status": {
+          "enum": [
+            "described-unverified",
+            "verified"
+          ]
+        },
+        "verification_receipt": {
+          "type": "object",
+          "properties": {
+            "space": {
+              "const": "rapp/1:wave"
+            },
+            "hash": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "space",
+            "hash"
+          ],
+          "additionalProperties": false
+        },
+        "publication_authorized": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "hive_rappid",
+        "vector_sha256",
+        "verification_status",
+        "verification_receipt",
+        "publication_authorized",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    },
+    "capability": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "discovery_only": {
+          "const": true
+        },
+        "activation_authorized": {
+          "const": false
+        },
+        "execution_authorized": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "locator",
+        "sha256",
+        "discovery_only",
+        "activation_authorized",
+        "execution_authorized",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "rapp-work-sdk/1/profile"
+    },
+    "profile": {
+      "const": "rapp-work-sdk/1"
+    },
+    "parent": {
+      "type": "object",
+      "properties": {
+        "profile": {
+          "const": "rapp-work/1"
+        },
+        "repository": {
+          "const": "https://github.com/kody-w/rapp-1"
+        },
+        "commit": {
+          "$ref": "#/$defs/hex40"
+        },
+        "path": {
+          "const": "protocols/rapp-work/1/SPEC.md"
+        },
+        "spec_sha256": {
+          "$ref": "#/$defs/hex64"
+        }
+      },
+      "required": [
+        "profile",
+        "repository",
+        "commit",
+        "path",
+        "spec_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "workspace_sibling": {
+      "type": "object",
+      "properties": {
+        "profile": {
+          "const": "rapp-workspace/1"
+        },
+        "spec_sha256": {
+          "$ref": "#/$defs/hex64"
+        },
+        "manifest_sha256": {
+          "$ref": "#/$defs/hex64"
+        },
+        "identity_unchanged": {
+          "const": true
+        },
+        "normative_bytes_unchanged": {
+          "const": true
+        }
+      },
+      "required": [
+        "profile",
+        "spec_sha256",
+        "manifest_sha256",
+        "identity_unchanged",
+        "normative_bytes_unchanged"
+      ],
+      "additionalProperties": false
+    },
+    "sidecar": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "const": ".rapp-work"
+        },
+        "mode": {
+          "const": "offline-first"
+        },
+        "network_default": {
+          "const": "disabled"
+        },
+        "atomic_generation_pointer": {
+          "const": true
+        },
+        "native_workspace_copy": {
+          "const": false
+        }
+      },
+      "required": [
+        "path",
+        "mode",
+        "network_default",
+        "atomic_generation_pointer",
+        "native_workspace_copy"
+      ],
+      "additionalProperties": false
+    },
+    "pins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pin": {
+            "$ref": "#/$defs/hex40"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535
+          },
+          "spec_sha256": {
+            "$ref": "#/$defs/hex64"
+          },
+          "status": {
+            "enum": [
+              "migration-source-only",
+              "current"
+            ]
+          },
+          "fresh_install": {
+            "type": "boolean"
+          },
+          "profile_artifact": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "pattern": "^history/[0-9a-f]{40}/profile[.]json$(?![\\s\\S])"
+                  },
+                  "sha256": {
+                    "$ref": "#/$defs/hex64"
+                  },
+                  "bytes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4194304
+                  }
+                },
+                "required": [
+                  "path",
+                  "sha256",
+                  "bytes"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "pin",
+          "sequence",
+          "spec_sha256",
+          "status",
+          "fresh_install",
+          "profile_artifact"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "current_pin": {
+      "$ref": "#/$defs/hex40"
+    },
+    "authority": {
+      "type": "object",
+      "properties": {
+        "discovery_only": {
+          "const": true
+        },
+        "hive_publication": {
+          "const": false
+        },
+        "plugin_activation": {
+          "const": false
+        },
+        "native_workspace_mutation": {
+          "const": false
+        },
+        "grants_authority": {
+          "const": false
+        }
+      },
+      "required": [
+        "discovery_only",
+        "hive_publication",
+        "plugin_activation",
+        "native_workspace_mutation",
+        "grants_authority"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema",
+    "profile",
+    "parent",
+    "workspace_sibling",
+    "sidecar",
+    "pins",
+    "current_pin",
+    "authority"
+  ],
+  "additionalProperties": false
+}

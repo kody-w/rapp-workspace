@@ -35,6 +35,7 @@ class FilesystemDeploymentTests(FixtureTest):
         data = self.fx.data["private/GODD-secret.txt"]
         forbidden = [data, b64(data).encode(), b"private/GODD-secret.txt", digest(data).encode(),
                      digest(b"private/GODD-secret.txt").encode(), b"pending_sealed", b".rapp-hive",
+                     b".rapp-work",
                      b"baseline.json", b"migration-receipt", b"PRIVATE KEY",
                      (self.fx.custody / "owner.pk8.pem").read_bytes()]
         exposed = b"\n".join(path.encode() + b"\n" + raw for path, raw in frozen["files"].items()) + frozen["pointer"]

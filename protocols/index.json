@@ -1,6 +1,6 @@
 {
   "schema": "rapp-estate-protocol-index/1",
-  "generated_utc": "2026-09-15T16:19:18.852Z",
+  "generated_utc": "2026-09-18T15:00:00.000Z",
   "profiles": [
     {
       "name": "rapp-hive/1",
@@ -46,6 +46,32 @@
       "external_effects": "disabled",
       "live_activation": "exact-document-external-verifier-required",
       "production_key_custody": "external-unqualified"
+    },
+    {
+      "name": "rapp-work-sdk/1",
+      "human_name": "RAPP Work SDK/1",
+      "parent": "rapp-work/1",
+      "authority": false,
+      "status": "additive-reference",
+      "spec_path": "protocols/rapp-work-sdk/1/SPEC.md",
+      "spec_sha256": "4d404a1ad5267f0f1cfa6b31dc9617efaee871607fd103503d6d6047fec8a8fc",
+      "spec_bytes": 8179,
+      "manifest_path": "protocols/rapp-work-sdk/1/manifest.json",
+      "manifest_sha256": "02059a7e3aa548da294eba9f963e2c68368424905814bab6af66217f2cad4c94",
+      "manifest_bytes": 4409,
+      "schemas_path": "protocols/rapp-work-sdk/1/schemas",
+      "conformance": "protocols/rapp-work-sdk/1/reference/conformance.py",
+      "scaffold": "protocols/rapp-work-sdk/1/reference/scaffold.py",
+      "sidecar": ".rapp-work",
+      "network_default": "disabled",
+      "native_workspace_copy": false,
+      "publication_authority": false,
+      "rapp_work_commit": "591e014ad39e223b00ab343ae26e5d9a867ebeee",
+      "rapp_work_repository": "https://github.com/kody-w/rapp-1",
+      "rapp_work_path": "protocols/rapp-work/1/SPEC.md",
+      "rapp_work_spec_sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e",
+      "rapp_work_spec_bytes": 11427,
+      "current_pin": "591e014ad39e223b00ab343ae26e5d9a867ebeee"
     }
   ],
   "authority": true,

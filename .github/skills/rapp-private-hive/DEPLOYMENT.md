@@ -11,7 +11,8 @@ any file into its own managed generation. **Nothing downloaded is executed.**
 | Capability | Implemented behavior |
 |---|---|
 | Owner custody | Explicit Ed25519 creation/load; private directory 0700, PKCS8 PEM and identity record 0600; no symlinks, hardlinks, implicit creation, replacement, or remint |
-| Workspace migration | Existing preparation CLI; all original files, workspace/Hive/dimension RAPPIDs, baselines and migration receipts remain local and unchanged |
+| Workspace preparation | Default preparation atomically installs/verifies the offline `.rapp-work/` SDK sidecar, then adds `.rapp-hive/`; native files, workspace/world identity, and Workspace/1 bytes remain unchanged |
+| Legacy migration | Explicit `legacy-migrate` lane preserves historical Hive receipts and embeds both checksum-locked project skills without relabeling native workspace content |
 | Authority | Self-signed out-of-band owner anchor; signed direct-owner `rapp/1-registry`; exact vendored Hive SPEC SHA-256, all eight body kinds, owner SPKI, exact stream genesis entries |
 | Convergence | Authenticated owner declaration and one linear owner dimension; native Hive convergence evaluation; immutable catalogs/manifests; one signed projection stream per configured channel |
 | Approval | Frozen local plan, SHA-256 approval and owner signature over that exact plan; publishing reads frozen bytes, not live workspace files |
@@ -41,6 +42,13 @@ Every deployment command verifies the complete checksum lock **before importing
 deployment code**. `--preflight` checks integrity; it is not an owner approval,
 transport reachability check, or proof of remote privacy.
 
+Preparation inspection accepts `--world-id` explicitly. When native
+`rappid.json` has no world and no Hive declaration exists yet, it may recover
+the exact world already recorded by a completely verified `.rapp-work/`
+sidecar. Conflicts refuse, and native identity bytes are never rewritten.
+On a case-insensitive workspace filesystem, every case-fold alias of
+`.rapp-work` and `.rapp-hive` is reserved from inventory and selection.
+
 All paths below are operator-supplied examples. There are no default personal
 paths, repository names, credentials, network gateways, or anchors. Use
 disjoint workspace, custody, publisher, staging, channel, and client locations.
@@ -64,11 +72,28 @@ substitutions all refuse. Loading never falls back to creating:
 python3 scripts/deploy_hive.py key load \
   --key-dir /path/to/owner-custody --expected-rappid '<existing keyed owner RAPPID>'
 
-python3 scripts/prepare_workspace.py migrate \
+python3 scripts/prepare_workspace.py prepare \
   --workspace /path/to/workspace \
   --member-rappid '<existing keyed owner RAPPID>' \
   --hive-name example-hive --world-id example-world
 ```
+
+Preparation calls the pinned `rapp-work-sdk/1` scaffold by default. It performs
+no network access, copies no native workspace bytes into `.rapp-work/`, and
+grants no publication authority. The SDK verifies older sidecars against their
+retained per-pin profile/discovery bytes and refuses raced activation rather
+than overwriting a destination. If the workspace specifically requires the
+historical migration receipt and embedded skills, use the explicit legacy
+lane instead:
+
+```bash
+python3 scripts/prepare_workspace.py legacy-migrate \
+  --workspace /path/to/older-workspace \
+  --member-rappid '<existing keyed owner RAPPID>' \
+  --hive-name example-hive --world-id example-world
+```
+
+`migrate` remains a compatibility alias for this explicit legacy lane.
 
 Back up custody using your own protected recovery mechanism. This MVP stores
 unencrypted PKCS8 behind POSIX custody; it does not claim hardware-backed key
