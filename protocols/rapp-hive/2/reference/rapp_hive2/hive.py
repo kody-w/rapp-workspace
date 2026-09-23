@@ -34,6 +34,8 @@ KINDS = {
     "hive2.manifest": ("rapp-hive/2-manifest", {"schema", "anchor", "heads", "state"}),
 }
 KEY_CONFIRMED = "key-confirmed"
+ALL_MEMBERS = "members"
+LEGACY_V1 = "rapp-hive/1"
 MAX_FILES = 20000
 MAX_OBJECT_BYTES = 1024 * 1024
 LABEL_RE = lensmod.ID_RE
@@ -42,10 +44,26 @@ LABEL_RE = lensmod.ID_RE
 # ---------------------------------------------------------------- carried objects
 
 
+def _is_hex(value: Any) -> bool:
+    return type(value) is str and lensmod.HEX_RE.fullmatch(value) is not None
+
+
+def _is_rappid(value: Any) -> bool:
+    try:
+        rapp1.check_rappid(value)
+    except Refusal:
+        return False
+    return True
+
+
 def _hex(value: Any, what: str) -> str:
-    if type(value) is not str or lensmod.HEX_RE.fullmatch(value) is None:
+    if not _is_hex(value):
         raise Refusal("REFUSE_SCHEMA", f"{what} must be a 64-hex particle.")
     return value
+
+
+def _sorted_unique_strings(value: Any) -> bool:
+    return type(value) is list and bool(value) and all(type(item) is str for item in value) and value == sorted(set(value))
 
 
 def _quorum(value: Any, what: str) -> dict[str, Any]:
@@ -55,7 +73,7 @@ def _quorum(value: Any, what: str) -> dict[str, Any]:
 
 
 def check_policy(policy: Any) -> dict[str, Any]:
-    keys = {"schema", "version", "predecessor", "admit", "change_policy", "adopt_lens", "migrate_pending", "data"}
+    keys = {"schema", "version", "predecessor", "deciders", "admit", "change_policy", "adopt_lens", "migrate_pending", "data"}
     if type(policy) is not dict or set(policy) != keys or policy["schema"] != POLICY:
         raise Refusal("REFUSE_SCHEMA", "A policy has exactly the rapp-hive/2-policy keys.")
     version = policy["version"]
@@ -78,6 +96,15 @@ def check_policy(policy: Any) -> dict[str, Any]:
         raise Refusal("REFUSE_SCHEMA", "policy.migrate_pending is keep-pinned or re-decide.")
     if type(policy["data"]) is not dict:
         raise Refusal("REFUSE_SCHEMA", "policy.data is an object.")
+    deciders = policy["deciders"]
+    if deciders != ALL_MEMBERS:
+        if not _sorted_unique_strings(deciders):
+            raise Refusal("REFUSE_SCHEMA", 'policy.deciders is "members" or a sorted, unique, nonempty list of RAPPIDs.')
+        for decider in deciders:
+            rapp1.check_rappid(decider)
+        quorums = (admit["quorum"], policy["change_policy"]["quorum"], adopt["new"]["quorum"], adopt["successor"]["quorum"])
+        if max(quorums) > len(deciders):
+            raise Refusal("REFUSE_SCHEMA", "A quorum cannot exceed the number of deciders.")
     return policy
 
 
@@ -89,20 +116,22 @@ def check_anchor(anchor: Any) -> dict[str, Any]:
     if type(anchor["world_id"]) is not str or len(anchor["world_id"]) > 64 or LABEL_RE.fullmatch(anchor["world_id"]) is None:
         raise Refusal("REFUSE_SCHEMA", "anchor.world_id is a lowercase label.")
     founders = anchor["founders"]
-    if type(founders) is not list or not founders or founders != sorted(set(founders)):
+    if not _sorted_unique_strings(founders):
         raise Refusal("REFUSE_SCHEMA", "anchor.founders is a sorted, unique, nonempty list.")
     for founder in founders:
         rapp1.check_rappid(founder)
     _hex(anchor["policy"], "anchor.policy")
     legacy = anchor["legacy"]
     if legacy is not None:
-        if type(legacy) is not dict or set(legacy) != {"from", "declaration", "join"} or type(legacy["from"]) is not str or not legacy["from"]:
+        if type(legacy) is not dict or set(legacy) != {"from", "declaration", "join"} or type(legacy["from"]) is not str or not 0 < len(legacy["from"]) <= 100:
             raise Refusal("REFUSE_SCHEMA", "anchor.legacy is exactly {from, declaration, join}.")
+        if (legacy["from"] == LEGACY_V1) != (legacy["declaration"] is not None):
+            raise Refusal("REFUSE_SCHEMA", "A rapp-hive/1 legacy names its declaration; other sources name none.")
         if legacy["declaration"] is not None:
             _hex(legacy["declaration"], "anchor.legacy.declaration")
         join = legacy["join"]
         if join is not None:
-            if type(join) is not dict or set(join) != {"requests"} or type(join["requests"]) is not list or join["requests"] != sorted(set(join["requests"])) or not join["requests"]:
+            if type(join) is not dict or set(join) != {"requests"} or not _sorted_unique_strings(join["requests"]):
                 raise Refusal("REFUSE_SCHEMA", "anchor.legacy.join is exactly {requests} with sorted unique frame hashes.")
             for item in join["requests"]:
                 _hex(item, "anchor.legacy.join.requests[]")
@@ -133,6 +162,8 @@ def _files(root: Path) -> list[str]:
                     pending.append(path)
                 elif stat.S_ISREG(info.st_mode):
                     found.append(path)
+                else:
+                    raise Refusal("REFUSE_UNSAFE_PATH", f"{path} is not a plain file or folder.")
                 if len(found) > MAX_FILES:
                     raise Refusal("REFUSE_JSON_SIZE", "The carrier holds too many files.")
     return sorted(found)
@@ -185,21 +216,22 @@ class Record:
     seq: int
     utc: str
     kind: str
+    legacy: bool = False  # on a body stream: content of its signer, never governance
 
 
 def verify_frames(carried: Carried) -> list[Record]:
-    """RAPP/1 integrity, the stream owner's own signature, and whole contiguous streams."""
+    """RAPP/1 integrity, the signer's own signature (the stream owner's on memory streams), whole streams."""
     records: list[Record] = []
     streams: dict[str, list[dict[str, Any]]] = {}
     for path, raw in carried.frames:
         frame = rapp1.parse(raw)
         rapp1.frame_integrity(frame)
-        owner = rapp1.stream_owner(frame)
-        spki = carried.identities.get(owner)
+        signer, legacy = rapp1.stream_signer(frame)
+        spki = carried.identities.get(signer)
         if spki is None:
-            raise Refusal("REFUSE_IDENTITY", f"{path}: no identity record for the stream owner.")
-        rapp1.verify_signature(frame, spki, owner)
-        records.append(Record(frame, raw, path, owner, frame["frame_hash"], frame["payload_hash"], frame["stream_id"], frame["seq"], frame["utc"], frame["kind"]))
+            raise Refusal("REFUSE_IDENTITY", f"{path}: no identity record for the signer.")
+        rapp1.verify_signature(frame, spki, signer)
+        records.append(Record(frame, raw, path, signer, frame["frame_hash"], frame["payload_hash"], frame["stream_id"], frame["seq"], frame["utc"], frame["kind"], legacy))
         streams.setdefault(frame["stream_id"], []).append(frame)
     for frames in streams.values():
         rapp1.check_chain(sorted(frames, key=lambda item: item["seq"]))
@@ -211,11 +243,66 @@ def verify_frames(carried: Carried) -> list[Record]:
 # ---------------------------------------------------------------- evaluation
 
 
-class Evaluation:
-    """Processes verified frames in RAPP/1 cross-stream order (ascending utc, then frame_hash)."""
+def check_legacy_declaration(record: Record) -> dict[str, Any]:
+    """A rapp-hive/1 declaration exactly as rapp-hive/1 accepts it: the genesis of its Mother Hive body
+    stream (``stream_id`` = ``hive_rappid``), signed by the one owner it declares."""
+    payload = record.frame["payload"]
+    members = payload.get("members")
+    if record.kind != "hive.declaration" or payload.get("schema") != "rapp-hive/1-declaration" or type(members) is not list or type(payload.get("world_id")) is not str:
+        raise Refusal("REFUSE_LEGACY", "The legacy declaration is not a rapp-hive/1 declaration.")
+    roles: dict[str, list[str]] = {"owner": [], "member": [], "viewer": []}
+    for item in members:
+        if type(item) is not dict or type(item.get("rappid")) is not str or item.get("role") not in roles:
+            raise Refusal("REFUSE_LEGACY", "Every declared member is a RAPPID with an owner, member or viewer role.")
+        roles[item["role"]].append(item["rappid"])
+    if len(roles["owner"]) != 1:
+        raise Refusal("REFUSE_LEGACY", "A rapp-hive/1 declaration has exactly one owner.")
+    if not record.legacy or record.stream != payload.get("hive_rappid") or record.seq != 0:
+        raise Refusal("REFUSE_LEGACY", "A rapp-hive/1 declaration is the genesis of its Mother Hive stream (stream_id = hive_rappid).")
+    if record.owner != roles["owner"][0]:
+        raise Refusal("REFUSE_LEGACY", "A rapp-hive/1 declaration is signed by its declared owner.")
+    return {
+        "owner": roles["owner"][0],
+        "members": sorted(set(roles["member"])),
+        "viewers": sorted(set(roles["viewer"])),
+        "world_id": payload["world_id"],
+        "privacy": payload.get("policy") if type(payload.get("policy")) is dict else {},
+    }
 
-    def __init__(self, carried: Carried, records: list[Record], anchor: str) -> None:
+
+def governance_problem(kind: str, payload: dict[str, Any]) -> str | None:
+    """Why a governance payload is malformed (keys, schema and value types), or None."""
+    name, keys = KINDS[kind]
+    if set(payload) != keys or payload.get("schema") != name:
+        return f"{kind} payload is not {name}."
+    if not _is_hex(payload["anchor"]):
+        return "anchor is a 64-hex particle."
+    if kind == "hive2.join" and not _is_hex(payload["policy"]):
+        return "A join pins a policy particle."
+    if kind == "hive2.grant" and (not _is_rappid(payload["member"]) or not _is_hex(payload["request"])):
+        return "A grant names a member RAPPID and a request frame hash."
+    if kind == "hive2.adopt" and (not _is_hex(payload["object"]) or not (payload["predecessor"] is None or _is_hex(payload["predecessor"]))):
+        return "An adoption names an object particle and a predecessor particle or null."
+    if kind == "hive2.attest":
+        if not _is_rappid(payload["subject"]):
+            return "An attestation names a keyed RAPPID."
+        if type(payload["claim"]) is not str or type(payload["method"]) is not str or not 0 < len(payload["claim"]) <= 100 or not 0 < len(payload["method"]) <= 200:
+            return "An attestation has a short claim and method."
+    return None
+
+
+class Evaluation:
+    """Processes verified frames in RAPP/1 cross-stream order (ascending utc, then frame_hash).
+
+    Membership never depends on content or lenses, so it is decided first (a governance-only pass).
+    Content of identities that are not members at the end is quarantined before any lens work: it never
+    teaches an additive successor and is never weighed by the lens laws.
+    """
+
+    def __init__(self, carried: Carried, records: list[Record], anchor: str, *, members_only: bool = False) -> None:
         self.carried, self.anchor_particle = carried, anchor
+        self.members_only = members_only
+        self.final_members: set[str] = set() if members_only else set(Evaluation(carried, records, anchor, members_only=True).members)
         if anchor not in carried.objects:
             raise Refusal("REFUSE_ANCHOR", "The anchor object is not carried.")
         self.anchor = check_anchor(carried.objects[anchor])
@@ -235,6 +322,7 @@ class Evaluation:
         self.refusals: list[dict[str, Any]] = []
         self.events: list[dict[str, Any]] = []
         self.content: list[Record] = []
+        self.quarantine: list[Record] = []
         self.manifests: list[Record] = []
         self.other_hives: list[str] = []
         self.schemas: dict[str, dict[str, Any]] = {
@@ -248,7 +336,8 @@ class Evaluation:
         self._check_legacy(records)
         for record in records:
             self._process(record)
-        self._finish()
+        if not members_only:
+            self._finish()
 
     # -- helpers
     def _policy(self, particle: str) -> dict[str, Any]:
@@ -272,27 +361,31 @@ class Evaluation:
             declaration = by_wave.get(self.legacy_declaration)
             if declaration is None:
                 raise Refusal("REFUSE_LEGACY", "The legacy declaration named by the anchor is not carried.")
-            if self.anchor["legacy"]["from"] == "rapp-hive/1":
-                payload = declaration.frame["payload"]
-                members = payload.get("members") if type(payload) is dict else None
-                if declaration.kind != "hive.declaration" or payload.get("schema") != "rapp-hive/1-declaration" or type(members) is not list:
-                    raise Refusal("REFUSE_LEGACY", "The legacy declaration is not a rapp-hive/1 declaration.")
-                declared = {item.get("rappid") for item in members if type(item) is dict and item.get("role") in ("owner", "member")}
-                owners = [item.get("rappid") for item in members if type(item) is dict and item.get("role") == "owner"]
-                if payload.get("world_id") != self.anchor["world_id"] or not set(self.anchor["founders"]) <= declared:
-                    raise Refusal("REFUSE_LEGACY", "Founders and world must come from the legacy declaration.")
-                if len(owners) != 1 or declaration.owner not in (owners[0], payload.get("hive_rappid")):
-                    raise Refusal("REFUSE_LEGACY", "The legacy declaration must be signed by its owner or its Hive identity.")
+            declared = check_legacy_declaration(declaration)
+            if declared["world_id"] != self.anchor["world_id"] or not set(self.anchor["founders"]) <= {declared["owner"], *declared["members"]}:
+                raise Refusal("REFUSE_LEGACY", "Founders and world must come from the legacy declaration.")
         for wave in self.legacy_joins:
-            if wave not in by_wave:
+            request = by_wave.get(wave)
+            if request is None:
                 raise Refusal("REFUSE_LEGACY", "A grandfathered legacy request is not carried.")
+            if request.kind in KINDS or wave == self.legacy_declaration:
+                raise Refusal("REFUSE_LEGACY", "A grandfathered request is a signed content frame of its requester.")
+
+    def _decides(self, policy: dict[str, Any], who: str) -> bool:
+        """A vote counts from a current member whom the governing policy lets decide."""
+        return who in self.members and (policy["deciders"] == ALL_MEMBERS or who in policy["deciders"])
 
     def _try_admit(self, key: str) -> None:
         request = self.pending.get(key)
         if request is None:
             return
-        rule = self._policy(request["pinned"])["admit"]
-        grants = {granter for granter in request["grants"] if granter in self.members}
+        if request["requester"] in self.members:
+            del self.pending[key]
+            self.events.append({"utc": None, "wave": key, "event": "request closed: already a member"})
+            return
+        pinned = self._policy(request["pinned"])
+        rule = pinned["admit"]
+        grants = {granter for granter in request["grants"] if self._decides(pinned, granter)}
         vouched = {voucher for voucher in self.attested.get(request["requester"], set()) if voucher in self.members and voucher != request["requester"]}
         if len(grants) >= rule["quorum"] and (not rule["attested"] or vouched):
             self.members[request["requester"]] = {
@@ -331,14 +424,15 @@ class Evaluation:
     def _process(self, record: Record) -> None:
         payload = record.frame["payload"]
         if record.kind in KINDS:
-            name, keys = KINDS[record.kind]
+            if record.legacy:
+                return self._refuse(record, "REFUSE_LEGACY_STREAM", "Governance is signed on the signer's own memory stream, never on a body stream.")
             if record.kind == "hive2.manifest":
                 if payload.get("anchor") == self.anchor_particle:
                     self.manifests.append(record)
                 return
-            if set(payload) != keys or payload.get("schema") != name:
-                self._refuse(record, "REFUSE_GOVERNANCE_SHAPE", f"{record.kind} payload is not {name}.")
-                return
+            problem = governance_problem(record.kind, payload)
+            if problem is not None:
+                return self._refuse(record, "REFUSE_GOVERNANCE_SHAPE", problem)
             if payload["anchor"] != self.anchor_particle:
                 self.other_hives.append(record.wave)
                 return
@@ -349,6 +443,12 @@ class Evaluation:
         if record.wave in self.legacy_joins:
             self.pending[record.wave] = {"requester": record.owner, "pinned": self.anchor["policy"], "grants": set(), "legacy": True}
             self._event(record, "legacy request carried over (pinned to the first policy)")
+            self._try_admit(record.wave)
+            return
+        if self.members_only:
+            return
+        if record.owner not in self.final_members:
+            self.quarantine.append(record)
             return
         self.content.append(record)
         self._route(record)
@@ -359,6 +459,9 @@ class Evaluation:
         if record.owner not in self.members:
             self.members[record.owner] = {"how": "founder"}
             self._event(record, "founder accepted the anchor")
+            for key in sorted(self.pending):
+                if self.pending.get(key, {}).get("requester") == record.owner:
+                    self._try_admit(key)
 
     def _join(self, record: Record, payload: dict[str, Any]) -> None:
         if record.owner in self.members:
@@ -377,6 +480,8 @@ class Evaluation:
         request = self.pending.get(payload["request"])
         if request is None or request["requester"] != payload["member"]:
             return self._refuse(record, "REFUSE_UNKNOWN_REQUEST", "The grant names no pending request of that identity.")
+        if not self._decides(self._policy(request["pinned"]), record.owner):
+            return self._refuse(record, "REFUSE_NOT_DECIDER", "The policy this request is decided under does not let this member decide.")
         request["grants"].add(record.owner)
         self._event(record, "granted a pending request")
         self._try_admit(payload["request"])
@@ -384,12 +489,6 @@ class Evaluation:
     def _attest(self, record: Record, payload: dict[str, Any]) -> None:
         if record.owner not in self.members:
             return self._refuse(record, "REFUSE_NOT_MEMBER", "Only members attest.")
-        try:
-            rapp1.check_rappid(payload["subject"])
-        except Refusal:
-            return self._refuse(record, "REFUSE_GOVERNANCE_SHAPE", "An attestation names a keyed RAPPID.")
-        if type(payload["claim"]) is not str or type(payload["method"]) is not str or not 0 < len(payload["claim"]) <= 100 or not 0 < len(payload["method"]) <= 200:
-            return self._refuse(record, "REFUSE_GOVERNANCE_SHAPE", "An attestation has a short claim and method.")
         self.attestations.append({"by": record.owner, "subject": payload["subject"], "claim": payload["claim"], "method": payload["method"], "wave": record.wave})
         if payload["claim"] == KEY_CONFIRMED and payload["subject"] != record.owner:
             self.attested.setdefault(payload["subject"], set()).add(record.owner)
@@ -408,19 +507,23 @@ class Evaluation:
             if value.get("schema") == POLICY:
                 return self._adopt_policy(record, payload, target, check_policy(value))
             if value.get("schema") == lensmod.LENS:
+                if self.members_only:
+                    return None
                 return self._adopt_lens(record, payload, target, lensmod.check_lens(value))
         except Refusal as error:
             return self._refuse(record, error.code, error.message)
         self._refuse(record, "REFUSE_UNKNOWN_OBJECT", "Only policies and lenses are adopted.")
 
     def _adopt_policy(self, record: Record, payload: dict[str, Any], target: str, value: dict[str, Any]) -> None:
-        current = self.policy_chain[-1]
-        if payload["predecessor"] != current or value["predecessor"] != current or value["version"] != self.policy["version"] + 1:
+        current, active = self.policy_chain[-1], self.policy
+        if payload["predecessor"] != current or value["predecessor"] != current or value["version"] != active["version"] + 1:
             return self._refuse(record, "REFUSE_STALE", "A policy successor pins the active policy (compare-and-swap).")
+        if not self._decides(active, record.owner):
+            return self._refuse(record, "REFUSE_NOT_DECIDER", "The active policy does not let this member decide.")
         tally = self.tallies.setdefault(("policy", target), set())
         tally.add(record.owner)
         self._event(record, f"adopted policy v{value['version']}")
-        if len(tally & set(self.members)) >= self.policy["change_policy"]["quorum"]:
+        if len({voter for voter in tally if self._decides(active, voter)}) >= active["change_policy"]["quorum"]:
             self.policy_chain.append(target)
             self._event(record, f"policy v{value['version']} is active")
             if value["migrate_pending"] == "re-decide":
@@ -437,14 +540,17 @@ class Evaluation:
                 return self._refuse(record, "REFUSE_STALE", "This lens id is active already; adopt a successor.")
             quorum = self.policy["adopt_lens"]["new"]["quorum"]
         else:
-            if current is None or payload["predecessor"] != current or (value["predecessor"] or {}).get("particle") != current:
-                return self._refuse(record, "REFUSE_STALE", "A lens successor pins the active version (compare-and-swap).")
+            if current is None or payload["predecessor"] != current or value["predecessor"] is None or not rapp1.json_equal(value["predecessor"], lensmod.reference(self.lens_objects[current])):
+                return self._refuse(record, "REFUSE_STALE", "A lens successor pins the active version exactly (compare-and-swap).")
             quorum = self.policy["adopt_lens"]["successor"]["quorum"]
+        active = self.policy
+        if not self._decides(active, record.owner):
+            return self._refuse(record, "REFUSE_NOT_DECIDER", "The active policy does not let this member decide.")
         self.lens_objects.setdefault(target, value)
         tally = self.tallies.setdefault(("lens", target), set())
         tally.add(record.owner)
         self._event(record, f"adopted lens {value['id']} v{value['version']}")
-        if len(tally & set(self.members)) >= quorum:
+        if len({voter for voter in tally if self._decides(active, voter)}) >= quorum:
             if current is not None:
                 broken = self._laws(value, self.lens_objects[current])
                 if broken:
@@ -511,10 +617,8 @@ class Evaluation:
     def _finish(self) -> None:
         self.views: list[dict[str, Any]] = []
         waiting: dict[str, dict[str, Any]] = {}
-        self.quarantined = [record.wave for record in self.content if record.owner not in self.members]
+        self.quarantined = [record.wave for record in self.quarantine]
         for record in self.content:
-            if record.owner not in self.members:
-                continue
             particle = self._schema(record)
             mappers = self._mappers(particle)
             if len(mappers) == 1:
@@ -546,8 +650,10 @@ class Evaluation:
 def _at_heads(records: list[Record], heads: dict[str, Any]) -> list[Record]:
     by_stream_seq = {(record.stream, record.seq): record for record in records}
     for stream_id, head in heads.items():
-        found = by_stream_seq.get((stream_id, head.get("seq") if type(head) is dict else None))
-        if type(head) is not dict or set(head) != {"seq", "frame_hash"} or found is None or found.wave != head["frame_hash"]:
+        if type(head) is not dict or set(head) != {"seq", "frame_hash"} or type(head["seq"]) is not int or type(head["frame_hash"]) is not str:
+            raise Refusal("REFUSE_MANIFEST", "A manifest head is exactly {seq, frame_hash}.")
+        found = by_stream_seq.get((stream_id, head["seq"]))
+        if found is None or found.wave != head["frame_hash"]:
             raise Refusal("REFUSE_MANIFEST", "A manifest head names a frame this carrier does not hold.")
     return [record for record in records if record.stream in heads and record.seq <= heads[record.stream]["seq"] and record.kind != "hive2.manifest"]
 
@@ -559,8 +665,8 @@ def manifests(carried: Carried, records: list[Record], evaluation: Evaluation) -
         if record.kind != "hive2.manifest" and (record.stream not in carrier_heads or record.seq > carrier_heads[record.stream]["seq"]):
             carrier_heads[record.stream] = {"seq": record.seq, "frame_hash": record.wave}
     latest: dict[str, Record] = {}
-    for record in evaluation.manifests:
-        if record.owner in evaluation.members and (record.owner not in latest or record.seq > latest[record.owner].seq):
+    for record in evaluation.manifests:  # section 1 order, so the last one seen is the member's newest
+        if record.owner in evaluation.members:
             latest[record.owner] = record
     results = []
     for owner in sorted(latest):

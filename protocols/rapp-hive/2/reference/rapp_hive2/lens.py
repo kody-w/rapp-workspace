@@ -67,7 +67,7 @@ def check_view(view: Any) -> dict[str, Any]:
         raise Refusal("REFUSE_LENS", "A view declares at least one field.")
     for name, allowed in fields.items():
         options = allowed if type(allowed) is list else [allowed]
-        if not options or options != sorted(set(options)) or any(option not in TYPES for option in options) or (type(allowed) is list and len(options) < 2):
+        if not options or any(type(option) is not str or option not in TYPES for option in options) or options != sorted(set(options)) or (type(allowed) is list and len(options) < 2):
             raise Refusal("REFUSE_LENS", f"view.fields.{name} must be a type name or a sorted list of two or more.")
     return view
 
@@ -122,6 +122,7 @@ def check_lens(lens: Any) -> dict[str, Any]:
         type(predecessor) is not dict
         or set(predecessor) != {"id", "version", "particle"}
         or predecessor["id"] != lens_id
+        or type(predecessor["version"]) is not int
         or predecessor["version"] != version - 1
         or type(predecessor["particle"]) is not str
         or HEX_RE.fullmatch(predecessor["particle"]) is None
@@ -237,7 +238,9 @@ def _selects(expression: Any) -> list[str]:
 
 
 def loss(lens: dict[str, Any], index: int, schema: dict[str, Any]) -> dict[str, list[str]]:
-    """Which payload fields a mapping carries, only matches on (tags), or drops: a property of the schema alone."""
+    """Which payload fields a mapping may carry, only matches on (tags), or always drops: a property of the
+    schema alone. A field read only by an untaken ``first`` branch counts as carried here; crossings report
+    what one message actually lost from the forward trace instead."""
     selects = _selects(lens["mappings"][index]["forward"])
     present = set(schema["payload"])
     referenced = set(present) if "payload" in selects else {path.split(".")[1] for path in selects if path.startswith("payload.")}

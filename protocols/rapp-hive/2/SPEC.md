@@ -39,7 +39,10 @@ practice:
 An implementation:
 
 1. **MUST** use the exact eleven-key `rapp/1` frame envelope, RAPP/1 canonical
-   JSON, particles `H("rapp/1:particle", payload)` and waves.
+   JSON, particles `H("rapp/1:particle", payload)` and waves, and apply the whole
+   RAPP/1 section 7.5 checklist: the `kind` grammar (`lclabel "." lclabel`), a
+   calendar-valid `utc` (no second 60), and `prev_wave` null, since this profile
+   carries no swarm streams.
 2. **MUST** require a valid detached EdDSA JWS on every frame it accepts.
 3. **MUST** register the kinds below in the adopting estate's signed RAPP/1
    section 13 registry and pin this specification's exact SHA-256, as for
@@ -67,12 +70,22 @@ Every other frame (for example `memory.save` work items, or `rapp-hive/1`
 
 ## 2. Stream ownership
 
-The signer of a frame is the keyed RAPPID that prefixes its `stream_id`:
-`stream_id = <rappid> ":" <instance>`. The JWS protected header `kid` **MUST**
-equal that RAPPID, and the signature **MUST** verify with the public key bound
-to it (RAPPID suffix = `H("rapp/1:rappid", SPKI DER)`). A frame on another
-identity's stream is invalid, whatever it says, and so is every carrier that
-holds it.
+A carrier holds RAPP/1 memory streams and body streams only (RAPP/1 section
+6.1.1); any other `stream_id` refuses the carrier.
+
+- **Memory streams** (`stream_id = <rappid> ":" <instance>`) are sovereign. The
+  signer is the keyed RAPPID that prefixes the stream: the JWS protected header
+  `kid` **MUST** equal it, and the signature **MUST** verify with the public key
+  bound to it (RAPPID suffix = `H("rapp/1:rappid", SPKI DER)`). A frame on
+  another identity's memory stream is invalid, whatever it says, and so is every
+  carrier that holds it. Every `rapp-hive/2` governance frame is written on its
+  signer's own memory stream.
+- **Body streams** (`stream_id = <rappid>`) are how `rapp-hive/1` writes its
+  Mother Hive: the owner signs frames on the `hive_rappid` stream. The signer of
+  a body-stream frame is its JWS `kid`, whose signature **MUST** verify. Such a
+  frame is legacy evidence: it counts only as content of its signer, and a
+  governance kind on a body stream is refused without effect
+  (`REFUSE_LEGACY_STREAM`).
 
 A carrier supplies public keys as self-verifying identity records:
 
@@ -93,7 +106,7 @@ views, exhausts, agreement, liveness, documents and user interfaces.
 A folder carrier holds `HIVE.json` (a pointer to the anchor particle),
 `identities/*.json`, `objects/<particle>.json` and `streams/**/<seq>.json`, all
 canonical JSON. File names are transport, never identity: an object whose bytes
-do not hash to its name is refused, links are refused, and paths obey the
+do not hash to its name is refused, links and special files are refused, and paths obey the
 strictest common rules of macOS, Linux and Windows. Git, NAS, LAN, archives or QR
 chunks are equally valid carriers of the same bytes.
 
@@ -113,12 +126,15 @@ and have no effect.
 ```
 
 The Hive's identity is the anchor particle. `policy` names version 1 of the
-policy. `legacy` is `null` or `{"from", "declaration", "join"}` (section 7).
+policy. `legacy` is `null` or `{"from", "declaration", "join"}` (section 7);
+`declaration` is a frame hash exactly when `from` is `"rapp-hive/1"`, and `null`
+otherwise.
 
 ### 4.2 Policy
 
 ```json
 {"schema": "rapp-hive/2-policy", "version": 1, "predecessor": null,
+ "deciders": "members",
  "admit": {"quorum": 2, "attested": true},
  "change_policy": {"quorum": 2},
  "adopt_lens": {"new": {"quorum": 1}, "additive": "automatic", "successor": {"quorum": 2}},
@@ -126,7 +142,12 @@ policy. `legacy` is `null` or `{"from", "declaration", "join"}` (section 7).
  "data": {}}
 ```
 
-A quorum counts distinct current members. `migrate_pending` is `keep-pinned`
+`deciders` is `"members"` (every member decides) or a sorted list of RAPPIDs
+(only they decide, and no quorum may exceed their number). A quorum counts
+distinct current members who decide under the governing policy: the pinned
+policy for a join request, the active policy for adoptions. A grant or adoption
+by a member who does not decide is refused (`REFUSE_NOT_DECIDER`); attesting is
+not deciding. `migrate_pending` is `keep-pinned`
 (requests already pending keep the rules they were made under) or `re-decide`
 (they move to the new rules). `data` carries settings that other profiles
 define, such as the `rapp-hive/1` privacy policy.
@@ -169,7 +190,13 @@ and a new lens later maps them all.
 ## 6. Deterministic evaluation
 
 An engine processes the verified frames of the carrier in section 1 order,
-starting with no members and the anchor's version 1 policy, and applies:
+starting with no members and the anchor's version 1 policy, and applies the
+rules below. Membership never depends on content or lenses, so an engine can
+decide it first; content is then weighed only if its signer is a member at the
+end (section 6.6). A governance frame whose keys, schema or value types are
+wrong is refused (`REFUSE_GOVERNANCE_SHAPE`): anchors, policies, requests,
+objects and predecessors are 64-hex particles (a predecessor may be `null`),
+members and subjects are keyed RAPPIDs.
 
 ### 6.1 Founding
 
@@ -180,25 +207,28 @@ starting with no members and the anchor's version 1 policy, and applies:
 
 `hive2.join` by a non-member creates a pending request pinned to the policy
 named in the frame, which **MUST** be the active policy (`REFUSE_STALE`).
-`hive2.grant` by a member counts toward a pending request of the named identity.
-A request is admitted when its distinct granting members reach the pinned
-policy's `admit.quorum` and, if `admit.attested`, a member other than the
-requester has attested `key-confirmed` for the requester's RAPPID. Membership
-only grows.
+`hive2.grant` by a member who decides under the request's pinned policy counts
+toward a pending request of the named identity. A request is admitted when its
+distinct granting deciders reach the pinned policy's `admit.quorum` and, if
+`admit.attested`, a member other than the requester has attested
+`key-confirmed` for the requester's RAPPID. A request whose requester is already
+a member closes without effect. Membership only grows.
 
 ### 6.3 Policy change
 
 `hive2.adopt` of a policy by a member counts only if the policy's `predecessor`
 and the frame's `predecessor` both equal the active policy and its version is
 one higher (compare-and-swap; `REFUSE_STALE`). The policy becomes active when its
-distinct adopting members reach the active policy's `change_policy.quorum`.
+distinct adopting deciders reach the active policy's `change_policy.quorum`.
 Pending requests then keep or change their pinned policy per `migrate_pending`.
 
 ### 6.4 Lenses and their laws
 
 `hive2.adopt` of a lens with `predecessor: null` introduces a new lens id
-(quorum `adopt_lens.new`). With a predecessor, it **MUST** name the active
-version (`REFUSE_STALE`) and needs quorum `adopt_lens.successor`. Before a
+(quorum `adopt_lens.new`). With a predecessor, the frame's `predecessor` **MUST**
+be the active lens particle and the lens's own `predecessor` **MUST** equal the
+active version's exact `{id, version, particle}`, so its version is one higher
+(`REFUSE_STALE`); it needs quorum `adopt_lens.successor`. Before a
 successor becomes active its **laws** **MUST** hold, whatever signatures it has:
 
 1. it keeps its predecessor's view;
@@ -225,8 +255,10 @@ person. People prove who holds a key; the Hive keeps their signed word.
 ### 6.6 Content and quarantine
 
 Content frames count once their signer is a member at the end of evaluation.
-Frames of other identities are quarantined, never deleted. Governance frames
-naming another anchor belong to another Hive and are ignored.
+Frames of other identities are quarantined, never deleted. Quarantined frames
+are set aside before any lens processing: they never teach an additive
+successor, never become exhausts and are never weighed by the lens laws.
+Governance frames naming another anchor belong to another Hive and are ignored.
 
 ### 6.7 State
 
@@ -240,14 +272,17 @@ The derived state is:
 ## 7. Legacy and migration
 
 An anchor with `legacy.from = "rapp-hive/1"` names the frame hash of the
-`rapp-hive/1` declaration it succeeds. That frame **MUST** be carried and signed
-by the declared owner or the Hive identity, its `world_id` **MUST** equal the
-anchor's, and every founder **MUST** be a declared owner or member
+`rapp-hive/1` declaration it succeeds. That frame **MUST** be carried and
+**MUST** be exactly what `rapp-hive/1` accepts: the genesis (`seq` 0) of its
+Mother Hive body stream, whose `stream_id` equals the declaration's
+`hive_rappid`, signed by the one owner it declares. Its `world_id` **MUST** equal
+the anchor's, and every founder **MUST** be a declared owner or member
 (`REFUSE_LEGACY`). `legacy.join.requests` lists the exact frame hashes of requests
-made on an older system. Each is a pending request of its signer, pinned to the
-anchor's version 1 policy, so it is decided by the rules of the Hive's first
-policy and is never stranded. The list is fixed by the anchor, so no new request
-can pose as an old one. See [`MIGRATION.md`](MIGRATION.md).
+made on an older system; each **MUST** be a carried content frame, never a
+governance frame or the declaration. Each is a pending request of its signer,
+pinned to the anchor's version 1 policy, so it is decided by the rules of the
+Hive's first policy and is never stranded. The list is fixed by the anchor, so no
+new request can pose as an old one. See [`MIGRATION.md`](MIGRATION.md).
 
 ## 8. Manifests and agreement
 
@@ -255,10 +290,13 @@ can pose as an old one. See [`MIGRATION.md`](MIGRATION.md).
 frame the signer holds, excluding manifests) and the particle of the state it
 derived at those heads. An engine re-derives the state from exactly those heads.
 A manifest is `consistent` or `divergent`; a consistent manifest either `agrees`
-with the carrier's heads or is `behind` them. Only each member's newest manifest
-counts. There is no master copy: the Hive's current state is what members'
-manifests agree on. Under a steward policy (quorum 1, one founder) the steward's
-manifest plays the role of the `rapp-hive/1` Mother Hive head.
+with the carrier's heads or is `behind` them. A manifest whose keys are wrong is
+`malformed`; one whose heads are malformed or name frames the carrier does not
+hold is `unverifiable` (`REFUSE_MANIFEST`). Only each member's newest manifest
+counts: the last in section 1 order, across all of its streams. There is no
+master copy: the Hive's current state is what members' manifests agree on. Under
+a steward policy (one decider) the steward's manifest plays the role of the
+`rapp-hive/1` Mother Hive head.
 
 ## 9. Crossing dimensions
 
@@ -268,7 +306,8 @@ version whose reverse reproduces the target schema exactly. The result is an
 unsigned proposal:
 
 - it **MUST** name the view fields the target cannot express, and the source
-  fields the forward lens dropped;
+  fields the forward lens did not actually read (string-valued `schema`,
+  `profile` and `operation` tags are matched by the schema itself);
 - it **MUST NOT** invent a field: if the target schema cannot be reproduced
   exactly, it refuses (`REFUSE_CROSSING`);
 - if more than one lens id could answer, it refuses (`REFUSE_LENS_COLLISION`);
@@ -295,7 +334,8 @@ public projection. Content is never public by default.
 2. Additive changes apply automatically; changes that could alter meaning wait
    for the policy's quorum and the lens laws.
 3. Unknown kinds and schemas are opaque evidence, never guessed.
-4. A `rapp-hive/2` engine keeps verifying `rapp-hive/1` frames as content; a
+4. A `rapp-hive/2` engine keeps verifying `rapp-hive/1` frames (on their body
+   streams) as content; a
    `rapp-hive/1` engine treats `hive2.*` frames as unregistered application
    data. Neither breaks the other.
 
@@ -318,8 +358,10 @@ byte. The reference runs them with
 `REFUSE_LEGACY`, `REFUSE_LENS` (carrier level); `REFUSE_GOVERNANCE_SHAPE`,
 `REFUSE_NOT_FOUNDER`, `REFUSE_NOT_MEMBER`, `REFUSE_ALREADY_MEMBER`,
 `REFUSE_DUPLICATE`, `REFUSE_UNKNOWN_REQUEST`, `REFUSE_UNKNOWN_OBJECT`,
-`REFUSE_STALE`, `REFUSE_LENS_LAW` (recorded, no effect); `REFUSE_CROSSING`,
-`REFUSE_LENS_COLLISION` (crossing).
+`REFUSE_STALE`, `REFUSE_NOT_DECIDER`, `REFUSE_LEGACY_STREAM`, `REFUSE_LENS_LAW`
+(recorded, no effect); `REFUSE_MANIFEST` (a manifest is unverifiable);
+`REFUSE_CROSSING`, `REFUSE_LENS_COLLISION` (crossing); `REFUSE_NOT_YOURS`,
+`REFUSE_ORDER`, `REFUSE_ALREADY_APPLIED`, `REFUSE_CONFLICT` (migration tooling).
 
 ## 14. Experimental frontier
 

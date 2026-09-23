@@ -34,7 +34,7 @@ def load_key(path: Path) -> Any:
 
 
 class Signer:
-    """One keyed RAPP identity. It can only ever write its own streams."""
+    """One keyed RAPP identity. rapp-hive/2 frames go on its own memory streams only."""
 
     def __init__(self, key: Any, owner: str, slug: str) -> None:
         from cryptography.hazmat.primitives import serialization
@@ -52,7 +52,15 @@ class Signer:
         return f"{self.rappid}:{instance}"
 
     def frame(self, kind: str, instance: str, payload: dict[str, Any], utc: str, previous: dict[str, Any] | None) -> dict[str, Any]:
-        stream = self.stream(instance)
+        return self._signed(kind, self.stream(instance), payload, utc, previous)
+
+    def body_frame(self, kind: str, stream: str, payload: dict[str, Any], utc: str, previous: dict[str, Any] | None) -> dict[str, Any]:
+        """A frame on a RAPP/1 body stream (a bare RAPPID), as rapp-hive/1 writes its Mother Hive; for models and tests."""
+        if rapp1.stream_family(stream) != "body":
+            raise Refusal("REFUSE_FRAME_SHAPE", "A body stream is a bare RAPPID.")
+        return self._signed(kind, stream, payload, utc, previous)
+
+    def _signed(self, kind: str, stream: str, payload: dict[str, Any], utc: str, previous: dict[str, Any] | None) -> dict[str, Any]:
         if previous is not None and previous["stream_id"] != stream:
             raise Refusal("REFUSE_HISTORY_ORDER", "A frame extends its own stream only.")
         frame: dict[str, Any] = {
@@ -86,7 +94,11 @@ def identity_path(record: dict[str, Any]) -> str:
 
 
 def frame_path(frame: dict[str, Any]) -> str:
-    owner, _, instance = frame["stream_id"].rpartition(":")
+    stream = frame["stream_id"]
+    if rapp1.stream_family(stream) == "body":
+        slug = stream.split("/", 1)[1].split(":", 1)[0]
+        return f"streams/{slug}.{_hash12(stream)}/{frame['seq']:08d}.json"
+    owner, _, instance = stream.rpartition(":")
     slug = owner.split("/", 1)[1].split(":", 1)[0]
     return f"streams/{slug}.{instance}.{_hash12(owner)}/{frame['seq']:08d}.json"
 

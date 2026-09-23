@@ -56,9 +56,9 @@ def is_additive(new: dict[str, Any], old: dict[str, Any]) -> bool:
     """True when ``new`` only adds payload fields to ``old``: same envelope and tags, every old field unchanged."""
     if (new["schema"], new["spec"], new["kind"]) != (old["schema"], old["spec"], old["kind"]):
         return False
-    if not rapp1.json_equal(new["tags"], old["tags"]):
+    if not rapp1.json_equal(new["tags"], old["tags"], limit=SCHEMA_MAX_BYTES):
         return False
     old_fields, new_fields = old["payload"], new["payload"]
     if not set(old_fields) < set(new_fields):
         return False
-    return all(rapp1.json_equal(new_fields[key], old_fields[key]) for key in old_fields)
+    return all(rapp1.json_equal(new_fields[key], old_fields[key], limit=SCHEMA_MAX_BYTES) for key in old_fields)

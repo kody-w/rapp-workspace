@@ -30,6 +30,16 @@ def _covered(leaf: tuple[Any, ...], used: set[tuple[Any, ...]]) -> bool:
     return any(leaf[: len(path)] == path for path in used)
 
 
+def dropped_fields(payload: dict[str, Any], used: set[tuple[Any, ...]]) -> list[str]:
+    """Source payload leaves the forward render did not actually read (string tags are matched by the schema)."""
+    leaves: set[tuple[Any, ...]] = set()
+    for key in payload:
+        if key in schemas.TAG_KEYS and type(payload[key]) is str:
+            continue
+        leaves |= _leaves(payload, (key,))
+    return sorted(".".join(str(part) for part in leaf) for leaf in leaves if not _covered(("payload", *leaf), used))
+
+
 def cross(evaluation: Evaluation, source_wave: str, target_schema: str) -> dict[str, Any]:
     entry = next((item for item in evaluation.views if item["source"] == source_wave), None)
     if entry is None:
@@ -66,7 +76,7 @@ def cross(evaluation: Evaluation, source_wave: str, target_schema: str) -> dict[
     candidate, payload, backward = next(iter(fits.values()))
     produced = set().union(*(_leaves(value, at) for at in forward_trace["produced"])) if forward_trace["produced"] else set()
     missing = sorted(".".join(str(part) for part in leaf) for leaf in produced if not _covered(leaf, backward["used"]))
-    dropped = lensmod.loss(source_lens, index, evaluation.schemas[entry["schema"]])["dropped"]
+    dropped = dropped_fields(record.frame["payload"], forward_trace["used"])
     return {
         "schema": CROSSING,
         "authority": False,
@@ -88,7 +98,7 @@ def cross_to_member(evaluation: Evaluation, source: str, member: str) -> dict[st
     needle = source.strip().lower()
     if len(needle) < 8:
         raise Refusal("REFUSE_UNKNOWN_TARGET", "Name the message by at least 8 hex characters.")
-    found = [item for item in evaluation.content if item.wave.startswith(needle) or item.particle.startswith(needle)]
+    found = [item for item in (*evaluation.content, *evaluation.quarantine) if item.wave.startswith(needle) or item.particle.startswith(needle)]
     if len(found) != 1:
         raise Refusal("REFUSE_UNKNOWN_TARGET", "That names no carried message, or more than one.")
     owners = [rappid for rappid in evaluation.members if rappid == member or rappid.split("/", 1)[1].split(":", 1)[0] == member]

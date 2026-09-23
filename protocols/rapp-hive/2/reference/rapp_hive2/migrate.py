@@ -6,8 +6,8 @@ frames that each identity signs with its own key. A signer can only ever apply
 its own steps; the tool never signs for anyone else.
 
 Path A  rapp-hive/1 -> rapp-hive/2: the one owner becomes the steward founder and
-        the policy mirrors rapp-hive/1 (one steward decides), so nothing changes
-        until the members choose a co-equal policy successor.
+        the policy mirrors rapp-hive/1 (the steward is its only decider), so nothing
+        changes until the steward adopts a co-equal policy successor.
 Path B  repository-seeded Hives with signed join requests: the exact requests that
         exist at migration are listed in the anchor and are decided under the
         Hive's first policy, so no request is ever stranded.
@@ -24,6 +24,7 @@ from . import hive, rapp1, sign, store
 from .rapp1 import Refusal
 
 PLAN = "rapp-hive/2-migration-plan"
+PLAN_KINDS = ("hive2.accept", "hive2.join", "hive2.grant")
 
 
 def _format(moment: _dt.datetime) -> str:
@@ -36,19 +37,20 @@ def utc_now() -> str:
 
 def later(utc: str, milliseconds: int) -> str:
     """RAPP UTC plus a few milliseconds: each frame a signer writes in one step gets its own time."""
-    if rapp1.UTC_RE.fullmatch(utc) is None:
-        raise Refusal("REFUSE_FRAME_TIME", "RAPP/1 requires UTC with exactly three milliseconds.")
+    if not rapp1.utc_valid(utc):
+        raise Refusal("REFUSE_FRAME_TIME", "RAPP/1 requires a real UTC moment with exactly three milliseconds.")
     moment = _dt.datetime.strptime(utc, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=_dt.timezone.utc)
     return _format(moment + _dt.timedelta(milliseconds=milliseconds))
 
 
-def steward_policy(privacy: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Version 1 that behaves like rapp-hive/1: one steward admits, adopts and changes policy."""
+def steward_policy(steward: str, privacy: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Version 1 that behaves like rapp-hive/1: the steward alone admits, adopts and changes policy."""
     return hive.check_policy(
         {
             "schema": hive.POLICY,
             "version": 1,
             "predecessor": None,
+            "deciders": [steward],
             "admit": {"quorum": 1, "attested": False},
             "change_policy": {"quorum": 1},
             "adopt_lens": {"new": {"quorum": 1}, "additive": "automatic", "successor": {"quorum": 1}},
@@ -65,6 +67,7 @@ def co_equal_policy(predecessor: str | None, version: int, quorum: int, *, attes
             "schema": hive.POLICY,
             "version": version,
             "predecessor": predecessor,
+            "deciders": hive.ALL_MEMBERS,
             "admit": {"quorum": quorum, "attested": attested},
             "change_policy": {"quorum": quorum},
             "adopt_lens": {"new": {"quorum": 1}, "additive": "automatic", "successor": {"quorum": quorum}},
@@ -95,20 +98,16 @@ def _draft(kind: str, payload: dict[str, Any]) -> dict[str, Any]:
 def plan_from_rapp_hive_1(carried: hive.Carried, records: list[hive.Record], declaration: str, *, name: str, legacy_requests: list[str] | None = None) -> dict[str, Any]:
     """Path A. ``declaration`` is the frame hash of the verified rapp-hive/1 declaration to carry over."""
     record = next((item for item in records if item.wave == declaration), None)
-    if record is None or record.kind != "hive.declaration" or record.frame["payload"].get("schema") != "rapp-hive/1-declaration":
+    if record is None:
         raise Refusal("REFUSE_LEGACY", "Name a verified rapp-hive/1 declaration frame.")
-    payload = record.frame["payload"]
-    owners = [item["rappid"] for item in payload["members"] if item["role"] == "owner"]
-    members = sorted(item["rappid"] for item in payload["members"] if item["role"] == "member")
-    viewers = sorted(item["rappid"] for item in payload["members"] if item["role"] == "viewer")
-    if len(owners) != 1:
-        raise Refusal("REFUSE_LEGACY", "A rapp-hive/1 declaration has exactly one owner.")
-    policy = steward_policy(payload["policy"])
+    declared = hive.check_legacy_declaration(record)
+    owners, members, viewers = [declared["owner"]], [item for item in declared["members"] if item != declared["owner"]], declared["viewers"]
+    policy = steward_policy(declared["owner"], declared["privacy"])
     policy_particle = rapp1.particle(policy)
     anchor = {
         "schema": hive.ANCHOR,
         "name": name,
-        "world_id": payload["world_id"],
+        "world_id": declared["world_id"],
         "founders": owners,
         "policy": policy_particle,
         "legacy": {"from": "rapp-hive/1", "declaration": declaration, "join": {"requests": sorted(legacy_requests)} if legacy_requests else None},
@@ -124,7 +123,7 @@ def plan_from_rapp_hive_1(carried: hive.Carried, records: list[hive.Record], dec
             "drafts": [_draft("hive2.grant", {"schema": "rapp-hive/2-grant", "anchor": anchor_particle, "member": member, "request": {"join_of": member}}) for member in members],
         })
     notes = [
-        "The rapp-hive/1 owner becomes the steward founder; the version 1 policy lets one steward decide, exactly like rapp-hive/1.",
+        "The rapp-hive/1 owner becomes the steward founder; the version 1 policy names the steward as its only decider, exactly like rapp-hive/1.",
         "Members keep their membership by joining and being granted by the steward; no one signs for anyone else.",
         "Rooms, sealed eggs, GODD slices and the rapp-hive/1 privacy policy are unchanged; the policy's data carries the privacy settings.",
         "When the members are ready, a co-equal policy successor (keep-pinned) moves decisions to peer quorum without stranding pending requests.",
@@ -169,16 +168,51 @@ def plan_from_join_requests(records: list[hive.Record], *, name: str, world_id: 
     return _plan(source, anchor, policy, steps, notes)
 
 
-def check_plan(plan: dict[str, Any]) -> dict[str, Any]:
+def check_plan(plan: Any) -> dict[str, Any]:
+    """A plan is data from someone else: it must reproduce its particle and may only ask for governance of its own anchor."""
+    if type(plan) is not dict or plan.get("schema") != PLAN:
+        raise Refusal("REFUSE_TAMPER", "This is not a rapp-hive/2 migration plan.")
     body = {key: value for key, value in plan.items() if key != "plan_particle"}
-    if plan.get("schema") != PLAN or rapp1.particle(body) != plan.get("plan_particle"):
+    if rapp1.particle(body) != plan.get("plan_particle"):
         raise Refusal("REFUSE_TAMPER", "The migration plan does not reproduce its particle.")
-    anchor, policy = plan["objects"]
+    objects, steps = plan.get("objects"), plan.get("steps")
+    if type(objects) is not list or len(objects) != 2 or type(steps) is not list or not steps:
+        raise Refusal("REFUSE_TAMPER", "A plan carries its anchor, its policy and its steps.")
+    anchor, policy = objects
     hive.check_anchor(anchor)
     hive.check_policy(policy)
-    if rapp1.particle(anchor) != plan["anchor"] or anchor["policy"] != rapp1.particle(policy):
+    if rapp1.particle(anchor) != plan.get("anchor") or anchor["policy"] != rapp1.particle(policy):
         raise Refusal("REFUSE_TAMPER", "The plan's anchor and policy do not match.")
+    for step in steps:
+        if type(step) is not dict or not {"signer", "phase", "drafts"} <= set(step) <= {"signer", "phase", "drafts", "optional"}:
+            raise Refusal("REFUSE_TAMPER", "A plan step is {signer, phase, drafts} (optionally optional).")
+        rapp1.check_rappid(step["signer"])
+        if type(step["phase"]) is not int or step["phase"] < 1 or type(step.get("optional", False)) is not bool or type(step["drafts"]) is not list or not step["drafts"]:
+            raise Refusal("REFUSE_TAMPER", "A plan step has a positive phase and at least one draft.")
+        for draft in step["drafts"]:
+            if type(draft) is not dict or set(draft) != {"kind", "instance", "payload"} or draft["kind"] not in PLAN_KINDS or draft["instance"] != "hive":
+                raise Refusal("REFUSE_TAMPER", "A plan only drafts accept, join and grant frames on the hive stream.")
+            if type(draft["payload"]) is not dict or draft["payload"].get("anchor") != plan["anchor"]:
+                raise Refusal("REFUSE_TAMPER", "Every drafted frame names the plan's own anchor.")
     return plan
+
+
+def _resolve(payload: dict[str, Any], records: list[hive.Record], anchor: str) -> dict[str, Any] | None:
+    """A draft's exact payload; ``{"join_of": R}`` becomes R's newest join frame for this anchor (None until R has joined)."""
+    request = payload.get("request")
+    if type(request) is dict and set(request) == {"join_of"}:
+        joins = [item for item in records if item.kind == "hive2.join" and not item.legacy and item.owner == request["join_of"] and item.frame["payload"].get("anchor") == anchor]
+        return {**payload, "request": joins[-1].wave} if joins else None
+    return dict(payload)
+
+
+def _applied(step: dict[str, Any], records: list[hive.Record], anchor: str) -> bool:
+    """Every draft of the step is already carried, signed by the step's signer on its own stream."""
+    for draft in step["drafts"]:
+        payload = _resolve(draft["payload"], records, anchor)
+        if payload is None or not any(item.owner == step["signer"] and not item.legacy and item.kind == draft["kind"] and rapp1.json_equal(item.frame["payload"], payload) for item in records):
+            return False
+    return True
 
 
 def apply(plan: dict[str, Any], folder: Path, signer: sign.Signer, *, phase: int, utc: str) -> list[str]:
@@ -186,9 +220,15 @@ def apply(plan: dict[str, Any], folder: Path, signer: sign.Signer, *, phase: int
     check_plan(plan)
     carried = hive.load(Path(folder))
     records = hive.verify_frames(carried)
+    if carried.anchor not in (None, plan["anchor"]):
+        raise Refusal("REFUSE_CONFLICT", "This folder already carries a different Hive.")
     steps = [step for step in plan["steps"] if step["phase"] == phase and step["signer"] == signer.rappid]
     if not steps:
         raise Refusal("REFUSE_NOT_YOURS", "This plan has no steps for this identity in that phase.")
+    if not all(_applied(step, records, plan["anchor"]) for step in plan["steps"] if step["phase"] < phase and not step.get("optional", False)):
+        raise Refusal("REFUSE_ORDER", "Every earlier phase must be applied first.")
+    if all(_applied(step, records, plan["anchor"]) for step in steps):
+        raise Refusal("REFUSE_ALREADY_APPLIED", "These steps are already signed and carried.")
     heads: dict[str, dict[str, Any]] = {}
     for record in records:
         if record.stream.startswith(signer.rappid + ":") and (record.stream not in heads or record.seq > heads[record.stream]["seq"]):
@@ -196,13 +236,9 @@ def apply(plan: dict[str, Any], folder: Path, signer: sign.Signer, *, phase: int
     frames = []
     drafts = [draft for step in steps for draft in step["drafts"]]
     for offset, draft in enumerate(drafts):
-        payload = dict(draft["payload"])
-        request = payload.get("request")
-        if type(request) is dict and set(request) == {"join_of"}:
-            joins = [item for item in records if item.kind == "hive2.join" and item.owner == request["join_of"] and item.frame["payload"].get("anchor") == plan["anchor"]]
-            if not joins:
-                raise Refusal("REFUSE_ORDER", "That member has not signed their join request yet (apply phase 1 first).")
-            payload["request"] = joins[-1].wave
+        payload = _resolve(draft["payload"], records, plan["anchor"])
+        if payload is None:
+            raise Refusal("REFUSE_ORDER", "That member has not signed their join request yet (apply phase 1 first).")
         stream = signer.stream(draft["instance"])
         previous = heads.get(stream)
         moment = later(utc, offset)
@@ -213,11 +249,18 @@ def apply(plan: dict[str, Any], folder: Path, signer: sign.Signer, *, phase: int
         frames.append(frame)
     anchor, policy = plan["objects"]
     files = sign.carrier_files(None, [signer.identity()], [anchor, policy], frames)
-    fresh = {path: data for path, data in files.items() if not (Path(folder) / path).exists()}
+    fresh: dict[str, bytes] = {}
     for path, data in files.items():
-        if path not in fresh and (Path(folder) / path).read_bytes() != data:
+        try:
+            existing = store.read_inside(Path(folder), path, limit=hive.MAX_OBJECT_BYTES)
+        except Refusal as error:
+            if error.code != "REFUSE_FOLDER_INCOMPLETE":
+                raise
+            fresh[path] = data
+            continue
+        if existing != data:
             raise Refusal("REFUSE_CONFLICT", f"{path} already exists with different bytes.")
-    if carried.anchor is None and not (Path(folder) / "HIVE.json").exists():
+    if carried.anchor is None:
         fresh["HIVE.json"] = rapp1.canonical({"schema": "rapp-hive/2-carrier", "anchor": plan["anchor"]})
     store.write_new_tree(Path(folder), fresh, require_empty=False)
     return sorted(fresh)

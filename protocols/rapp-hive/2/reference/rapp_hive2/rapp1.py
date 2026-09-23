@@ -25,8 +25,11 @@ FRAME_KEYS = frozenset(
 )
 HEAD_KEYS = ("stream_id", "seq", "payload_hash", "frame_hash")
 HASH_RE = re.compile(r"[0-9a-f]{64}\Z")
-RAPPID_RE = re.compile(r"rappid:@([a-z0-9]+(?:-[a-z0-9]+)*)/([a-z0-9]+(?:-[a-z0-9]+)*):([0-9a-f]{64})\Z")
-UTC_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z\Z")
+LCLABEL = r"[a-z0-9]+(?:-[a-z0-9]+)*"  # RAPP/1 section 6.1.1
+RAPPID_RE = re.compile(rf"rappid:@({LCLABEL})/({LCLABEL}):([0-9a-f]{{64}})\Z")
+MEMORY_STREAM_RE = re.compile(rf"(rappid:@{LCLABEL}/{LCLABEL}:[0-9a-f]{{64}}):({LCLABEL})\Z")
+KIND_RE = re.compile(rf"({LCLABEL})\.({LCLABEL})\Z")
+UTC_RE = re.compile(r"([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.[0-9]{3}Z\Z")
 
 
 class Refusal(Exception):
@@ -121,9 +124,9 @@ def parse(data: bytes | str, *, require_canonical: bool = True, limit: int = MAX
     return value
 
 
-def json_equal(left: object, right: object) -> bool:
+def json_equal(left: object, right: object, *, limit: int = MAX_JSON_BYTES) -> bool:
     """Typed JSON equality (true is not 1); the browser engine compares the same way."""
-    return canonical(left) == canonical(right)
+    return canonical(left, limit=limit) == canonical(right, limit=limit)
 
 
 def digest(data: bytes) -> str:
@@ -237,18 +240,46 @@ def verify_signature(frame: dict[str, Any], spki_b64: str, signer: str) -> None:
         raise Refusal("REFUSE_SIGNATURE", "Ed25519 signature verification failed.") from exc
 
 
+def utc_valid(value: object) -> bool:
+    """RAPP/1 section 7.4: the fixed 24-byte form and a real calendar moment (no second 60)."""
+    match = UTC_RE.fullmatch(value) if type(value) is str else None
+    if match is None:
+        return False
+    year, month, day, hour, minute, second = (int(part) for part in match.groups())
+    leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+    days = (31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+    return year >= 1 and 1 <= month <= 12 and 1 <= day <= days[month - 1] and hour <= 23 and minute <= 59 and second <= 59
+
+
+def stream_family(stream: object) -> str | None:
+    """rapp-hive/2 carries RAPP/1 memory streams (``<rappid>:<instance>``) and body streams (a bare RAPPID)."""
+    if type(stream) is not str:
+        return None
+    memory = MEMORY_STREAM_RE.fullmatch(stream)
+    if memory is not None:
+        owner = RAPPID_RE.fullmatch(memory[1])
+        return "memory" if len(owner[1]) <= 39 and len(owner[2]) <= 100 and len(memory[2]) <= 64 else None
+    body = RAPPID_RE.fullmatch(stream)
+    return "body" if body is not None and len(body[1]) <= 39 and len(body[2]) <= 100 else None
+
+
 def frame_integrity(frame: object) -> dict[str, Any]:
-    """Shape + particle + wave checks. Signatures are checked separately."""
+    """RAPP/1 section 7.5 shape, particle, wave and wire checks. Signatures are checked separately."""
     if type(frame) is not dict or set(frame) != FRAME_KEYS:
         raise Refusal("REFUSE_FRAME_SHAPE", "An exact eleven-key RAPP/1 frame is required.")
-    if frame["spec"] != "rapp/1" or type(frame["kind"]) is not str or type(frame["stream_id"]) is not str:
-        raise Refusal("REFUSE_FRAME_SHAPE", "Invalid RAPP/1 frame envelope.")
+    kind = KIND_RE.fullmatch(frame["kind"]) if type(frame["kind"]) is str else None
+    if frame["spec"] != "rapp/1" or kind is None or len(kind[1]) > 64 or len(kind[2]) > 64:
+        raise Refusal("REFUSE_FRAME_SHAPE", "Invalid RAPP/1 frame envelope (spec or kind grammar).")
+    if stream_family(frame["stream_id"]) is None:
+        raise Refusal("REFUSE_FRAME_SHAPE", "rapp-hive/2 carries RAPP/1 memory and body streams only.")
     if type(frame["seq"]) is not int or not 0 <= frame["seq"] <= MAX_SAFE_INTEGER:
         raise Refusal("REFUSE_FRAME_SHAPE", "Invalid frame sequence.")
-    if type(frame["utc"]) is not str or UTC_RE.fullmatch(frame["utc"]) is None:
-        raise Refusal("REFUSE_FRAME_TIME", "RAPP/1 requires UTC with exactly three milliseconds.")
+    if not utc_valid(frame["utc"]):
+        raise Refusal("REFUSE_FRAME_TIME", "RAPP/1 requires a real UTC moment with exactly three milliseconds.")
     if type(frame["payload"]) is not dict:
         raise Refusal("REFUSE_FRAME_SHAPE", "Frame payloads are JSON objects.")
+    if frame["prev_wave"] is not None:
+        raise Refusal("REFUSE_FRAME_SHAPE", "prev_wave is null off swarm (RAPP/1 wire chain).")
     prev = frame["prev"]
     if (frame["seq"] == 0) != (prev is None) or (
         prev is not None and (type(prev) is not str or not HASH_RE.fullmatch(prev))
@@ -281,8 +312,28 @@ def check_extends(retained: dict[str, Any] | None, frames: list[dict[str, Any]])
         raise Refusal("REFUSE_FORK", "A same-sequence competing head differs from the retained vector.")
 
 
-def stream_owner(frame: dict[str, Any]) -> str:
-    """rapp-hive/2 section 2: a frame's signer is the keyed RAPPID that prefixes its stream_id."""
-    stream = frame.get("stream_id")
-    owner = stream.rpartition(":")[0] if type(stream) is str else ""
-    return check_rappid(owner)
+def jws_kid(frame: dict[str, Any]) -> str:
+    """The keyed RAPPID named by a frame's detached JWS protected header."""
+    signature = frame.get("sig")
+    pieces = signature.split(".") if type(signature) is str and len(signature) <= 16384 else []
+    if len(pieces) != 3:
+        raise Refusal("REFUSE_SIGNATURE", "An exact detached unencoded EdDSA JWS is required.")
+    header = parse(unb64url(pieces[0]), limit=4096) if pieces[0] else None
+    if type(header) is not dict or set(header) != {"alg", "b64", "crit", "kid"}:
+        raise Refusal("REFUSE_SIGNATURE", "The JWS protected header is exactly {alg, b64, crit, kid}.")
+    return check_rappid(header["kid"])
+
+
+def stream_signer(frame: dict[str, Any]) -> tuple[str, bool]:
+    """rapp-hive/2 section 2: who signed a frame, and whether it is legacy (body-stream) evidence.
+
+    On a memory stream the signer is the keyed RAPPID that prefixes ``stream_id`` (ownership is structural).
+    On a body stream (``stream_id`` is a bare RAPPID, as the rapp-hive/1 Mother Hive is) the signer is the
+    JWS ``kid``; such frames count only as content of their signer, never as rapp-hive/2 governance.
+    """
+    family = stream_family(frame.get("stream_id"))
+    if family == "memory":
+        return check_rappid(MEMORY_STREAM_RE.fullmatch(frame["stream_id"])[1]), False
+    if family == "body":
+        return jws_kid(frame), True
+    raise Refusal("REFUSE_FRAME_SHAPE", "rapp-hive/2 carries RAPP/1 memory and body streams only.")

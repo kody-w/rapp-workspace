@@ -85,6 +85,17 @@ def canonical_cases() -> dict[str, Any]:
     return {"values": out, "refused": refused}
 
 
+def _resigned(frame: dict[str, Any], signer: Any, **changes: Any) -> dict[str, Any]:
+    """The frame with ``changes``, hashes recomputed and a valid signature, so only the change is wrong."""
+    changed = {**frame, **changes}
+    changed["payload_hash"] = rapp1.particle(changed["payload"])
+    changed["frame_hash"] = rapp1.wave(changed)
+    header = rapp1.b64url(rapp1.protected_header(signer.rappid))
+    unsigned = {key: item for key, item in changed.items() if key != "sig"}
+    changed["sig"] = header + ".." + rapp1.b64url(signer._key.sign(header.encode("ascii") + b"." + rapp1.canonical(unsigned)))
+    return changed
+
+
 def _tampered(files: dict[str, bytes], built: dict[str, Any]) -> dict[str, dict[str, bytes]]:
     people = {info["slug"]: rappid for rappid, info in built["people"].items()}
     cases: dict[str, dict[str, bytes]] = {}
@@ -122,6 +133,21 @@ def _tampered(files: dict[str, bytes], built: dict[str, Any]) -> dict[str, dict[
     changed = dict(files)
     changed["HIVE.json"] = rapp1.canonical({"schema": "rapp-hive/2-carrier", "anchor": "0" * 64})
     cases["missing-anchor"] = changed
+
+    avery_signer = model.signer("avery-laptop")
+    for name, change in (
+        ("calendar-time", {"utc": last["utc"].replace("-09-22T", "-09-31T")}),
+        ("prev-wave", {"prev_wave": previous["frame_hash"]}),
+        ("kind-grammar", {"kind": "hive2.Attest"}),
+    ):
+        changed = dict(files)
+        changed[hive_frames[-1]] = rapp1.canonical(_resigned(last, avery_signer, **change))
+        cases[name] = changed
+
+    declaration_path = next(path for path in files if path.startswith("streams/") and rapp1.parse(files[path])["kind"] == "hive.declaration")
+    changed = dict(files)
+    changed[declaration_path] = rapp1.canonical(_resigned(rapp1.parse(files[declaration_path]), model.signer("blake-phone")))
+    cases["legacy-declaration-not-by-owner"] = changed
     return cases
 
 
@@ -134,6 +160,7 @@ def generate() -> dict[str, Any]:
         "variant-re-decide": {"migrate_pending": "re-decide"},
         "variant-unattested": {"attest_drew": False},
         "variant-divergent-manifest": {"divergent_manifest": True},
+        "variant-adversarial": {"adversarial": True},
     }
     for name, options in variants.items():
         variant = built if not options else model.build(**options)

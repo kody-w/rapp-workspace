@@ -39,19 +39,27 @@ try the frontier with the Hive they already have.
      --name "<Hive name>" --out plan.json
    ```
 
-   The plan's anchor keeps the declaration's `world_id`, names the one owner as
-   the steward founder, and pins a version 1 **steward policy**: one steward
-   admits, adopts lenses and changes policy, just as the owner did in
-   `rapp-hive/1`. Members (role `member`) keep their place by joining and being
-   granted by the steward. Viewers are not admitted as members; they can still
-   read carried copies.
+   The declaration must be exactly what `rapp-hive/1` accepts: the first frame
+   of the Mother Hive stream (`stream_id` = `hive_rappid`), signed by the one
+   owner it declares. The plan's anchor keeps its `world_id`, names that owner as
+   the steward founder, and pins a version 1 **steward policy** whose only
+   decider is the steward (`"deciders": [<owner>]`): the steward alone admits,
+   adopts lenses and changes policy, just as the owner did in `rapp-hive/1`.
+   Members (role `member`) keep their place by joining and being granted by the
+   steward; their own grants and adoptions do not count until a co-equal policy
+   makes them deciders. Viewers are not admitted as members; they can still read
+   carried copies.
 
 2. **Review.** Everyone can check the plan: its particle, anchor, policy and
    each person's steps. It holds no private data beyond what the declaration
    already names.
 
 3. **Apply, each with their own key.** The owner applies phase 1 (accept), each
-   member applies phase 1 (join), then the owner applies phase 2 (grants):
+   member applies phase 1 (join), then the owner applies phase 2 (grants). The
+   migrator refuses a phase before every earlier phase is carried
+   (`REFUSE_ORDER`), a step that is already carried (`REFUSE_ALREADY_APPLIED`),
+   and any plan that asks for more than accept, join and grant frames for its own
+   anchor (`REFUSE_TAMPER`):
 
    ```sh
    python3 -B -m rapp_hive2 migrate apply <folder> plan.json \
@@ -61,9 +69,11 @@ try the frontier with the Hive they already have.
 4. **Verify.** `python3 -B -m rapp_hive2 status <folder>` shows the same people
    with the same roles, now on `rapp-hive/2`.
 
-5. **When ready, go co-equal.** Adopt a version 2 policy with a peer quorum and
-   `migrate_pending: "keep-pinned"`. Requests already waiting keep the rules they
-   were made under; new requests use the new rules.
+5. **When ready, go co-equal.** The steward adopts a version 2 policy with
+   `"deciders": "members"`, a peer quorum and `migrate_pending: "keep-pinned"`.
+   Requests already waiting keep the rules they were made under (a request made
+   under the steward policy is still decided by the steward alone); new requests
+   use the new rules.
 
 ## Path B: repository-seeded Hives with signed join requests
 
@@ -86,10 +96,13 @@ which leaves older requests with no way in).
    Each becomes a pending request of its own signer, decided under the Hive's
    first policy. Because the list is fixed in the anchor, no new request can pose
    as an old one.
-3. **Apply.** Each founder accepts (phase 1). Each founder then signs only the
-   approvals they vouch for (phase 2, optional per request). There is no
+3. **Apply.** Each founder accepts (phase 1). After every founder has accepted,
+   each founder signs only the approvals they vouch for (phase 2, optional per
+   request). The first policy's deciders are all members, so there is no
    one-owner override; when the quorum is reached, the requester is a member,
-   without re-enrolling.
+   without re-enrolling. A request may be any signed content frame of its
+   requester, including one on an old body stream; governance frames and the
+   declaration cannot be listed.
 
 ## Path C: a new Hive on the frontier
 
@@ -100,14 +113,22 @@ and adopt your first lenses. The synthetic model Hive shows every step.
 
 | | A `rapp-hive/1` engine | A `rapp-hive/2` engine |
 |---|---|---|
-| `rapp-hive/1` frames | verified as always | carried as content; the pinned declaration is legacy evidence |
-| `hive2.*` frames | unregistered application data, ignored | governance |
+| `rapp-hive/1` frames | verified as always | verified on their body streams and carried as content of their signer; the pinned declaration is legacy evidence |
+| `hive2.*` frames | unregistered application data, ignored | governance, but only on the signer's own memory stream |
 | Old join requests | unchanged | pending requests when listed in the anchor |
 
 ## Try it on the model first
 
 The synthetic Contoso model Hive (`python3 -B -m rapp_hive2 model <new-folder>`)
-contains a `before/` folder (a `rapp-hive/1` declaration, work items and an old
+contains a `before/` folder (a `rapp-hive/1` declaration on its Mother Hive
+stream, which `rapp-hive/1`'s own reference verifies, plus work items and an old
 join request) and the migrated `hive/`. Running Path A on `before/` with the
 model's public test keys reproduces the migrated frames byte for byte; the
-reference tests check this.
+reference tests check this. The model also shows the steward deciding alone: a
+member's grant under the steward policy is refused (`REFUSE_NOT_DECIDER`) until
+the peers take over.
+
+A published, walkable copy lives at
+[kody-w/rapp-model-hive](https://github.com/kody-w/rapp-model-hive): a room-by-room
+tour, a single offline page that verifies the Hive in your browser, and a
+Brainstem agent that replays this migration and compares every frame.

@@ -2,10 +2,12 @@
 
 Fictional people and devices, signed with PUBLIC test keys (anyone can re-derive
 them from their labels, so they prove nothing). It starts on the current version
-(a rapp-hive/1 declaration plus an old onboarding request), is migrated with the
-reference migrator, and then shows everything rapp-hive/2 does: co-equal peers,
-grandfathered requests, attested admission, schema lenses (automatic, authored
-and refused), a new schema waiting for a lens, crossings, and agreeing manifests.
+(a genuine rapp-hive/1 declaration on its Mother Hive body stream, signed by its
+owner, plus an old onboarding request), is migrated with the reference migrator,
+and then shows everything rapp-hive/2 does: a steward who alone decides until
+co-equal peers take over, grandfathered requests, attested admission, schema
+lenses (automatic, authored and refused), quarantine, a new schema waiting for a
+lens, crossings, and agreeing manifests.
 Deterministic: every build is byte-for-byte identical.
 """
 
@@ -27,7 +29,7 @@ PEOPLE = {
     "drew-desktop": "Drew (new analyst, desktop)",
     "emery-kiosk": "Emery (front-desk kiosk, joined on the old system)",
     "frankie-laptop": "Frankie (contractor, still waiting)",
-    "contoso-hive": "The legacy Hive identity (rapp-hive/1)",
+    "contoso-hive": "The rapp-hive/1 Mother Hive stream (its owner, Avery, signs it)",
 }
 TASKS = "contoso-tasks/1"
 
@@ -87,14 +89,15 @@ def _objects() -> dict[str, Any]:
     }
 
 
-DEFAULTS = {"migrate_pending": "keep-pinned", "attest_drew": True, "divergent_manifest": False}
+DEFAULTS = {"migrate_pending": "keep-pinned", "attest_drew": True, "divergent_manifest": False, "adversarial": False}
 
 
 def build(**options: Any) -> dict[str, Any]:
     """Build the legacy snapshot and the migrated model; returns {before, hive, story} (files are exact bytes).
 
     Options produce conformance variants: ``migrate_pending="re-decide"``, ``attest_drew=False``,
-    ``divergent_manifest=True``.
+    ``divergent_manifest=True`` (a newer divergent manifest on a second stream) and ``adversarial=True``
+    (signed but malformed or misplaced governance that must be refused without effect).
     """
     unknown = set(options) - set(DEFAULTS)
     if unknown:
@@ -107,12 +110,17 @@ def build(**options: Any) -> dict[str, Any]:
     frames: list[dict[str, Any]] = []
     story: list[dict[str, Any]] = []
 
-    def write(who: sign.Signer, kind: str, instance: str, payload: dict[str, Any], utc: str, note: str) -> dict[str, Any]:
-        frame = who.frame(kind, instance, payload, utc, heads.get(who.stream(instance)))
+    def keep(who: sign.Signer, frame: dict[str, Any], note: str) -> dict[str, Any]:
         heads[frame["stream_id"]] = frame
         frames.append(frame)
-        story.append({"utc": utc, "who": who.slug, "wave": frame["frame_hash"], "note": note})
+        story.append({"utc": frame["utc"], "who": who.slug, "wave": frame["frame_hash"], "note": note})
         return frame
+
+    def write(who: sign.Signer, kind: str, instance: str, payload: dict[str, Any], utc: str, note: str) -> dict[str, Any]:
+        return keep(who, who.frame(kind, instance, payload, utc, heads.get(who.stream(instance))), note)
+
+    def body(who: sign.Signer, kind: str, stream: str, payload: dict[str, Any], utc: str, note: str) -> dict[str, Any]:
+        return keep(who, who.body_frame(kind, stream, payload, utc, heads.get(stream)), note)
 
     def task(who: sign.Signer, utc: str, payload: dict[str, Any], note: str) -> dict[str, Any]:
         return write(who, "memory.save", "tasks", {"profile": TASKS, "operation": "task", **payload}, utc, note)
@@ -120,7 +128,7 @@ def build(**options: Any) -> dict[str, Any]:
     # ---- The current version: a rapp-hive/1 declaration, tasks, and an old onboarding request.
     member = lambda who, role, area: {"rappid": who.rappid, "role": role, "area": area}  # noqa: E731
     team = sorted([member(avery, "owner", "members/avery"), member(blake, "member", "members/blake"), member(casey, "member", "members/casey")], key=lambda item: item["rappid"])
-    declaration = write(legacy_hive, "hive.declaration", "mother", {
+    declaration = body(avery, "hive.declaration", legacy_hive.rappid, {
         "schema": "rapp-hive/1-declaration",
         "hive_rappid": legacy_hive.rappid,
         "world_id": WORLD,
@@ -130,14 +138,14 @@ def build(**options: Any) -> dict[str, Any]:
         "rooms": [{"id": "team", "area": "rooms/team", "members": sorted(item["rappid"] for item in team), "access": "repository"}],
         "channels": [{"id": "model", "kind": "local", "role": "authority", "locator": "model-hive/legacy", "writeback": True}],
         "policy": {"godd_sharing": "explicit", "default_godd_scope": "local-only", "external_publication": "disabled", "conflict_mode": "explicit", "default_transfer": "copy"},
-    }, "2026-09-20T09:00:00.000Z", "rapp-hive/1 era: the one owner declares the Hive (Avery owner; Blake and Casey members).")
+    }, "2026-09-20T09:00:00.000Z", "rapp-hive/1 era: Avery, the one owner, declares the Hive as the first frame of its Mother Hive stream (Blake and Casey are members).")
     first_task = task(avery, "2026-09-20T10:00:00.000Z", {"task_id": "T-100", "title": "Draft the onboarding checklist", "owner": "avery", "due": "2026-09-30"}, "Avery's laptop app writes a task.")
     phone_task = task(blake, "2026-09-20T10:30:00.000Z", {"id": "T-101", "text": "Photograph the site walk-through", "assignee": "blake"}, "Blake's phone app writes a task in its own shape.")
     legacy_request = write(emery, "memory.save", "onboarding", {
         "profile": "contoso-onboarding/1", "operation": "join-request", "hive": rapp1.particle(declaration["payload"]), "device": "front-desk kiosk",
     }, "2026-09-20T11:00:00.000Z", "The old onboarding script records Emery's signed request to join. Nobody has approved it yet.")
-    identities = sorted((who.identity() for who in people.values()), key=lambda item: item["rappid"])
-    before = sign.carrier_files(None, [item for item in identities if item["rappid"] in {legacy_hive.rappid, avery.rappid, blake.rappid, casey.rappid, emery.rappid}], [], frames)
+    identities = sorted((who.identity() for who in people.values() if who is not legacy_hive), key=lambda item: item["rappid"])
+    before = sign.carrier_files(None, [item for item in identities if item["rappid"] in {avery.rappid, blake.rappid, casey.rappid, emery.rappid}], [], frames)
 
     # ---- Migration (Path A + B) with the reference migrator, each identity signing only its own steps.
     with tempfile.TemporaryDirectory() as scratch:
@@ -179,8 +187,9 @@ def build(**options: Any) -> dict[str, Any]:
     peers = migrate.co_equal_policy(rapp1.particle(steward), 2, 2, attested=True, data={"carried_from": "rapp-hive/1", "privacy": steward["data"]["privacy"]})
     if options["migrate_pending"] != "keep-pinned":
         peers = hive.check_policy({**peers, "migrate_pending": options["migrate_pending"]})
-    adopt(avery, peers, rapp1.particle(steward), "2026-09-22T09:00:00.000Z", "The steward hands decisions to the peers: policy v2 needs 2 grants and a confirmed key.")
-    governance(blake, "hive2.grant", {"schema": "rapp-hive/2-grant", "member": emery.rappid, "request": legacy_request["frame_hash"]}, "2026-09-22T09:10:00.000Z", "Blake approves Emery's old request: it was made under policy v1, so one approval is enough.")
+    adopt(avery, peers, rapp1.particle(steward), "2026-09-22T09:00:00.000Z", "The steward hands decisions to the peers: under policy v2 every member decides, and joining needs 2 grants and a confirmed key.")
+    governance(blake, "hive2.grant", {"schema": "rapp-hive/2-grant", "member": emery.rappid, "request": legacy_request["frame_hash"]}, "2026-09-22T09:10:00.000Z", "Blake approves Emery's old request, but it was made under policy v1, where only Avery decides: Blake's approval does not count.")
+    governance(avery, "hive2.grant", {"schema": "rapp-hive/2-grant", "member": emery.rappid, "request": legacy_request["frame_hash"]}, "2026-09-22T09:12:00.000Z", "Avery approves it: under the rules it was made under, the steward's one approval is enough, so Emery is in.")
     drew_join = governance(drew, "hive2.join", {"schema": "rapp-hive/2-join", "policy": rapp1.particle(peers)}, "2026-09-22T09:20:00.000Z", "Drew's desktop asks to join under policy v2.")
     if options["attest_drew"]:
         governance(casey, "hive2.attest", {"schema": "rapp-hive/2-attest", "subject": drew.rappid, "claim": hive.KEY_CONFIRMED, "method": "video call"}, "2026-09-22T09:25:00.000Z", "Casey confirms Drew's key fingerprint on a video call.")
@@ -189,7 +198,7 @@ def build(**options: Any) -> dict[str, Any]:
     frankie_join = governance(frankie, "hive2.join", {"schema": "rapp-hive/2-join", "policy": rapp1.particle(peers)}, "2026-09-22T09:40:00.000Z", "Frankie asks to join under policy v2.")
     governance(blake, "hive2.attest", {"schema": "rapp-hive/2-attest", "subject": frankie.rappid, "claim": hive.KEY_CONFIRMED, "method": "in person"}, "2026-09-22T09:45:00.000Z", "Blake confirms Frankie's key in person.")
     governance(blake, "hive2.grant", {"schema": "rapp-hive/2-grant", "member": frankie.rappid, "request": frankie_join["frame_hash"]}, "2026-09-22T09:50:00.000Z", "Blake grants Frankie. One more grant is needed.")
-    task(frankie, "2026-09-22T09:55:00.000Z", {"task_id": "T-199", "title": "Invoice for week one", "owner": "frankie", "due": "2026-10-01"}, "Frankie writes a task. It waits in quarantine until Frankie is admitted.")
+    task(frankie, "2026-09-22T09:55:00.000Z", {"task_id": "T-199", "title": "Invoice for week one", "owner": "frankie", "due": "2026-10-01", "invoice": "INV-7"}, "Frankie writes a task with an extra 'invoice' field. It waits in quarantine until Frankie is admitted, and a quarantined message never teaches the Hive a new shape.")
 
     # ---- Schemas: automatic, authored, refused, waiting.
     task(avery, "2026-09-22T13:00:00.000Z", {"task_id": "T-102", "title": "Book the kickoff room", "owner": "avery", "due": "2026-09-25"}, "Same schema as before: it maps instantly.")
@@ -220,9 +229,19 @@ def build(**options: Any) -> dict[str, Any]:
         state_now = hive.Evaluation(carried, records, anchor).state_particle
         state_behind = hive.Evaluation(carried, hive._at_heads(records, behind), anchor).state_particle
     for who, utc in ((avery, "2026-09-23T09:00:00.000Z"), (casey, "2026-09-23T09:05:00.000Z"), (drew, "2026-09-23T09:10:00.000Z")):
-        claimed = "0" * 64 if options["divergent_manifest"] and who is drew else state_now
-        write(who, "hive2.manifest", "manifest", {"schema": "rapp-hive/2-manifest", "anchor": anchor, "heads": current, "state": claimed}, utc, f"{who.slug} signs its manifest: same heads, same state.")
+        write(who, "hive2.manifest", "manifest", {"schema": "rapp-hive/2-manifest", "anchor": anchor, "heads": current, "state": state_now}, utc, f"{who.slug} signs its manifest: same heads, same state.")
     write(blake, "hive2.manifest", "manifest", {"schema": "rapp-hive/2-manifest", "anchor": anchor, "heads": behind, "state": state_behind}, "2026-09-22T14:45:00.000Z", "Blake's phone signed its manifest before going offline: consistent, just behind.")
+    if options["divergent_manifest"]:
+        write(drew, "hive2.manifest", "manifest-backup", {"schema": "rapp-hive/2-manifest", "anchor": anchor, "heads": current, "state": "0" * 64}, "2026-09-23T09:30:00.000Z", "Drew's backup stream signs a newer manifest claiming a state its heads do not produce: it is Drew's newest, so Drew is divergent.")
+    if options["adversarial"]:
+        v3 = objects["contoso_v3"]
+        relabelled = lensmod.check_lens({**v3, "version": 99, "predecessor": {"id": v3["id"], "version": 98, "particle": rapp1.particle(v3)}})
+        all_objects.append(relabelled)
+        adopt(blake, relabelled, rapp1.particle(v3), "2026-09-23T10:00:00.000Z", "Blake adopts a copy of lens v3 relabelled v99 with a v98 predecessor: stale, because a successor pins the active version exactly.")
+        governance(avery, "hive2.grant", {"schema": "rapp-hive/2-grant", "member": frankie.rappid, "request": []}, "2026-09-23T10:05:00.000Z", "A buggy app signs a grant whose request is a list: refused as malformed; nothing crashes.")
+        governance(avery, "hive2.adopt", {"schema": "rapp-hive/2-adopt", "object": {}, "predecessor": None}, "2026-09-23T10:10:00.000Z", "A buggy app signs an adoption whose object is an empty object: refused as malformed.")
+        body(avery, "hive2.grant", legacy_hive.rappid, {"schema": "rapp-hive/2-grant", "anchor": anchor, "member": frankie.rappid, "request": frankie_join["frame_hash"]}, "2026-09-23T10:15:00.000Z", "Avery signs a grant onto the old Mother Hive stream: governance on a body stream never counts.")
+        write(avery, "hive2.manifest", "manifest", {"schema": "rapp-hive/2-manifest", "anchor": anchor, "heads": {next(iter(current)): {"seq": [], "frame_hash": "0" * 64}}, "state": state_now}, "2026-09-23T10:20:00.000Z", "A buggy manifest names a head whose sequence is a list: unverifiable, and nothing crashes.")
     story.sort(key=lambda item: (item["utc"], item["wave"]))
     files = sign.carrier_files(anchor, identities, all_objects, frames)
     return {

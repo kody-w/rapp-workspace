@@ -32,14 +32,14 @@
       "ring": "canary",
       "production_activation": "forbidden-while-experimental",
       "spec_path": "protocols/rapp-hive/2/SPEC.md",
-      "spec_sha256": "cf29380748e746afc7e6a1126d8c77a48721cd3205021fb2e1675de1b6ab7146",
-      "spec_bytes": 15777,
+      "spec_sha256": "aaf6af3da795e147ccae5fac26d29c3f18da9ca7346d50b7f6fb9a56ab3f7ee9",
+      "spec_bytes": 18753,
       "migration_path": "protocols/rapp-hive/2/MIGRATION.md",
-      "migration_sha256": "21888dd8b40f0232c6c306b153a9ab9555d76749e8e3f10918377c77ceb49abb",
-      "migration_bytes": 5187,
+      "migration_sha256": "6a9eb9e41921021b469f679714e9dc38beeeb41e0230307bafd1bf92372ea1f8",
+      "migration_bytes": 6720,
       "conformance_vectors_path": "protocols/rapp-hive/2/conformance/vectors.json",
-      "conformance_vectors_sha256": "3c8fd72f77fe83a93520d54e0fca71e5e4124a0484afc0d15ac438517b9fee08",
-      "conformance_vectors_bytes": 742376,
+      "conformance_vectors_sha256": "88e4988835942b071c408b937f59601534ae1c421de8053ec83939f9cf73d2d9",
+      "conformance_vectors_bytes": 1144488,
       "conformance": "protocols/rapp-hive/2/reference/rapp_hive2/vectors.py"
     },
     {
@@ -50,8 +50,8 @@
       "status": "experimental-frontier",
       "ring": "canary",
       "spec_path": "protocols/rapp-schema/1/SPEC.md",
-      "spec_sha256": "9ab88bd610b65fa6f41a45de85d1c2c862d28e308af49d7f9cf05da14e2e489f",
-      "spec_bytes": 2647,
+      "spec_sha256": "8c2d9023d492600d91e28935d640fd95c4b2ed3a583f87386cf18ff2071e2a20",
+      "spec_bytes": 2777,
       "conformance": "protocols/rapp-hive/2/reference/rapp_hive2/vectors.py"
     },
     {

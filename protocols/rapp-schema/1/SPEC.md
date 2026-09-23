@@ -56,5 +56,7 @@ computed over RAPP/1 canonical JSON with a byte bound of 8 MiB.
 
 Schema `N` is **additive** over schema `O` when they have equal `schema`,
 `spec`, `kind` and `tags`, every payload field of `O` appears in `N` with an
-identical shape, and `N` has at least one more field. An additive schema can be
-mapped by `O`'s mapping unchanged; its extra fields are reported as dropped.
+identical shape, and `N` has at least one more field. Shapes are compared as
+canonical JSON under the same 8 MiB bound as the particle, so every pair of valid
+schemas can be compared. An additive schema can be mapped by `O`'s mapping
+unchanged; its extra fields are reported as dropped.

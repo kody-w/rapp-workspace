@@ -33,11 +33,13 @@ def _short(rappid: str) -> str:
 def status_lines(evaluation: hive.Evaluation, verdict: dict[str, Any]) -> list[str]:
     anchor = evaluation.anchor
     policy = evaluation.policy
-    lines = [f"{anchor['name']} (world {anchor['world_id']}), policy v{policy['version']}: {policy['admit']['quorum']} grant(s){' and a confirmed key' if policy['admit']['attested'] else ''} to join."]
+    deciders = "every member decides" if policy["deciders"] == hive.ALL_MEMBERS else " and ".join(_short(item) for item in policy["deciders"]) + (" decides" if len(policy["deciders"]) == 1 else " decide")
+    lines = [f"{anchor['name']} (world {anchor['world_id']}), policy v{policy['version']}: {deciders}; {policy['admit']['quorum']} grant(s){' and a confirmed key' if policy['admit']['attested'] else ''} to join."]
     lines.append("Members: " + ", ".join(f"{_short(key)}{' (from the old system)' if value.get('legacy') else ''}" for key, value in sorted(evaluation.members.items())) + ".")
     for key, request in sorted(evaluation.pending.items()):
-        rule = evaluation._policy(request["pinned"])["admit"]
-        grants = len({granter for granter in request["grants"] if granter in evaluation.members})
+        pinned = evaluation._policy(request["pinned"])
+        rule = pinned["admit"]
+        grants = len({granter for granter in request["grants"] if evaluation._decides(pinned, granter)})
         lines.append(f"Waiting: {_short(request['requester'])} has {grants} of {rule['quorum']} grant(s){'; needs a confirmed key' if rule['attested'] and not evaluation.attested.get(request['requester']) else ''}.")
     for lens_id, particle in sorted(evaluation.active.items()):
         lines.append(f"Lens {lens_id} v{evaluation.lens_objects[particle]['version']} maps {sum(len(m['accepts']) for m in evaluation.lens_objects[particle]['mappings'])} schema(s).")
