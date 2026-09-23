@@ -24,7 +24,8 @@ from . import hive, rapp1, sign, store
 from .rapp1 import Refusal
 
 PLAN = "rapp-hive/2-migration-plan"
-PLAN_KINDS = ("hive2.accept", "hive2.join", "hive2.grant")
+PLAN_KINDS = ("hive2.accept", "hive2.join", "hive2.grant", "hive2.attest")
+CONFIRMED_BEFORE_SIGNING = "fingerprint confirmed with its holder before signing this migration step"
 
 
 def _format(moment: _dt.datetime) -> str:
@@ -133,13 +134,20 @@ def plan_from_rapp_hive_1(carried: hive.Carried, records: list[hive.Record], dec
     return _plan("rapp-hive/1", anchor, policy, steps, notes)
 
 
-def plan_from_join_requests(records: list[hive.Record], *, name: str, world_id: str, founders: list[str], requests: list[str], quorum: int, source: str) -> dict[str, Any]:
-    """Path B. The exact legacy request frames are listed; founders accept, then approve each request they vouch for."""
+def plan_from_join_requests(records: list[hive.Record], *, name: str, world_id: str, founders: list[str], requests: list[str], quorum: int, source: str, attested: bool = False) -> dict[str, Any]:
+    """Path B. The exact legacy request frames are listed; founders accept, then approve each request they vouch for.
+
+    A founder's own old request closes when that founder accepts, so no grant is drafted for it.
+    """
     by_wave = {item.wave: item for item in records}
     if any(wave not in by_wave for wave in requests):
         raise Refusal("REFUSE_LEGACY", "Every carried-over request must be a verified frame.")
+    if any(by_wave[wave].kind in hive.KINDS for wave in requests):
+        raise Refusal("REFUSE_LEGACY", "A carried-over request is a signed content frame, not governance.")
     founders = sorted(set(founders))
-    policy = co_equal_policy(None, 1, quorum, attested=False, data={"carried_from": source})
+    if quorum > len(founders):
+        raise Refusal("REFUSE_SCHEMA", "A first policy whose quorum exceeds its founders could never admit anyone.")
+    policy = co_equal_policy(None, 1, quorum, attested=attested, data={"carried_from": source})
     policy_particle = rapp1.particle(policy)
     anchor = {
         "schema": hive.ANCHOR,
@@ -151,20 +159,29 @@ def plan_from_join_requests(records: list[hive.Record], *, name: str, world_id: 
     }
     anchor_particle = rapp1.particle(anchor)
     steps = [{"signer": founder, "phase": 1, "drafts": [_draft("hive2.accept", {"schema": "rapp-hive/2-accept", "anchor": anchor_particle})]} for founder in founders]
-    for founder in founders:
+    outside = [wave for wave in sorted(requests) if by_wave[wave].owner not in founders]
+    for founder in founders if outside else []:
+        confirmations = [
+            _draft("hive2.attest", {"schema": "rapp-hive/2-attest", "anchor": anchor_particle, "subject": requester, "claim": hive.KEY_CONFIRMED, "method": CONFIRMED_BEFORE_SIGNING})
+            for requester in sorted({by_wave[wave].owner for wave in outside})
+        ] if attested else []
         steps.append({
             "signer": founder,
             "phase": 2,
             "optional": True,
-            "drafts": [
+            "drafts": confirmations + [
                 _draft("hive2.grant", {"schema": "rapp-hive/2-grant", "anchor": anchor_particle, "member": by_wave[wave].owner, "request": wave})
-                for wave in sorted(requests)
+                for wave in outside
             ],
         })
     notes = [
         f"{len(requests)} signed requests made on the old system are carried over exactly and decided under this Hive's first policy.",
         "Each founder signs only the approvals they vouch for; no one-owner override exists.",
     ]
+    if len(outside) != len(requests):
+        notes.append(f"{len(requests) - len(outside)} of those requests come from founders; each closes when its founder accepts.")
+    if attested:
+        notes.append("Admission also needs a key another member has confirmed: each founder's optional step includes a key-confirmed attestation; sign it only after confirming that requester's fingerprint with its holder by voice, video or in person.")
     return _plan(source, anchor, policy, steps, notes)
 
 
@@ -191,7 +208,7 @@ def check_plan(plan: Any) -> dict[str, Any]:
             raise Refusal("REFUSE_TAMPER", "A plan step has a positive phase and at least one draft.")
         for draft in step["drafts"]:
             if type(draft) is not dict or set(draft) != {"kind", "instance", "payload"} or draft["kind"] not in PLAN_KINDS or draft["instance"] != "hive":
-                raise Refusal("REFUSE_TAMPER", "A plan only drafts accept, join and grant frames on the hive stream.")
+                raise Refusal("REFUSE_TAMPER", "A plan only drafts accept, join, grant and attest frames on the hive stream.")
             if type(draft["payload"]) is not dict or draft["payload"].get("anchor") != plan["anchor"]:
                 raise Refusal("REFUSE_TAMPER", "Every drafted frame names the plan's own anchor.")
     return plan

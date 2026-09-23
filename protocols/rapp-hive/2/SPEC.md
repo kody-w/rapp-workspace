@@ -129,7 +129,8 @@ and have no effect.
  "legacy": null}
 ```
 
-The Hive's identity is the anchor particle. `policy` names version 1 of the
+The Hive's identity is the anchor particle. `world_id` is a lowercase label of
+at most 128 characters, as in RAPP Workspace/1. `policy` names version 1 of the
 policy. `legacy` is `null` or `{"from", "declaration", "join"}` (section 7);
 `declaration` is a frame hash exactly when `from` is `"rapp-hive/1"`, and `null`
 otherwise.

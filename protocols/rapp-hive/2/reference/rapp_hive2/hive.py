@@ -47,6 +47,7 @@ V1_CHANNEL_KINDS = ("github", "sharepoint", "nas", "lan", "local", "custom")
 V1_CHANNEL_ROLES = ("authority", "writable", "mirror", "cache", "backup")
 V1_PRIVACY = {"godd_sharing": "explicit", "default_godd_scope": "local-only", "external_publication": "disabled", "conflict_mode": "explicit", "default_transfer": "copy"}
 MAX_FILES = 20000
+MAX_WORLD_ID = 128  # as RAPP Workspace/1
 MAX_OBJECT_BYTES = 1024 * 1024
 LABEL_RE = lensmod.ID_RE
 
@@ -123,8 +124,8 @@ def check_anchor(anchor: Any) -> dict[str, Any]:
         raise Refusal("REFUSE_SCHEMA", "An anchor has exactly the rapp-hive/2-anchor keys.")
     if type(anchor["name"]) is not str or not 0 < len(anchor["name"]) <= 100:
         raise Refusal("REFUSE_SCHEMA", "anchor.name is a short text.")
-    if type(anchor["world_id"]) is not str or len(anchor["world_id"]) > 64 or LABEL_RE.fullmatch(anchor["world_id"]) is None:
-        raise Refusal("REFUSE_SCHEMA", "anchor.world_id is a lowercase label.")
+    if type(anchor["world_id"]) is not str or len(anchor["world_id"]) > MAX_WORLD_ID or LABEL_RE.fullmatch(anchor["world_id"]) is None:
+        raise Refusal("REFUSE_SCHEMA", "anchor.world_id is a lowercase label of at most 128 characters.")
     founders = anchor["founders"]
     if not _sorted_unique_strings(founders):
         raise Refusal("REFUSE_SCHEMA", "anchor.founders is a sorted, unique, nonempty list.")

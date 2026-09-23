@@ -91,13 +91,21 @@ which leaves older requests with no way in).
    ```sh
    python3 -B -m rapp_hive2 migrate plan-joins <folder> --name "<Hive name>" \
      --world <world_id> --founder <rappid> --founder <rappid> \
-     --request <frame hash> --quorum 2 --from repository-seeded-private-hive --out plan.json
+     --request <frame hash> --quorum 2 --attested --from repository-seeded-private-hive --out plan.json
    ```
 
-   The anchor lists those request frame hashes under `legacy.join.requests`.
-   Each becomes a pending request of its own signer, decided under the Hive's
-   first policy. Because the list is fixed in the anchor, no new request can pose
-   as an old one.
+   The anchor keeps the Hive's existing `world_id` (up to 128 characters) and
+   lists those request frame hashes under `legacy.join.requests`. Each becomes a
+   pending request of its own signer, decided under the Hive's first policy.
+   Because the list is fixed in the anchor, no new request can pose as an old
+   one. A founder may be someone whose old request is still waiting: that
+   request closes when the founder accepts, so no grant is drafted for it. The
+   quorum cannot exceed the number of founders (a peer policy with too few
+   members could never admit anyone), and `--attested` also requires a key
+   another member has confirmed, for Hives that already check fingerprints:
+   each founder's optional phase 2 step then includes a `key-confirmed`
+   attestation, to sign only after confirming that requester's fingerprint with
+   its holder by voice, video or in person.
 3. **Apply.** Each founder accepts (phase 1). After every founder has accepted,
    each founder signs only the approvals they vouch for (phase 2, optional per
    request). The first policy's deciders are all members, so there is no

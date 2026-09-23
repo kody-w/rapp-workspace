@@ -296,6 +296,50 @@ class LegacyAndMigrationTests(unittest.TestCase):
             _c, _r, evaluation, _v = hive.evaluate_folder(folder)
             self.assertEqual(len(evaluation.members), 3)
 
+    def test_path_b_founders_old_requests_close_when_they_accept(self) -> None:
+        scratch, folder = written(BUILT["before"])
+        with scratch:
+            carried = hive.load(folder)
+            records = hive.verify_frames(carried)
+            request = next(item for item in records if item.frame["payload"].get("operation") == "join-request")
+            founders = [slug_of("avery-laptop"), request.owner]
+            world = "seeded-" + "a" * 64 + "-world"
+            with self.assertRaises(Refusal) as refused:
+                migrate.plan_from_join_requests(records, name="Seeded", world_id=world, founders=founders, requests=[request.wave], quorum=3, source="seeded-private-hive")
+            self.assertEqual(refused.exception.code, "REFUSE_SCHEMA")
+            plan = migrate.plan_from_join_requests(records, name="Seeded", world_id=world, founders=founders, requests=[request.wave], quorum=2, source="seeded-private-hive", attested=True)
+            self.assertEqual(sorted({step["phase"] for step in plan["steps"]}), [1], "no grant is drafted for a founder's own request")
+            self.assertTrue(plan["objects"][1]["admit"]["attested"])
+            for slug, utc in (("avery-laptop", "2026-09-21T09:00:00.000Z"), ("emery-kiosk", "2026-09-21T09:01:00.000Z")):
+                migrate.apply(plan, folder, model.signer(slug), phase=1, utc=utc)
+            _c, _r, evaluation, _v = hive.evaluate_folder(folder)
+            self.assertEqual(sorted(evaluation.members), sorted(founders))
+            self.assertEqual(evaluation.pending, {})
+
+    def test_path_b_attested_plans_draft_confirmations_before_grants(self) -> None:
+        scratch, folder = written(BUILT["before"])
+        with scratch:
+            carried = hive.load(folder)
+            records = hive.verify_frames(carried)
+            request = next(item for item in records if item.frame["payload"].get("operation") == "join-request")
+            founders = [slug_of("avery-laptop"), slug_of("blake-phone")]
+            plan = migrate.plan_from_join_requests(records, name="Seeded", world_id="seeded", founders=founders, requests=[request.wave], quorum=2, source="seeded-private-hive", attested=True)
+            for slug, utc in (("avery-laptop", "2026-09-21T09:00:00.000Z"), ("blake-phone", "2026-09-21T09:01:00.000Z")):
+                migrate.apply(plan, folder, model.signer(slug), phase=1, utc=utc)
+            self.assertEqual([draft["kind"] for draft in plan["steps"][-1]["drafts"]], ["hive2.attest", "hive2.grant"])
+            migrate.apply(plan, folder, model.signer("avery-laptop"), phase=2, utc="2026-09-21T09:02:00.000Z")
+            _c, _r, evaluation, _v = hive.evaluate_folder(folder)
+            self.assertIn(request.wave, evaluation.pending, "one grant of two")
+            migrate.apply(plan, folder, model.signer("blake-phone"), phase=2, utc="2026-09-21T09:03:00.000Z")
+            _c, _r, evaluation, _v = hive.evaluate_folder(folder)
+            self.assertIn(request.owner, evaluation.members)
+
+    def test_world_ids_follow_workspace_1s_length(self) -> None:
+        anchor = json.loads(next(data for path, data in BUILT["hive"].items() if path.startswith("objects/") and json.loads(data).get("schema") == hive.ANCHOR))
+        self.assertEqual(hive.check_anchor({**anchor, "world_id": "w" * 128})["world_id"], "w" * 128)
+        with self.assertRaises(Refusal):
+            hive.check_anchor({**anchor, "world_id": "w" * 129})
+
     def test_path_b_carries_old_join_requests_without_an_override(self) -> None:
         scratch, folder = written(BUILT["before"])
         with scratch:

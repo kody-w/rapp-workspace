@@ -83,6 +83,7 @@ def main(argv: list[str] | None = None) -> int:
     planb.add_argument("--request", action="append", required=True)
     planb.add_argument("--quorum", type=int, required=True)
     planb.add_argument("--from", dest="source", required=True)
+    planb.add_argument("--attested", action="store_true", help="admission also needs a key another member confirmed")
     planb.add_argument("--out", required=True)
     applying = migrating.add_parser("apply")
     applying.add_argument("folder")
@@ -119,7 +120,7 @@ def main(argv: list[str] | None = None) -> int:
                 if args.step == "plan-hive1":
                     plan = migrate.plan_from_rapp_hive_1(carried, records, args.declaration, name=args.name, legacy_requests=args.legacy_request)
                 else:
-                    plan = migrate.plan_from_join_requests(records, name=args.name, world_id=args.world, founders=args.founder, requests=args.request, quorum=args.quorum, source=args.source)
+                    plan = migrate.plan_from_join_requests(records, name=args.name, world_id=args.world, founders=args.founder, requests=args.request, quorum=args.quorum, source=args.source, attested=args.attested)
                 store.write_new_tree(Path(args.out).parent, {Path(args.out).name: rapp1.canonical(plan)}, require_empty=False)
                 result = {"ok": True, "plan": args.out, "plan_particle": plan["plan_particle"], "steps": [{"signer": _short(step["signer"]), "phase": step["phase"], "frames": len(step["drafts"])} for step in plan["steps"]], "notes": plan["notes"]}
             else:
