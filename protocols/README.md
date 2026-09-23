@@ -11,6 +11,8 @@ collaboration and compliance while retaining byte-level RAPP/1 conformance.
 | [`rapp-workspace/1`](rapp-workspace/1/SPEC.md) | RAPP Workspace/1 core protocol: recursive default-branch catalogs, outcome-first organization, pointer-only workspace composites and fail-closed Hive proposals/effects | `python3 ../tools/frame_lens.py conformance --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"` |
 | [`rapp-hive/1`](rapp-hive/1/SPEC.md) | Private Hive workspaces, generic RAPP objects, sealed GODD rooms, PII-free DOGG, Dream Catcher convergence, and multi-channel projection | `python3 rapp-hive/1/reference/hive_conformance.py` |
 | [`rapp-federation/1`](rapp-federation/1/SPEC.md) | The universal logical Hive Mind: consent-bound business collaboration among sovereign Private Hives, including delay-tolerant exchange and durable receipts | `python3 rapp-federation/1/reference/conformance.py --report rapp-federation/1/conformance-results.json` |
+| [`rapp-hive/2`](rapp-hive/2/SPEC.md) | **Experimental frontier (canary).** Co-equal Hives of sovereign streams: only signed facts are carried, schema lenses map every shape into shared views, members sign agreeing manifests, and [migration paths](rapp-hive/2/MIGRATION.md) bring `rapp-hive/1` and seeded Hives along without breaking them | `cd rapp-hive/2/reference && python3 -B -m rapp_hive2 vectors --check ../conformance/vectors.json` |
+| [`rapp-schema/1`](rapp-schema/1/SPEC.md) | **Experimental frontier (canary).** The bare schema of a RAPP/1 frame (names and types, never values): the unit lenses map | covered by the `rapp-hive/2` vectors |
 
 An estate activates a profile through an owner-signed RAPP/1 `protocol`
 registry entry pinning this repository, the normative path, and exact SHA-256.

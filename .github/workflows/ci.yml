@@ -40,6 +40,22 @@ jobs:
       - name: Compile
         run: python3 -m py_compile tools/*.py protocols/rapp-workspace/1/reference/*.py tests/*.py
 
+  rapp-hive-2-frontier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install rapp-hive/2 reference dependencies
+        run: python3 -m pip install "cryptography>=43"
+      - name: rapp-hive/2 reference tests and conformance (experimental frontier)
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 -B -m unittest discover -s protocols/rapp-hive/2/reference/tests -v
+          cd protocols/rapp-hive/2/reference
+          python3 -B -m rapp_hive2 vectors --check ../conformance/vectors.json
   work-sdk-private-hive:
     runs-on: ubuntu-latest
     steps:

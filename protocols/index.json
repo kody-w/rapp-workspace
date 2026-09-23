@@ -23,6 +23,38 @@
       "conformance": "protocols/rapp-federation/1/reference/conformance.py"
     },
     {
+      "name": "rapp-hive/2",
+      "human_name": "RAPP Hive/2 (experimental frontier)",
+      "parent": "rapp/1",
+      "predecessor": "rapp-hive/1",
+      "authority": false,
+      "status": "experimental-frontier",
+      "ring": "canary",
+      "production_activation": "forbidden-while-experimental",
+      "spec_path": "protocols/rapp-hive/2/SPEC.md",
+      "spec_sha256": "cf29380748e746afc7e6a1126d8c77a48721cd3205021fb2e1675de1b6ab7146",
+      "spec_bytes": 15777,
+      "migration_path": "protocols/rapp-hive/2/MIGRATION.md",
+      "migration_sha256": "21888dd8b40f0232c6c306b153a9ab9555d76749e8e3f10918377c77ceb49abb",
+      "migration_bytes": 5187,
+      "conformance_vectors_path": "protocols/rapp-hive/2/conformance/vectors.json",
+      "conformance_vectors_sha256": "3c8fd72f77fe83a93520d54e0fca71e5e4124a0484afc0d15ac438517b9fee08",
+      "conformance_vectors_bytes": 742376,
+      "conformance": "protocols/rapp-hive/2/reference/rapp_hive2/vectors.py"
+    },
+    {
+      "name": "rapp-schema/1",
+      "human_name": "RAPP Schema/1 (experimental frontier)",
+      "parent": "rapp/1",
+      "authority": false,
+      "status": "experimental-frontier",
+      "ring": "canary",
+      "spec_path": "protocols/rapp-schema/1/SPEC.md",
+      "spec_sha256": "9ab88bd610b65fa6f41a45de85d1c2c862d28e308af49d7f9cf05da14e2e489f",
+      "spec_bytes": 2647,
+      "conformance": "protocols/rapp-hive/2/reference/rapp_hive2/vectors.py"
+    },
+    {
       "name": "rapp-workspace/1",
       "human_name": "RAPP Workspace/1",
       "parent": "rapp/1",
