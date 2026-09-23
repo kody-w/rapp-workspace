@@ -206,13 +206,19 @@ def _resolve(payload: dict[str, Any], records: list[hive.Record], anchor: str) -
     return dict(payload)
 
 
-def _applied(step: dict[str, Any], records: list[hive.Record], anchor: str) -> bool:
-    """Every draft of the step is already carried, signed by the step's signer on its own stream."""
+def _applied(step: dict[str, Any], records: list[hive.Record], anchor: str, refused: set[str]) -> list[hive.Record] | None:
+    """The effective frames that carry every draft of the step (signed by its signer on its own stream), or None."""
+    found = []
     for draft in step["drafts"]:
         payload = _resolve(draft["payload"], records, anchor)
-        if payload is None or not any(item.owner == step["signer"] and not item.legacy and item.kind == draft["kind"] and rapp1.json_equal(item.frame["payload"], payload) for item in records):
-            return False
-    return True
+        match = None if payload is None else next(
+            (item for item in records if item.owner == step["signer"] and not item.legacy and item.kind == draft["kind"] and item.wave not in refused and rapp1.json_equal(item.frame["payload"], payload)),
+            None,
+        )
+        if match is None:
+            return None
+        found.append(match)
+    return found
 
 
 def apply(plan: dict[str, Any], folder: Path, signer: sign.Signer, *, phase: int, utc: str) -> list[str]:
@@ -225,10 +231,17 @@ def apply(plan: dict[str, Any], folder: Path, signer: sign.Signer, *, phase: int
     steps = [step for step in plan["steps"] if step["phase"] == phase and step["signer"] == signer.rappid]
     if not steps:
         raise Refusal("REFUSE_NOT_YOURS", "This plan has no steps for this identity in that phase.")
-    if not all(_applied(step, records, plan["anchor"]) for step in plan["steps"] if step["phase"] < phase and not step.get("optional", False)):
-        raise Refusal("REFUSE_ORDER", "Every earlier phase must be applied first.")
-    if all(_applied(step, records, plan["anchor"]) for step in steps):
-        raise Refusal("REFUSE_ALREADY_APPLIED", "These steps are already signed and carried.")
+    refused: set[str] = set()
+    if plan["anchor"] in carried.objects:
+        refused = {item["wave"] for item in hive.Evaluation(carried, records, plan["anchor"]).refusals}
+    earlier = [_applied(step, records, plan["anchor"], refused) for step in plan["steps"] if step["phase"] < phase and not step.get("optional", False)]
+    if any(found is None for found in earlier):
+        raise Refusal("REFUSE_ORDER", "Every earlier phase must be applied (and in effect) first.")
+    if all(_applied(step, records, plan["anchor"], refused) is not None for step in steps):
+        raise Refusal("REFUSE_ALREADY_APPLIED", "These steps are already signed, carried and in effect.")
+    floor = max((item.utc for found in earlier for item in found), default=None)
+    if floor is not None and later(utc, 0) <= floor:
+        raise Refusal("REFUSE_FRAME_TIME", f"Sign these steps after the steps they depend on (after {floor}).")
     heads: dict[str, dict[str, Any]] = {}
     for record in records:
         if record.stream.startswith(signer.rappid + ":") and (record.stream not in heads or record.seq > heads[record.stream]["seq"]):

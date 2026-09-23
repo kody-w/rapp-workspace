@@ -89,15 +89,16 @@ def _objects() -> dict[str, Any]:
     }
 
 
-DEFAULTS = {"migrate_pending": "keep-pinned", "attest_drew": True, "divergent_manifest": False, "adversarial": False}
+DEFAULTS = {"migrate_pending": "keep-pinned", "attest_drew": True, "divergent_manifest": False, "adversarial": False, "double_request": False}
 
 
 def build(**options: Any) -> dict[str, Any]:
     """Build the legacy snapshot and the migrated model; returns {before, hive, story} (files are exact bytes).
 
     Options produce conformance variants: ``migrate_pending="re-decide"``, ``attest_drew=False``,
-    ``divergent_manifest=True`` (a newer divergent manifest on a second stream) and ``adversarial=True``
-    (signed but malformed or misplaced governance that must be refused without effect).
+    ``divergent_manifest=True`` (a newer divergent manifest on a second stream), ``adversarial=True``
+    (signed but malformed or misplaced governance and manifests, refused without effect) and
+    ``double_request=True`` (Emery's old script filed twice; admission closes both requests).
     """
     unknown = set(options) - set(DEFAULTS)
     if unknown:
@@ -144,6 +145,11 @@ def build(**options: Any) -> dict[str, Any]:
     legacy_request = write(emery, "memory.save", "onboarding", {
         "profile": "contoso-onboarding/1", "operation": "join-request", "hive": rapp1.particle(declaration["payload"]), "device": "front-desk kiosk",
     }, "2026-09-20T11:00:00.000Z", "The old onboarding script records Emery's signed request to join. Nobody has approved it yet.")
+    legacy_requests = [legacy_request["frame_hash"]]
+    if options["double_request"]:
+        legacy_requests.append(write(emery, "memory.save", "onboarding", {
+            "profile": "contoso-onboarding/1", "operation": "join-request", "hive": rapp1.particle(declaration["payload"]), "device": "front-desk kiosk (retried)",
+        }, "2026-09-20T11:05:00.000Z", "The old script retries and records a second signed request from Emery.")["frame_hash"])
     identities = sorted((who.identity() for who in people.values() if who is not legacy_hive), key=lambda item: item["rappid"])
     before = sign.carrier_files(None, [item for item in identities if item["rappid"] in {avery.rappid, blake.rappid, casey.rappid, emery.rappid}], [], frames)
 
@@ -155,7 +161,7 @@ def build(**options: Any) -> dict[str, Any]:
         store.write_new_tree(folder, dict(before))
         carried = hive.load(folder)
         records = hive.verify_frames(carried)
-        plan = migrate.plan_from_rapp_hive_1(carried, records, declaration["frame_hash"], name=NAME, legacy_requests=[legacy_request["frame_hash"]])
+        plan = migrate.plan_from_rapp_hive_1(carried, records, declaration["frame_hash"], name=NAME, legacy_requests=legacy_requests)
         for who, phase, utc in ((avery, 1, "2026-09-21T09:00:00.000Z"), (blake, 1, "2026-09-21T09:05:00.000Z"), (casey, 1, "2026-09-21T09:10:00.000Z"), (avery, 2, "2026-09-21T09:20:00.000Z")):
             migrate.apply(plan, folder, who, phase=phase, utc=utc)
         migrated = hive.load(folder)
@@ -242,6 +248,9 @@ def build(**options: Any) -> dict[str, Any]:
         governance(avery, "hive2.adopt", {"schema": "rapp-hive/2-adopt", "object": {}, "predecessor": None}, "2026-09-23T10:10:00.000Z", "A buggy app signs an adoption whose object is an empty object: refused as malformed.")
         body(avery, "hive2.grant", legacy_hive.rappid, {"schema": "rapp-hive/2-grant", "anchor": anchor, "member": frankie.rappid, "request": frankie_join["frame_hash"]}, "2026-09-23T10:15:00.000Z", "Avery signs a grant onto the old Mother Hive stream: governance on a body stream never counts.")
         write(avery, "hive2.manifest", "manifest", {"schema": "rapp-hive/2-manifest", "anchor": anchor, "heads": {next(iter(current)): {"seq": [], "frame_hash": "0" * 64}}, "state": state_now}, "2026-09-23T10:20:00.000Z", "A buggy manifest names a head whose sequence is a list: unverifiable, and nothing crashes.")
+        write(casey, "hive2.manifest", "manifest", {"schema": "not-a-manifest", "anchor": anchor, "heads": current, "state": state_now}, "2026-09-23T10:25:00.000Z", "Casey's newest manifest carries the wrong schema: malformed, whatever it claims.")
+        first_drew = next(frame for frame in frames if frame["stream_id"] == drew.stream("manifest") and frame["seq"] == 0)
+        write(drew, "hive2.manifest", "manifest", {"schema": "rapp-hive/2-manifest", "anchor": anchor, "heads": {first_drew["stream_id"]: {"seq": 0, "frame_hash": first_drew["frame_hash"]}}, "state": state_now}, "2026-09-23T10:30:00.000Z", "Drew's newest manifest names a manifest as a head: unverifiable, because heads exclude manifests.")
     story.sort(key=lambda item: (item["utc"], item["wave"]))
     files = sign.carrier_files(anchor, identities, all_objects, frames)
     return {

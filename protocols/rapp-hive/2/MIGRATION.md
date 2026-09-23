@@ -39,9 +39,10 @@ try the frontier with the Hive they already have.
      --name "<Hive name>" --out plan.json
    ```
 
-   The declaration must be exactly what `rapp-hive/1` accepts: the first frame
-   of the Mother Hive stream (`stream_id` = `hive_rappid`), signed by the one
-   owner it declares. The plan's anchor keeps its `world_id`, names that owner as
+   The declaration must be exactly what `rapp-hive/1` accepts: a payload that
+   passes every `rapp-hive/1` declaration rule, as the first frame of the Mother
+   Hive stream (`stream_id` = `hive_rappid`), signed by the one owner it
+   declares. The plan's anchor keeps its `world_id`, names that owner as
    the steward founder, and pins a version 1 **steward policy** whose only
    decider is the steward (`"deciders": [<owner>]`): the steward alone admits,
    adopts lenses and changes policy, just as the owner did in `rapp-hive/1`.
@@ -56,10 +57,11 @@ try the frontier with the Hive they already have.
 
 3. **Apply, each with their own key.** The owner applies phase 1 (accept), each
    member applies phase 1 (join), then the owner applies phase 2 (grants). The
-   migrator refuses a phase before every earlier phase is carried
-   (`REFUSE_ORDER`), a step that is already carried (`REFUSE_ALREADY_APPLIED`),
-   and any plan that asks for more than accept, join and grant frames for its own
-   anchor (`REFUSE_TAMPER`):
+   migrator refuses a phase before every earlier phase is carried and in effect
+   (`REFUSE_ORDER`), a time that would sort before the steps it depends on
+   (`REFUSE_FRAME_TIME`), a step that is already carried and in effect
+   (`REFUSE_ALREADY_APPLIED`), and any plan that asks for more than accept, join
+   and grant frames for its own anchor (`REFUSE_TAMPER`):
 
    ```sh
    python3 -B -m rapp_hive2 migrate apply <folder> plan.json \

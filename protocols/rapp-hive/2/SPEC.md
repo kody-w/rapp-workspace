@@ -108,7 +108,11 @@ A folder carrier holds `HIVE.json` (a pointer to the anchor particle),
 canonical JSON. File names are transport, never identity: an object whose bytes
 do not hash to its name is refused, links and special files are refused, and paths obey the
 strictest common rules of macOS, Linux and Windows. Git, NAS, LAN, archives or QR
-chunks are equally valid carriers of the same bytes.
+chunks are equally valid carriers of the same bytes. Every carried file, and so
+every carried object, is at most 1 MiB of canonical JSON; a larger schema is
+derived from its frames and never carried. A carried object whose `schema` is
+`rapp-schema/1` **MUST** be a schema that `rapp-schema/1` could produce
+(`REFUSE_SCHEMA`).
 
 The verifier is pure: given the same bytes, every engine on every platform
 reaches the same verdict (section 12). Integrity failures refuse the whole
@@ -211,8 +215,9 @@ named in the frame, which **MUST** be the active policy (`REFUSE_STALE`).
 toward a pending request of the named identity. A request is admitted when its
 distinct granting deciders reach the pinned policy's `admit.quorum` and, if
 `admit.attested`, a member other than the requester has attested
-`key-confirmed` for the requester's RAPPID. A request whose requester is already
-a member closes without effect. Membership only grows.
+`key-confirmed` for the requester's RAPPID. Admission closes every other pending
+request of the new member, and a request whose requester is already a member
+closes without effect. Membership only grows.
 
 ### 6.3 Policy change
 
@@ -273,9 +278,11 @@ The derived state is:
 
 An anchor with `legacy.from = "rapp-hive/1"` names the frame hash of the
 `rapp-hive/1` declaration it succeeds. That frame **MUST** be carried and
-**MUST** be exactly what `rapp-hive/1` accepts: the genesis (`seq` 0) of its
-Mother Hive body stream, whose `stream_id` equals the declaration's
-`hive_rappid`, signed by the one owner it declares. Its `world_id` **MUST** equal
+**MUST** be exactly what `rapp-hive/1` accepts: its payload passes every
+`rapp-hive/1` declaration rule (section 3 of that profile, as its reference
+`validate_declaration` checks), and it is the genesis (`seq` 0) of its Mother
+Hive body stream, whose `stream_id` equals the declaration's `hive_rappid`,
+signed by the one owner it declares. Its `world_id` **MUST** equal
 the anchor's, and every founder **MUST** be a declared owner or member
 (`REFUSE_LEGACY`). `legacy.join.requests` lists the exact frame hashes of requests
 made on an older system; each **MUST** be a carried content frame, never a
@@ -288,10 +295,11 @@ new request can pose as an old one. See [`MIGRATION.md`](MIGRATION.md).
 
 `hive2.manifest` names `heads` (per stream: `seq` and `frame_hash` of the newest
 frame the signer holds, excluding manifests) and the particle of the state it
-derived at those heads. An engine re-derives the state from exactly those heads.
+derived at those heads. A head that names a manifest makes the manifest
+unverifiable. An engine re-derives the state from exactly those heads.
 A manifest is `consistent` or `divergent`; a consistent manifest either `agrees`
-with the carrier's heads or is `behind` them. A manifest whose keys are wrong is
-`malformed`; one whose heads are malformed or name frames the carrier does not
+with the carrier's heads or is `behind` them. A manifest whose keys, schema or state
+particle are wrong is `malformed`; one whose heads are malformed or name frames the carrier does not
 hold is `unverifiable` (`REFUSE_MANIFEST`). Only each member's newest manifest
 counts: the last in section 1 order, across all of its streams. There is no
 master copy: the Hive's current state is what members' manifests agree on. Under

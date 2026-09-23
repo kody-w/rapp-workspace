@@ -116,7 +116,22 @@ class ConformanceTests(unittest.TestCase):
         _main, main = evaluated(BUILT["hive"])
         self.assertEqual(verdict["state"], main["state"])
         self.assertEqual([item["code"] for item in verdict["refusals"][len(main["refusals"]):]], ["REFUSE_STALE", "REFUSE_GOVERNANCE_SHAPE", "REFUSE_GOVERNANCE_SHAPE", "REFUSE_LEGACY_STREAM"])
-        self.assertIn("unverifiable", [item["verdict"] for item in verdict["manifests"]])
+        self.assertEqual([item["verdict"] for item in verdict["manifests"]], ["unverifiable", "consistent", "malformed", "unverifiable"])
+
+    def test_admission_closes_every_request_of_the_new_member(self) -> None:
+        variant = model.build(double_request=True)
+        evaluation, _verdict = evaluated(variant["hive"])
+        self.assertEqual(len(json.loads(next(data for path, data in variant["hive"].items() if path.startswith("objects/") and json.loads(data).get("schema") == hive.ANCHOR))["legacy"]["join"]["requests"]), 2)
+        self.assertIn(slug_of("emery-kiosk"), evaluation.members)
+        self.assertEqual([request["requester"] for request in evaluation.pending.values()], [slug_of("frankie-laptop")])
+
+    def test_carried_schemas_are_exactly_what_schema_of_produces(self) -> None:
+        for frame in frames_of(BUILT["hive"]):
+            self.assertIs(schemas.check_schema(schemas.schema_of(frame))["schema"], schemas.VERSION)
+        for bad in ({"schema": schemas.VERSION}, {**schemas.schema_of(frames_of(BUILT["hive"])[0]), "payload": {"a": "text"}}, {**schemas.schema_of(frames_of(BUILT["hive"])[0]), "payload": {"a": ["string", "integer"]}}):
+            with self.assertRaises(Refusal) as refused:
+                schemas.check_schema(bad)
+            self.assertEqual(refused.exception.code, "REFUSE_SCHEMA")
 
     def test_crossings_never_invent_and_name_what_stays_behind(self) -> None:
         scratch, folder = written(BUILT["hive"])
@@ -162,6 +177,50 @@ class LegacyAndMigrationTests(unittest.TestCase):
         self.assertEqual(declaration["stream_id"], payload["hive_rappid"])
         self.assertEqual(rapp.parse_detached_jws(declaration["sig"])[0]["kid"], owner)
         self.assertEqual(rapp_hive.validate_declaration(payload), rapp1.particle(payload))
+
+    def test_the_declaration_rules_agree_with_rapp_hive_1_exactly(self) -> None:
+        import copy
+        import unicodedata
+
+        import rapp_hive  # the rapp-hive/1 reference profile, unchanged
+
+        base = next(frame for frame in frames_of(BUILT["before"]) if frame["kind"] == "hive.declaration")["payload"]
+        owner = next(item for item in base["members"] if item["role"] == "owner")
+
+        def edited(change):
+            value = copy.deepcopy(base)
+            change(value)
+            return value
+
+        mutations = [edited(lambda value, key=key: value.pop(key)) for key in sorted(base)]
+        mutations += [
+            edited(lambda value: value.update(extra=1)),
+            edited(lambda value: value.update(schema="rapp-hive/1-object")),
+            edited(lambda value: value.update(world_id="Upper")),
+            edited(lambda value: value.update(created_utc="2026-02-30T09:00:00.000Z")),
+            edited(lambda value: value["members"].reverse()),
+            edited(lambda value: value["members"][0].update(role="owner") if value["members"][0] is not owner else value["members"][1].update(role="owner")),
+            edited(lambda value: value["members"][0].update(role=[])),
+            edited(lambda value: value["members"][0].update(area="../outside")),
+            edited(lambda value: value["members"][0].update(area="C:/x")),
+            edited(lambda value: value["members"][0].update(area="aux.txt")),
+            edited(lambda value: value["members"][0].update(area="notes.")),
+            edited(lambda value: value["rooms"][0]["members"].append("rappid:@contoso/stranger:" + "0" * 64)),
+            edited(lambda value: value["rooms"][0].update(access="public")),
+            edited(lambda value: value["channels"][0].update(role="mirror")),
+            edited(lambda value: value["channels"][0].update(writeback=False)),
+            edited(lambda value: value["channels"][0].update(locator=unicodedata.normalize("NFD", "café"))),
+            edited(lambda value: value["policy"].update(external_publication="enabled")),
+            edited(lambda value: value["members"][0].update(area="members/a--b")),
+            edited(lambda value: value.update(authority_channel_id="other")),
+        ]
+        for payload in [base, *mutations]:
+            try:
+                rapp_hive.validate_declaration(payload)
+                v1_accepts = True
+            except (ValueError, TypeError, KeyError):
+                v1_accepts = False
+            self.assertEqual(hive.v1_declaration_problem(payload) is None, v1_accepts, payload)
 
     def test_a_rapp_hive_1_legacy_names_its_declaration(self) -> None:
         anchor = json.loads(next(data for path, data in BUILT["hive"].items() if path.startswith("objects/") and json.loads(data).get("schema") == hive.ANCHOR))
@@ -211,6 +270,31 @@ class LegacyAndMigrationTests(unittest.TestCase):
             with self.assertRaises(Refusal) as refused:
                 migrate.apply(plan, folder, model.signer("avery-laptop"), phase=1, utc="2026-09-21T09:01:00.000Z")
             self.assertEqual(refused.exception.code, "REFUSE_ALREADY_APPLIED")
+
+    def test_steps_are_signed_after_what_they_depend_on(self) -> None:
+        scratch, folder = written(BUILT["before"])
+        with scratch:
+            carried = hive.load(folder)
+            records = hive.verify_frames(carried)
+            declaration = next(item.wave for item in records if item.kind == "hive.declaration")
+            plan = migrate.plan_from_rapp_hive_1(carried, records, declaration, name=model.NAME)
+            for slug, utc in (("avery-laptop", "2026-09-21T09:00:00.000Z"), ("blake-phone", "2026-09-21T09:05:00.000Z"), ("casey-tablet", "2026-09-21T09:10:00.000Z")):
+                migrate.apply(plan, folder, model.signer(slug), phase=1, utc=utc)
+            with self.assertRaises(Refusal) as refused:
+                migrate.apply(plan, folder, model.signer("avery-laptop"), phase=2, utc="2026-09-21T09:01:00.000Z")
+            self.assertEqual(refused.exception.code, "REFUSE_FRAME_TIME")
+            # A grant signed by other tooling that sorts before the join is refused by evaluation, so it never counts as applied.
+            avery = model.signer("avery-laptop")
+            carried = hive.load(folder)
+            records = hive.verify_frames(carried)
+            head = max((item.frame for item in records if item.stream == avery.stream("hive")), key=lambda frame: frame["seq"])
+            blake_join = next(item.wave for item in records if item.kind == "hive2.join" and item.owner == slug_of("blake-phone"))
+            early = avery.frame("hive2.grant", "hive", {"schema": "rapp-hive/2-grant", "anchor": plan["anchor"], "member": slug_of("blake-phone"), "request": blake_join}, "2026-09-21T09:00:30.000Z", head)
+            store.write_new_tree(folder, {sign.frame_path(early): rapp1.canonical(early)}, require_empty=False)
+            written_now = migrate.apply(plan, folder, avery, phase=2, utc="2026-09-21T09:20:00.000Z")
+            self.assertEqual(len(written_now), 2, "both grants are signed again; the refused early grant never counted")
+            _c, _r, evaluation, _v = hive.evaluate_folder(folder)
+            self.assertEqual(len(evaluation.members), 3)
 
     def test_path_b_carries_old_join_requests_without_an_override(self) -> None:
         scratch, folder = written(BUILT["before"])

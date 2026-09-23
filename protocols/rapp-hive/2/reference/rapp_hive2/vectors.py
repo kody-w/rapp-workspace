@@ -148,6 +148,26 @@ def _tampered(files: dict[str, bytes], built: dict[str, Any]) -> dict[str, dict[
     changed = dict(files)
     changed[declaration_path] = rapp1.canonical(_resigned(rapp1.parse(files[declaration_path]), model.signer("blake-phone")))
     cases["legacy-declaration-not-by-owner"] = changed
+
+    declaration = rapp1.parse(files[declaration_path])
+    anchor = rapp1.parse(files["objects/" + rapp1.parse(files["HIVE.json"])["anchor"] + ".json"])
+    payload = declaration["payload"]
+    for name, edited in (
+        ("legacy-declaration-incomplete", {key: value for key, value in payload.items() if key != "rooms"}),
+        ("legacy-declaration-malformed-role", {**payload, "members": [{**item, "role": []} if item["role"] == "viewer" or item["rappid"] == payload["members"][-1]["rappid"] else item for item in payload["members"]]}),
+    ):
+        resigned = _resigned(declaration, avery_signer, payload=edited)
+        successor = {**anchor, "legacy": {**anchor["legacy"], "declaration": resigned["frame_hash"]}}
+        changed = dict(files)
+        changed[declaration_path] = rapp1.canonical(resigned)
+        changed["objects/" + rapp1.particle(successor) + ".json"] = rapp1.canonical(successor)
+        changed["HIVE.json"] = rapp1.canonical({"schema": "rapp-hive/2-carrier", "anchor": rapp1.particle(successor)})
+        cases[name] = changed
+
+    malformed_schema = {"schema": schemas.VERSION}
+    changed = dict(files)
+    changed["objects/" + rapp1.particle(malformed_schema) + ".json"] = rapp1.canonical(malformed_schema)
+    cases["schema-object-malformed"] = changed
     return cases
 
 
@@ -161,6 +181,7 @@ def generate() -> dict[str, Any]:
         "variant-unattested": {"attest_drew": False},
         "variant-divergent-manifest": {"divergent_manifest": True},
         "variant-adversarial": {"adversarial": True},
+        "variant-double-request": {"double_request": True},
     }
     for name, options in variants.items():
         variant = built if not options else model.build(**options)

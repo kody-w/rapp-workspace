@@ -10,7 +10,9 @@ rules is recorded as a refusal and has no effect.
 from __future__ import annotations
 
 import os
+import re
 import stat
+import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -36,6 +38,14 @@ KINDS = {
 KEY_CONFIRMED = "key-confirmed"
 ALL_MEMBERS = "members"
 LEGACY_V1 = "rapp-hive/1"
+V1_DECLARATION_KEYS = {"schema", "hive_rappid", "world_id", "created_utc", "authority_channel_id", "members", "rooms", "channels", "policy"}
+V1_LABEL_RE = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?\Z")
+V1_DRIVE_RE = re.compile(r"[A-Za-z]:")
+V1_ROLES = ("owner", "member", "viewer")
+V1_ROOM_ACCESS = ("repository", "sealed")
+V1_CHANNEL_KINDS = ("github", "sharepoint", "nas", "lan", "local", "custom")
+V1_CHANNEL_ROLES = ("authority", "writable", "mirror", "cache", "backup")
+V1_PRIVACY = {"godd_sharing": "explicit", "default_godd_scope": "local-only", "external_publication": "disabled", "conflict_mode": "explicit", "default_transfer": "copy"}
 MAX_FILES = 20000
 MAX_OBJECT_BYTES = 1024 * 1024
 LABEL_RE = lensmod.ID_RE
@@ -243,20 +253,108 @@ def verify_frames(carried: Carried) -> list[Record]:
 # ---------------------------------------------------------------- evaluation
 
 
+def _v1_text(value: Any, maximum: int = 256) -> bool:
+    return type(value) is str and 0 < len(value) <= maximum and unicodedata.normalize("NFC", value) == value
+
+
+def _v1_label(value: Any) -> bool:
+    return _v1_text(value, 64) and V1_LABEL_RE.fullmatch(value) is not None
+
+
+def _v1_path(value: Any) -> bool:
+    """rapp-hive/1 relative_path: a canonical, relative, portable POSIX path."""
+    if not _v1_text(value, 1024) or value.startswith("/") or "\\" in value or "\x7f" in value or V1_DRIVE_RE.match(value):
+        return False
+    return all(
+        part not in ("", ".", "..") and not part.endswith((" ", ".")) and ":" not in part and all(ord(char) >= 32 for char in part) and part.split(".", 1)[0].upper() not in store.WINDOWS_RESERVED
+        for part in value.split("/")
+    )
+
+
+def _v1_strings(value: Any) -> Any:
+    if type(value) is str:
+        yield value
+    elif type(value) is dict:
+        for key, item in value.items():
+            yield key
+            yield from _v1_strings(item)
+    elif type(value) is list:
+        for item in value:
+            yield from _v1_strings(item)
+
+
+def _v1_sorted_unique(values: list[str]) -> bool:
+    return values == sorted(set(values))
+
+
+def v1_declaration_problem(payload: dict[str, Any]) -> str | None:
+    """Why ``payload`` is not a declaration rapp-hive/1 accepts (its reference ``validate_declaration``), or None."""
+    if any(unicodedata.normalize("NFC", text) != text for text in _v1_strings(payload)):
+        return "Every string of a rapp-hive/1 declaration is NFC."
+    if set(payload) != V1_DECLARATION_KEYS or payload["schema"] != "rapp-hive/1-declaration":
+        return "A rapp-hive/1 declaration has exactly its nine keys and its schema."
+    if not _is_rappid(payload["hive_rappid"]) or not _v1_label(payload["world_id"]) or not rapp1.utc_valid(payload["created_utc"]) or not _v1_label(payload["authority_channel_id"]):
+        return "hive_rappid, world_id, created_utc and authority_channel_id follow rapp-hive/1."
+    members = payload["members"]
+    if type(members) is not list or not members:
+        return "declaration.members is a nonempty list."
+    for member in members:
+        if type(member) is not dict or set(member) != {"rappid", "role", "area"} or not _is_rappid(member["rappid"]) or type(member["role"]) is not str or member["role"] not in V1_ROLES or not _v1_path(member["area"]):
+            return "Every declared member is exactly {rappid, role, area} with an owner, member or viewer role."
+    member_ids = [member["rappid"] for member in members]
+    if not _v1_sorted_unique(member_ids) or sum(member["role"] == "owner" for member in members) != 1:
+        return "Members are unique, sorted by RAPPID, and exactly one is the owner."
+    rooms = payload["rooms"]
+    if type(rooms) is not list or not rooms:
+        return "declaration.rooms is a nonempty list."
+    for room in rooms:
+        if type(room) is not dict or set(room) != {"id", "area", "members", "access"} or not _v1_label(room["id"]) or not _v1_path(room["area"]) or type(room["access"]) is not str or room["access"] not in V1_ROOM_ACCESS:
+            return "Every room is exactly {id, area, members, access} with repository or sealed access."
+        audience = room["members"]
+        if type(audience) is not list or not audience or not all(_is_rappid(item) for item in audience) or not _v1_sorted_unique(audience) or not set(audience) <= set(member_ids):
+            return "A room's members are a nonempty, sorted, unique list of declared members."
+    if not _v1_sorted_unique([room["id"] for room in rooms]):
+        return "Rooms are unique and sorted by id."
+    channels = payload["channels"]
+    if type(channels) is not list or not channels:
+        return "declaration.channels is a nonempty list."
+    authorities = []
+    for channel in channels:
+        if (
+            type(channel) is not dict
+            or set(channel) != {"id", "kind", "role", "locator", "writeback"}
+            or not _v1_label(channel["id"])
+            or type(channel["kind"]) is not str
+            or channel["kind"] not in V1_CHANNEL_KINDS
+            or type(channel["role"]) is not str
+            or channel["role"] not in V1_CHANNEL_ROLES
+            or not _v1_text(channel["locator"], 2048)
+            or type(channel["writeback"]) is not bool
+        ):
+            return "Every channel is exactly {id, kind, role, locator, writeback} with a supported kind and role."
+        if channel["role"] == "authority":
+            if not channel["writeback"]:
+                return "The authority channel supports writeback."
+            authorities.append(channel["id"])
+    if not _v1_sorted_unique([channel["id"] for channel in channels]) or authorities != [payload["authority_channel_id"]]:
+        return "Channels are unique and sorted by id, with exactly the one named authority channel."
+    policy = payload["policy"]
+    if type(policy) is not dict or set(policy) != set(V1_PRIVACY) or any(policy[key] != value or type(policy[key]) is not str for key, value in V1_PRIVACY.items()):
+        return "The rapp-hive/1 privacy policy has its fixed values."
+    return None
+
+
 def check_legacy_declaration(record: Record) -> dict[str, Any]:
-    """A rapp-hive/1 declaration exactly as rapp-hive/1 accepts it: the genesis of its Mother Hive body
-    stream (``stream_id`` = ``hive_rappid``), signed by the one owner it declares."""
+    """A rapp-hive/1 declaration exactly as rapp-hive/1 accepts it: its payload passes rapp-hive/1's declaration
+    rules, and it is the genesis of its Mother Hive body stream (``stream_id`` = ``hive_rappid``), signed by
+    the one owner it declares."""
     payload = record.frame["payload"]
-    members = payload.get("members")
-    if record.kind != "hive.declaration" or payload.get("schema") != "rapp-hive/1-declaration" or type(members) is not list or type(payload.get("world_id")) is not str:
-        raise Refusal("REFUSE_LEGACY", "The legacy declaration is not a rapp-hive/1 declaration.")
-    roles: dict[str, list[str]] = {"owner": [], "member": [], "viewer": []}
-    for item in members:
-        if type(item) is not dict or type(item.get("rappid")) is not str or item.get("role") not in roles:
-            raise Refusal("REFUSE_LEGACY", "Every declared member is a RAPPID with an owner, member or viewer role.")
-        roles[item["role"]].append(item["rappid"])
-    if len(roles["owner"]) != 1:
-        raise Refusal("REFUSE_LEGACY", "A rapp-hive/1 declaration has exactly one owner.")
+    if record.kind != "hive.declaration":
+        raise Refusal("REFUSE_LEGACY", "The legacy declaration is not a hive.declaration frame.")
+    problem = v1_declaration_problem(payload)
+    if problem is not None:
+        raise Refusal("REFUSE_LEGACY", f"Not a declaration rapp-hive/1 accepts: {problem}")
+    roles: dict[str, list[str]] = {role: [item["rappid"] for item in payload["members"] if item["role"] == role] for role in V1_ROLES}
     if not record.legacy or record.stream != payload.get("hive_rappid") or record.seq != 0:
         raise Refusal("REFUSE_LEGACY", "A rapp-hive/1 declaration is the genesis of its Mother Hive stream (stream_id = hive_rappid).")
     if record.owner != roles["owner"][0]:
@@ -266,7 +364,7 @@ def check_legacy_declaration(record: Record) -> dict[str, Any]:
         "members": sorted(set(roles["member"])),
         "viewers": sorted(set(roles["viewer"])),
         "world_id": payload["world_id"],
-        "privacy": payload.get("policy") if type(payload.get("policy")) is dict else {},
+        "privacy": payload["policy"],
     }
 
 
@@ -326,7 +424,7 @@ class Evaluation:
         self.manifests: list[Record] = []
         self.other_hives: list[str] = []
         self.schemas: dict[str, dict[str, Any]] = {
-            key: value for key, value in carried.objects.items() if type(value) is dict and value.get("schema") == schemas.VERSION
+            key: schemas.check_schema(value) for key, value in carried.objects.items() if type(value) is dict and value.get("schema") == schemas.VERSION
         }
         self.frame_schema: dict[str, str] = {}
         self.records = records
@@ -397,6 +495,9 @@ class Evaluation:
             }
             del self.pending[key]
             self.events.append({"utc": None, "wave": key, "event": "admitted"})
+            for other in sorted(self.pending):
+                if self.pending.get(other, {}).get("requester") == request["requester"]:
+                    self._try_admit(other)
 
     def _schema(self, record: Record) -> str:
         if record.wave not in self.frame_schema:
@@ -655,6 +756,8 @@ def _at_heads(records: list[Record], heads: dict[str, Any]) -> list[Record]:
         found = by_stream_seq.get((stream_id, head["seq"]))
         if found is None or found.wave != head["frame_hash"]:
             raise Refusal("REFUSE_MANIFEST", "A manifest head names a frame this carrier does not hold.")
+        if found.kind == "hive2.manifest":
+            raise Refusal("REFUSE_MANIFEST", "Manifest heads exclude manifests.")
     return [record for record in records if record.stream in heads and record.seq <= heads[record.stream]["seq"] and record.kind != "hive2.manifest"]
 
 
@@ -672,7 +775,7 @@ def manifests(carried: Carried, records: list[Record], evaluation: Evaluation) -
     for owner in sorted(latest):
         record = latest[owner]
         payload = record.frame["payload"]
-        if set(payload) != KINDS["hive2.manifest"][1] or type(payload["heads"]) is not dict or type(payload["state"]) is not str:
+        if set(payload) != KINDS["hive2.manifest"][1] or payload["schema"] != KINDS["hive2.manifest"][0] or type(payload["heads"]) is not dict or not _is_hex(payload["state"]):
             results.append({"wave": record.wave, "by": owner, "verdict": "malformed"})
             continue
         try:
