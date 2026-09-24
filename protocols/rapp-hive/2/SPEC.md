@@ -3,7 +3,7 @@
 ## Co-equal Hives of sovereign streams, schema lenses and portable manifests
 
 **Protocol identifier:** `rapp-hive/2`
-**Status:** Experimental frontier draft, canary ring. Not for production activation.
+**Status:** Frozen research record (2026-09-23): kept for its lessons; never activate. See [`FROZEN.md`](FROZEN.md).
 **Parent:** [`rapp/1`](https://github.com/kody-w/rapp-1/blob/main/SPEC.md)
 **Predecessor:** [`rapp-hive/1`](../1/SPEC.md), which remains valid and unchanged
 **Companion:** [`rapp-schema/1`](../../rapp-schema/1/SPEC.md)
