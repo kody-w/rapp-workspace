@@ -4,14 +4,14 @@
   "parent": {
     "profile": "rapp-work/1",
     "repository": "https://github.com/kody-w/rapp-1",
-    "commit": "591e014ad39e223b00ab343ae26e5d9a867ebeee",
+    "commit": "e657140bf583e7caacea096af2f653cc8621f1a2",
     "path": "protocols/rapp-work/1/SPEC.md",
     "spec_sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e"
   },
   "workspace_sibling": {
     "profile": "rapp-workspace/1",
     "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
-    "manifest_sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370",
+    "manifest_sha256": "3c59224a8641a827403779382abb70114ff53f3f884e2a0e738ed042b51582d3",
     "identity_unchanged": true,
     "normative_bytes_unchanged": true
   },
@@ -51,12 +51,24 @@
       "pin": "591e014ad39e223b00ab343ae26e5d9a867ebeee",
       "sequence": 2,
       "spec_sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e",
+      "status": "migration-source-only",
+      "fresh_install": false,
+      "profile_artifact": {
+        "path": "history/591e014ad39e223b00ab343ae26e5d9a867ebeee/profile.json",
+        "sha256": "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc",
+        "bytes": 2342
+      }
+    },
+    {
+      "pin": "e657140bf583e7caacea096af2f653cc8621f1a2",
+      "sequence": 3,
+      "spec_sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e",
       "status": "current",
       "fresh_install": true,
       "profile_artifact": null
     }
   ],
-  "current_pin": "591e014ad39e223b00ab343ae26e5d9a867ebeee",
+  "current_pin": "e657140bf583e7caacea096af2f653cc8621f1a2",
   "authority": {
     "discovery_only": true,
     "hive_publication": false,

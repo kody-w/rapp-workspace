@@ -15,14 +15,17 @@ import scaffold
 import schema_source
 
 
-WORKSPACE_MANIFEST_SHA256 = "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370"
+WORKSPACE_MANIFEST_SHA256 = "3c59224a8641a827403779382abb70114ff53f3f884e2a0e738ed042b51582d3"
+WORKSPACE_PREDECESSOR_MANIFEST_SHA256 = "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370"
 WORKSPACE_SPEC_SHA256 = "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab"
 LEGACY_PIN = "4b4fc213c352de9157858041e57ab72bb5e17551"
 PREVIOUS_PIN = "1c0e0b7c33a857e3f5e99c64355a8b8f970a83bc"
+DISPLACED_PIN = "591e014ad39e223b00ab343ae26e5d9a867ebeee"
 RAPPID = "rappid:@fixture/workspace:" + "1" * 64
 HIVE_RAPPID = "rappid:@fixture/hive:" + "2" * 64
 NOW = "2026-09-18T15:00:00.000Z"
 PRIOR_RELEASE = ROOT / "fixtures" / "prior-release"
+PRIOR_RELEASE_DISPLACED = ROOT / "fixtures" / "prior-release-591e014"
 
 
 def require(condition: bool, message: str) -> None:
@@ -51,6 +54,124 @@ def write_workspace(path: Path, suffix: str) -> dict[str, bytes]:
 def assert_native(path: Path, expected: dict[str, bytes]) -> None:
     for name, raw in expected.items():
         require((path / name).read_bytes() == raw, f"native workspace byte changed: {name}")
+
+
+def prepared_fixture(source: Path, destination: Path) -> Path:
+    shutil.copytree(source, destination)
+    destination.chmod(0o700)
+    sidecar = destination / ".rapp-work"
+    for directory in [sidecar, *[path for path in sidecar.rglob("*") if path.is_dir()]]:
+        directory.chmod(0o700)
+    for path in sidecar.rglob("*"):
+        if path.is_file():
+            path.chmod(0o600)
+    return destination
+
+
+def fixture_record_matches(source: Path, pin: str) -> None:
+    record = scaffold.strict_json((source / "fixture.json").read_bytes(), "fixture.json")
+    sidecar = source / ".rapp-work"
+    install = scaffold.strict_json((sidecar / "install.json").read_bytes(), "fixture install")
+    digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+    require(
+        record["schema"] == "rapp-work-sdk-prior-release-fixture/1"
+        and record["pin"] == pin == install["installed_pin"] == install["current_pin"]
+        and record["workspace_identity_sha256"] == digest(source / "rappid.json")
+        and record["profile_sha256"] == digest(sidecar / "generations" / pin / "profile.json")
+        and record["discovery_sha256"] == digest(sidecar / "generations" / pin / "discovery.json")
+        and record["install_sha256"] == digest(sidecar / "install.json")
+        and record["generation_sha256"] == install["current_generation_sha256"],
+        f"prior-release fixture record does not describe its bytes: {pin}",
+    )
+
+
+def prior_release_update(source: Path, historical: Path, pin: str) -> int:
+    checks = 0
+    prepared_fixture(source, historical)
+    historical_expected = {
+        path.relative_to(historical).as_posix(): path.read_bytes()
+        for path in historical.rglob("*")
+        if path.is_file() and ".rapp-work" not in path.parts
+    }
+    old_profile_path = historical / ".rapp-work" / "generations" / pin / "profile.json"
+    old_discovery_path = historical / ".rapp-work" / "generations" / pin / "discovery.json"
+    old_profile = old_profile_path.read_bytes()
+    old_discovery = old_discovery_path.read_bytes()
+    old_state = scaffold.verify_workspace(historical)
+    require(
+        old_state["current_pin"] == pin
+        and hashlib.sha256(old_profile).hexdigest() == scaffold._pin_profile_sha256(pin)
+        and old_profile == scaffold._pin_profile_raw(pin)
+        and old_profile != scaffold.PROFILE_RAW,
+        "retained prior-release sidecar is not an actual older profile",
+    )
+    checks += 1
+    plan = scaffold.plan_update(historical, from_pin=pin, to_pin=scaffold.CURRENT_PIN)
+    require(
+        plan["plan"]["from_profile_sha256"] == scaffold._pin_profile_sha256(pin)
+        and plan["plan"]["target_profile_sha256"] == scaffold.PROFILE_SHA256,
+        "forward plan does not bind source and target profile bytes",
+    )
+    before_install = (historical / ".rapp-work" / "install.json").read_bytes()
+    try:
+        scaffold.update_workspace(
+            historical,
+            from_pin=pin,
+            to_pin=scaffold.CURRENT_PIN,
+            plan_digest="0" * 64,
+            now=NOW,
+        )
+    except scaffold.Refusal:
+        pass
+    else:
+        raise scaffold.Refusal("wrong update plan digest was accepted")
+    require(
+        (historical / ".rapp-work" / "install.json").read_bytes() == before_install
+        and not (historical / ".rapp-work" / "generations" / scaffold.CURRENT_PIN).exists(),
+        "refused update plan digest left partial state",
+    )
+    checks += 1
+    updated = scaffold.update_workspace(
+        historical,
+        from_pin=pin,
+        to_pin=scaffold.CURRENT_PIN,
+        plan_digest=plan["plan_digest"],
+        now=NOW,
+    )
+    require(updated["status"] == "updated", "forward update did not activate")
+    assert_native(historical, historical_expected)
+    active_install = scaffold.strict_json(
+        (historical / ".rapp-work" / "install.json").read_bytes(),
+        "updated fixture install",
+    )
+    require(
+        active_install["profile_sha256"] == scaffold.PROFILE_SHA256
+        and active_install["last_update_plan_digest"] == plan["plan_digest"]
+        and old_profile_path.read_bytes() == old_profile
+        and old_discovery_path.read_bytes() == old_discovery
+        and (
+            historical
+            / ".rapp-work"
+            / "generations"
+            / scaffold.CURRENT_PIN
+            / "profile.json"
+        ).read_bytes()
+        == scaffold.PROFILE_RAW,
+        "forward update did not preserve source artifacts and activate target profile bytes",
+    )
+    checks += 1
+    try:
+        scaffold.plan_update(
+            historical,
+            from_pin=scaffold.CURRENT_PIN,
+            to_pin=pin,
+        )
+    except scaffold.Refusal:
+        pass
+    else:
+        raise scaffold.Refusal("downgrade plan was accepted")
+    checks += 1
+    return checks
 
 
 def discovery(identity: dict, pin: str) -> dict:
@@ -146,40 +267,22 @@ def run(output: Path) -> dict:
     ), "native content was copied into the sidecar")
     checks += 1
 
-    historical = destination / "historical"
-    shutil.copytree(PRIOR_RELEASE, historical)
-    historical.chmod(0o700)
-    historical_sidecar = historical / ".rapp-work"
-    for directory in [
-        historical_sidecar,
-        *[path for path in historical_sidecar.rglob("*") if path.is_dir()],
-    ]:
-        directory.chmod(0o700)
-    for path in historical_sidecar.rglob("*"):
-        if path.is_file():
-            path.chmod(0o600)
-    historical_expected = {
-        path.relative_to(historical).as_posix(): path.read_bytes()
-        for path in historical.rglob("*")
-        if path.is_file() and ".rapp-work" not in path.parts
-    }
-    old_profile_path = (
-        historical / ".rapp-work" / "generations" / LEGACY_PIN / "profile.json"
-    )
-    old_discovery_path = (
-        historical / ".rapp-work" / "generations" / LEGACY_PIN / "discovery.json"
-    )
-    old_profile = old_profile_path.read_bytes()
-    old_discovery = old_discovery_path.read_bytes()
-    old_state = scaffold.verify_workspace(historical)
     require(
-        old_state["current_pin"] == LEGACY_PIN
-        and hashlib.sha256(old_profile).hexdigest()
-        == scaffold._pin_profile_sha256(LEGACY_PIN)
-        and old_profile != scaffold.PROFILE_RAW,
-        "retained prior-release sidecar is not an actual older profile",
+        scaffold.PROFILE["workspace_sibling"]
+        == {
+            "profile": "rapp-workspace/1",
+            "spec_sha256": WORKSPACE_SPEC_SHA256,
+            "manifest_sha256": WORKSPACE_MANIFEST_SHA256,
+            "identity_unchanged": True,
+            "normative_bytes_unchanged": True,
+        },
+        "current profile does not pin the current Workspace/1 sibling",
     )
     checks += 1
+    for source, pin in ((PRIOR_RELEASE, LEGACY_PIN), (PRIOR_RELEASE_DISPLACED, DISPLACED_PIN)):
+        fixture_record_matches(source, pin)
+        checks += 1
+    checks += prior_release_update(PRIOR_RELEASE, destination / "historical", LEGACY_PIN)
     previous_profile = scaffold.strict_json(
         scaffold._pin_profile_raw(PREVIOUS_PIN),
         "retained previous profile",
@@ -193,70 +296,26 @@ def run(output: Path) -> dict:
         "immediate previous parent pin is not retained as a migration source",
     )
     checks += 1
-    plan = scaffold.plan_update(
-        historical,
-        from_pin=LEGACY_PIN,
-        to_pin=scaffold.CURRENT_PIN,
+    displaced_profile = scaffold.strict_json(
+        scaffold._pin_profile_raw(DISPLACED_PIN),
+        "retained displaced profile",
     )
     require(
-        plan["plan"]["from_profile_sha256"]
-        == scaffold._pin_profile_sha256(LEGACY_PIN)
-        and
-        plan["plan"]["target_profile_sha256"] == scaffold.PROFILE_SHA256,
-        "forward plan does not bind source and target profile bytes",
-    )
-    try:
-        scaffold.update_workspace(
-            historical,
-            from_pin=LEGACY_PIN,
-            to_pin=scaffold.CURRENT_PIN,
-            plan_digest="0" * 64,
-            now=NOW,
-        )
-    except scaffold.Refusal:
-        pass
-    else:
-        raise scaffold.Refusal("wrong update plan digest was accepted")
-    checks += 1
-    updated = scaffold.update_workspace(
-        historical,
-        from_pin=LEGACY_PIN,
-        to_pin=scaffold.CURRENT_PIN,
-        plan_digest=plan["plan_digest"],
-        now=NOW,
-    )
-    require(updated["status"] == "updated", "forward update did not activate")
-    assert_native(historical, historical_expected)
-    active_install = scaffold.strict_json(
-        (historical / ".rapp-work" / "install.json").read_bytes(),
-        "updated fixture install",
-    )
-    require(
-        active_install["profile_sha256"] == scaffold.PROFILE_SHA256
-        and old_profile_path.read_bytes() == old_profile
-        and old_discovery_path.read_bytes() == old_discovery
-        and (
-            historical
-            / ".rapp-work"
-            / "generations"
-            / scaffold.CURRENT_PIN
-            / "profile.json"
-        ).read_bytes()
-        == scaffold.PROFILE_RAW,
-        "forward update did not preserve source artifacts and activate target profile bytes",
+        scaffold.PINS[DISPLACED_PIN]["status"] == "migration-source-only"
+        and scaffold.PINS[DISPLACED_PIN]["fresh_install"] is False
+        and displaced_profile["current_pin"] == DISPLACED_PIN
+        and displaced_profile["parent"]["repository"] == "https://github.com/kody-w/rapp-1"
+        and displaced_profile["parent"]["spec_sha256"] == scaffold.PARENT_PIN["spec_sha256"]
+        and displaced_profile["workspace_sibling"]["manifest_sha256"]
+        == WORKSPACE_PREDECESSOR_MANIFEST_SHA256,
+        "displaced parent pin is not retained as a migration source",
     )
     checks += 1
-    try:
-        scaffold.plan_update(
-            historical,
-            from_pin=scaffold.CURRENT_PIN,
-            to_pin=LEGACY_PIN,
-        )
-    except scaffold.Refusal:
-        pass
-    else:
-        raise scaffold.Refusal("downgrade plan was accepted")
-    checks += 1
+    checks += prior_release_update(
+        PRIOR_RELEASE_DISPLACED,
+        destination / "historical-591e014",
+        DISPLACED_PIN,
+    )
 
     conflict = destination / "conflict"
     write_workspace(conflict, "9")

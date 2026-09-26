@@ -1,0 +1,246 @@
+{
+  "schema": "rapp-workspace-file-manifest/1",
+  "profile": "rapp-workspace/1",
+  "brand": "RAPP Workspace/1",
+  "parent": "rapp/1",
+  "authority": true,
+  "status": "core",
+  "signed_activation": false,
+  "assurances": [
+    "rapp_integrity",
+    "observation",
+    "semantic_fidelity",
+    "current_authorization",
+    "safe_deployment"
+  ],
+  "normative": [
+    {
+      "path": "SPEC.md",
+      "sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
+      "bytes": 31443
+    },
+    {
+      "path": "safety-matrix.json",
+      "sha256": "838b25dc46d881671d84a5d9f5cb10350fab3070f0e326e606dd420755f0beb9",
+      "bytes": 7665
+    },
+    {
+      "path": "schemas/activation-document.schema.json",
+      "sha256": "9a746ecdf1327e5b23fc7ee9d4c478bc75ec9b8c05ce88f7846f3e19bc4d307e",
+      "bytes": 1954
+    },
+    {
+      "path": "schemas/adoption-record.schema.json",
+      "sha256": "b9c89905c2144746ec089d87e1c57d8a751cab5c4cfc481ccdca442eade6d9a8",
+      "bytes": 1788
+    },
+    {
+      "path": "schemas/adoption-request.schema.json",
+      "sha256": "e776bbc0f78ddcdeb9e577aef6eb17a18b10cf9858c45c08f969e2c8f01cd005",
+      "bytes": 1869
+    },
+    {
+      "path": "schemas/catalog-shard.schema.json",
+      "sha256": "c786ef2787047324b83f140d9f98e78b9dcb9c93a3efb8e892732646c88a86c9",
+      "bytes": 2763
+    },
+    {
+      "path": "schemas/common.schema.json",
+      "sha256": "961e0d3565973cee3cb20de531a045348cfb0e190ebac281c4c266bcc38c270f",
+      "bytes": 12089
+    },
+    {
+      "path": "schemas/current_authorization-receipt.schema.json",
+      "sha256": "97b002c935497a47c302cb54917e808887314a79daf22a758f92a28e464ee213",
+      "bytes": 2229
+    },
+    {
+      "path": "schemas/derivation.schema.json",
+      "sha256": "ff1b4bf07765fee31a219d2e821489bd8411aed0f15df16f0255f95009828ce9",
+      "bytes": 3199
+    },
+    {
+      "path": "schemas/lens-request.schema.json",
+      "sha256": "72c77b6f35bd0a70ebb1fb42cbc3d5bccbf1cb6276f498b329e681620d534117",
+      "bytes": 2044
+    },
+    {
+      "path": "schemas/observation-receipt.schema.json",
+      "sha256": "455c9b8a0e8d41c3528ba92dea21b87a979b208e3ec9ff1596a1714f324dd8ff",
+      "bytes": 2199
+    },
+    {
+      "path": "schemas/observation.schema.json",
+      "sha256": "b92db603893f13843b68f53ebb8c10ed48442248362c51aa5cb98eadbbd73548",
+      "bytes": 2045
+    },
+    {
+      "path": "schemas/organization-assessment.schema.json",
+      "sha256": "5060614fbee8128fbbd551a2d164e2c656db3c5db7432cca09d357afa0dbba23",
+      "bytes": 4013
+    },
+    {
+      "path": "schemas/outcome-resolution.schema.json",
+      "sha256": "c7013444e45618dcf0c9877c89368fa59148b23a46facfdadd452f1cb287c6b3",
+      "bytes": 1831
+    },
+    {
+      "path": "schemas/rapp_integrity-receipt.schema.json",
+      "sha256": "c8abf59d7f66b622d318b36211ecd6d1f82517f33825bb18d06d6973ac51c89d",
+      "bytes": 2208
+    },
+    {
+      "path": "schemas/refusal.schema.json",
+      "sha256": "e75fba1ee3fd188cb27eea97a99e3dc58034457e78423662a97368f0ef7bfd8d",
+      "bytes": 1743
+    },
+    {
+      "path": "schemas/safe_deployment-receipt.schema.json",
+      "sha256": "326bfc952395ab7886db65c9210077249daab1733fe92240a51a566fd61e7eb0",
+      "bytes": 2211
+    },
+    {
+      "path": "schemas/scheduler-exhaust.schema.json",
+      "sha256": "1e46559455d3d00f4e2ba5a578b92e9755eb2f066caf776d775ff28202d44045",
+      "bytes": 2136
+    },
+    {
+      "path": "schemas/seed.schema.json",
+      "sha256": "16ea66c87f2729af4980dbc434ef81b9d2da1d4ebd5878d4d444f5ac95ca2b5a",
+      "bytes": 1398
+    },
+    {
+      "path": "schemas/semantic_fidelity-receipt.schema.json",
+      "sha256": "bdcf18e1838c9112ea4b34e83c9caffa69411da3179fc3a679f5e591f231e589",
+      "bytes": 2217
+    },
+    {
+      "path": "schemas/subscription-proposal.schema.json",
+      "sha256": "9044caa6ac96279d0141ec27e0ee2b5892be685e72138288adef6890cbc3d304",
+      "bytes": 2223
+    },
+    {
+      "path": "schemas/workspace-binding.schema.json",
+      "sha256": "877c789b92821c1a0434f3c3131de9cbc31818c9dbafacccacdc6ea9d1bf76e6",
+      "bytes": 2116
+    },
+    {
+      "path": "schemas/workspace-composite.schema.json",
+      "sha256": "67ccf539c34a1dbc3b90cf5080178274c9415215fa2800503dbed54fff6d5626",
+      "bytes": 3439
+    }
+  ],
+  "reference": [
+    {
+      "path": "reference/common.py",
+      "sha256": "93535b9ed69f55919fa0bc74c855112db52cdf65cc483ce9f188b08aab314f10",
+      "bytes": 10696
+    },
+    {
+      "path": "reference/composite_work.py",
+      "sha256": "19a4c89ac8d853aeefeeb972d86af84c2e8e4c8a2beededafa5aa5d20e190382",
+      "bytes": 3942
+    },
+    {
+      "path": "reference/conformance.py",
+      "sha256": "82554a9b12a65dcefdf23f8b7d5bd3357e7820a7c662cafe2aeb8644d473cbfd",
+      "bytes": 2368
+    },
+    {
+      "path": "reference/pins.py",
+      "sha256": "abb4c82149b40e7782a024847b3a2f2ac37cdec1ee93413a335fd247babb6048",
+      "bytes": 5075
+    },
+    {
+      "path": "reference/safe_demo.py",
+      "sha256": "79e688a5f62ae60fd3a61a0513617641d5c89efa9d2d95405a2d23fdcd98b18a",
+      "bytes": 9114
+    },
+    {
+      "path": "reference/safe_kernel.py",
+      "sha256": "140253ef275590d09670bf089e49f2ff54e57600706c177b6e7fe47692278b41",
+      "bytes": 108154
+    },
+    {
+      "path": "reference/schema_source.py",
+      "sha256": "ed90646aa2bfd33fe08457313ca46cf6469e182c59925ce38e105c49bdf78f8a",
+      "bytes": 12203
+    },
+    {
+      "path": "reference/total_eval.py",
+      "sha256": "08027edd61f663309d0447c31425723815c2a10742e472ee92b829cb1bf63da2",
+      "bytes": 651
+    }
+  ],
+  "repository_evidence": [
+    {
+      "path": "README.md",
+      "sha256": "d35441bb54b21e78ff3dc92f46c1c31ad61e1934a73898b7bbe5e55c14eaae9d",
+      "bytes": 9857
+    },
+    {
+      "path": "SPEC.md",
+      "sha256": "6e79dfa4cf3723e25b299dc2078a683761024c122c6653f575124f4a65db044e",
+      "bytes": 2176
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "e22d03690496348c1d999ac1ee20aa16b4c8ceb27ecc3522c1e2ee877e5a2bb7",
+      "bytes": 11128
+    },
+    {
+      "path": "tools/frame_lens.py",
+      "sha256": "ecf1d51a61fd61e6039532dfe8dddb17503568748bdb984c37bcc0de9a33e4ee",
+      "bytes": 1002
+    },
+    {
+      "path": "tests/test_safe_kernel.py",
+      "sha256": "f43a52ba70800bc6fdf0dec928ef2b8f7171aeb8e25a55f0759cdb77fd67a777",
+      "bytes": 60174
+    },
+    {
+      "path": "tests/test_p0_hardening.py",
+      "sha256": "df528adcac20c048a9cce775067e6771076a0fee50b363269e21612289335157",
+      "bytes": 39062
+    },
+    {
+      "path": "protocols/rapp-workspace/1/reference/README.md",
+      "sha256": "f34d8e1e1e3bf4d24fd07d17ae2cd44c78d4655d9727a12547e471a6e20b6ece",
+      "bytes": 10421
+    },
+    {
+      "path": "protocols/rapp-workspace/prototypes/README.md",
+      "sha256": "dc36783a729887f5379c67cbe7a6d7132b607b046bc110cbd6ef01fcfa0e8aa2",
+      "bytes": 878
+    },
+    {
+      "path": "protocols/README.md",
+      "sha256": "870b7d6bd4516fe45d5c0204754fa964b968b84b09dec8184bd339daece47503",
+      "bytes": 3488
+    },
+    {
+      "path": ".github/skills/rapp-workspace/SKILL.md",
+      "sha256": "e22d03690496348c1d999ac1ee20aa16b4c8ceb27ecc3522c1e2ee877e5a2bb7",
+      "bytes": 11128
+    },
+    {
+      "path": ".github/skills/autonomous-rapp-estate-manager/SKILL.md",
+      "sha256": "fa25152be019916e61ed31669b594d0b8f7836a19054dec9d8d34b80dcb0b2c6",
+      "bytes": 5945
+    }
+  ],
+  "provenance": {
+    "path": "provenance.json",
+    "sha256": "f2b830739105b45cf04ab1780a5d3fa6cabe877bd1bf966a51cd4b1505c220af",
+    "bytes": 4329
+  },
+  "prototype_catalog": {
+    "path": "protocols/rapp-workspace/prototypes/index.json",
+    "sha256": "6f4b1c747659c883e1657d8547d31483c02a74205a5b0f522f35c5eefe1a3443",
+    "bytes": 1557
+  },
+  "authority_boundary": "capability/adoption controller is external to all learned/received data",
+  "live_activation": "exact-document-external-verifier-required",
+  "production_key_custody": "external-unqualified",
+  "synthetic_activation": "explicit-labeled-fixtures-only"
+}

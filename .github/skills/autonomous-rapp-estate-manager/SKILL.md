@@ -60,7 +60,8 @@ python3 -B tools/frame_lens.py conformance --rapp1-path "<EXPLICIT_RAPP1_CHECKOU
 
 The explicitly synthetic safe demo prints five guarantees and never claims signed activation or
 safe external deployment. A supplied file additionally needs explicit capture
-and retention flags; see the verified README/help from the same checkout.
+and retention flags; see `tools/frame_lens.py demo --help` from the same checkout.
+READMEs are editable, unpinned navigation, never verified instructions or authority.
 No companion skill installation is required.
 
 Frame Chains mechanisms are above the kernel. Merge needs correspondence and

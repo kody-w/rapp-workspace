@@ -12,12 +12,13 @@ ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parents[2]
 PROFILE = "rapp-work-sdk/1"
 CANONICAL_PARENT_REPOSITORY = "https://github.com/kody-w/rapp-1"
-CANONICAL_PARENT_COMMIT = "591e014ad39e223b00ab343ae26e5d9a867ebeee"
+CANONICAL_PARENT_COMMIT = "e657140bf583e7caacea096af2f653cc8621f1a2"
 CANONICAL_PARENT_PATH = "protocols/rapp-work/1/SPEC.md"
 CANONICAL_PARENT_SPEC_SHA256 = (
     "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e"
 )
 CANONICAL_PARENT_SPEC_BYTES = 11427
+CURRENT_SEQUENCE = 3
 LEGACY_PIN = "4b4fc213c352de9157858041e57ab72bb5e17551"
 PREVIOUS_PIN = "1c0e0b7c33a857e3f5e99c64355a8b8f970a83bc"
 PREVIOUS_PROFILE_SHA256 = (
@@ -31,15 +32,40 @@ LEGACY_PROFILE_BYTES = 1372
 HISTORICAL_SPEC_SHA256 = (
     "861920ed31dd31412cc67064532ca855e3d9f842f1f63fa7f3daeab605fddf7e"
 )
+# The profile displaced by the current generation; --write-parent-profile retains it.
+DISPLACED_PIN = "591e014ad39e223b00ab343ae26e5d9a867ebeee"
+DISPLACED_PROFILE_SHA256 = (
+    "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc"
+)
+DISPLACED_PROFILE_BYTES = 2342
+# pin -> (sequence, rapp-work/1 SPEC SHA-256, retained profile SHA-256, retained profile bytes)
 HISTORICAL_PROFILES = {
-    LEGACY_PIN: (LEGACY_PROFILE_SHA256, LEGACY_PROFILE_BYTES),
-    PREVIOUS_PIN: (PREVIOUS_PROFILE_SHA256, PREVIOUS_PROFILE_BYTES),
+    LEGACY_PIN: (0, HISTORICAL_SPEC_SHA256, LEGACY_PROFILE_SHA256, LEGACY_PROFILE_BYTES),
+    PREVIOUS_PIN: (1, HISTORICAL_SPEC_SHA256, PREVIOUS_PROFILE_SHA256, PREVIOUS_PROFILE_BYTES),
+    DISPLACED_PIN: (
+        2,
+        CANONICAL_PARENT_SPEC_SHA256,
+        DISPLACED_PROFILE_SHA256,
+        DISPLACED_PROFILE_BYTES,
+    ),
+}
+WORKSPACE_SIBLING = {
+    "profile": "rapp-workspace/1",
+    "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
+    "manifest_sha256": "3c59224a8641a827403779382abb70114ff53f3f884e2a0e738ed042b51582d3",
+    "identity_unchanged": True,
+    "normative_bytes_unchanged": True,
 }
 VENDORED_PARENT_SPEC = "vendor/rapp-work/1/SPEC.md"
 
 
 def encoded(value: object) -> bytes:
     return (json.dumps(value, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+def front_door(relative: str) -> bool:
+    name = relative.rsplit("/", 1)[-1].casefold()
+    return name == "readme" or name.startswith("readme.")
 
 
 def record(base: Path, relative: str) -> dict:
@@ -49,6 +75,18 @@ def record(base: Path, relative: str) -> dict:
         "sha256": hashlib.sha256(raw).hexdigest(),
         "bytes": len(raw),
     }
+
+
+def listed_paths(value: object):
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key == "path" and isinstance(child, str):
+                yield child
+            else:
+                yield from listed_paths(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from listed_paths(child)
 
 
 def decoded(raw: bytes, label: str) -> dict:
@@ -61,10 +99,10 @@ def decoded(raw: bytes, label: str) -> dict:
     return value
 
 
-def historical_pin(pin: str, sequence: int) -> dict:
+def historical_pin(pin: str) -> dict:
     relative = f"history/{pin}/profile.json"
     artifact = record(ROOT, relative)
-    expected_sha256, expected_bytes = HISTORICAL_PROFILES[pin]
+    sequence, spec_sha256, expected_sha256, expected_bytes = HISTORICAL_PROFILES[pin]
     value = decoded((ROOT / relative).read_bytes(), relative)
     parent = value.get("parent")
     pins = value.get("pins")
@@ -76,7 +114,7 @@ def historical_pin(pin: str, sequence: int) -> dict:
         or value.get("current_pin") != pin
         or not isinstance(parent, dict)
         or parent.get("commit") != pin
-        or parent.get("spec_sha256") != HISTORICAL_SPEC_SHA256
+        or parent.get("spec_sha256") != spec_sha256
         or not isinstance(pins, list)
         or not any(
             isinstance(item, dict)
@@ -122,13 +160,7 @@ def profile() -> dict:
             "path": CANONICAL_PARENT_PATH,
             "spec_sha256": CANONICAL_PARENT_SPEC_SHA256,
         },
-        "workspace_sibling": {
-            "profile": "rapp-workspace/1",
-            "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
-            "manifest_sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370",
-            "identity_unchanged": True,
-            "normative_bytes_unchanged": True,
-        },
+        "workspace_sibling": dict(WORKSPACE_SIBLING),
         "sidecar": {
             "path": ".rapp-work",
             "mode": "offline-first",
@@ -137,11 +169,13 @@ def profile() -> dict:
             "native_workspace_copy": False,
         },
         "pins": [
-            historical_pin(LEGACY_PIN, 0),
-            historical_pin(PREVIOUS_PIN, 1),
+            *(
+                historical_pin(pin)
+                for pin in sorted(HISTORICAL_PROFILES, key=lambda pin: HISTORICAL_PROFILES[pin][0])
+            ),
             {
                 "pin": CANONICAL_PARENT_COMMIT,
-                "sequence": 2,
+                "sequence": CURRENT_SEQUENCE,
                 "spec_sha256": CANONICAL_PARENT_SPEC_SHA256,
                 "status": "current",
                 "fresh_install": True,
@@ -159,27 +193,28 @@ def profile() -> dict:
     }
 
 
-def preserve_previous_profile() -> None:
-    destination = ROOT / "history" / PREVIOUS_PIN / "profile.json"
+def preserve_displaced_profile() -> None:
+    destination = ROOT / "history" / DISPLACED_PIN / "profile.json"
     if destination.is_file() and not destination.is_symlink():
         raw = destination.read_bytes()
     else:
         if destination.exists() or destination.is_symlink():
-            raise ValueError("previous profile artifact path is unsafe")
+            raise ValueError("displaced profile artifact path is unsafe")
         raw = (ROOT / "profile.json").read_bytes()
         if (
-            len(raw) != PREVIOUS_PROFILE_BYTES
-            or hashlib.sha256(raw).hexdigest() != PREVIOUS_PROFILE_SHA256
+            len(raw) != DISPLACED_PROFILE_BYTES
+            or hashlib.sha256(raw).hexdigest() != DISPLACED_PROFILE_SHA256
         ):
-            raise ValueError("current profile is not the accepted previous profile")
+            raise ValueError("current profile is not the accepted displaced profile")
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(raw)
     if (
-        len(raw) != PREVIOUS_PROFILE_BYTES
-        or hashlib.sha256(raw).hexdigest() != PREVIOUS_PROFILE_SHA256
+        len(raw) != DISPLACED_PROFILE_BYTES
+        or hashlib.sha256(raw).hexdigest() != DISPLACED_PROFILE_SHA256
     ):
-        raise ValueError("retained previous profile bytes changed")
-    historical_pin(PREVIOUS_PIN, 1)
+        raise ValueError("retained displaced profile bytes changed")
+    for pin in HISTORICAL_PROFILES:
+        historical_pin(pin)
 
 
 def install_parent_spec(source: Path | None) -> None:
@@ -220,20 +255,14 @@ def manifest() -> dict:
     reference = [
         "reference/" + path.name
         for path in sorted((ROOT / "reference").iterdir())
-        if path.is_file() and path.suffix in {".py", ".md"}
+        if path.is_file() and path.suffix == ".py"
     ]
-    return {
+    value = {
         "schema": "rapp-work-sdk-file-manifest/1",
         "profile": PROFILE,
         "parent": "rapp-work/1",
         "parent_pin": record(ROOT, "parent-pin.json"),
-        "workspace_sibling": {
-            "profile": "rapp-workspace/1",
-            "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
-            "manifest_sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370",
-            "identity_unchanged": True,
-            "normative_bytes_unchanged": True,
-        },
+        "workspace_sibling": dict(WORKSPACE_SIBLING),
         "normative": [record(ROOT, name) for name in normative],
         "historical_profiles": [
             record(ROOT, name) for name in historical_profiles
@@ -246,6 +275,10 @@ def manifest() -> dict:
         "native_workspace_copy": False,
         "publication_authority": False,
     }
+    for relative in listed_paths(value):
+        if front_door(relative):
+            raise ValueError(f"front-door bytes are never pinned: {relative}")
+    return value
 
 
 def index_profile() -> dict:
@@ -288,6 +321,24 @@ def check_index() -> bool:
     return matches == [index_profile()]
 
 
+def write_index() -> None:
+    """Replace only the SDK entry in place; other entries and their order are kept."""
+    index_path = REPO / "protocols" / "index.json"
+    index = decoded(index_path.read_bytes(), "protocols/index.json")
+    profiles = index.get("profiles")
+    if not isinstance(profiles, list):
+        raise ValueError("protocols/index.json profiles are invalid")
+    entry, updated = index_profile(), []
+    for item in profiles:
+        if not isinstance(item, dict) or item.get("name") != PROFILE:
+            updated.append(item)
+        elif entry is not None:
+            updated.append(entry)
+            entry = None
+    index["profiles"] = updated + ([entry] if entry is not None else [])
+    index_path.write_bytes(encoded(index))
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write", action="store_true")
@@ -297,43 +348,35 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.canonical_spec is not None and not args.write_parent_profile:
         parser.error("--canonical-spec requires --write-parent-profile")
-    if args.write_parent_profile:
-        preserve_previous_profile()
-        install_parent_spec(args.canonical_spec)
-        (ROOT / "parent-pin.json").write_bytes(encoded(parent_pin()))
-        (ROOT / "profile.json").write_bytes(encoded(profile()))
-    raw = encoded(manifest())
-    path = ROOT / "manifest.json"
-    if args.write:
-        path.write_bytes(raw)
-    if args.write_index:
-        index_path = REPO / "protocols" / "index.json"
-        index = decoded(index_path.read_bytes(), "protocols/index.json")
-        profiles = index.get("profiles")
-        if not isinstance(profiles, list):
-            raise ValueError("protocols/index.json profiles are invalid")
-        index["profiles"] = [
-            entry
-            for entry in profiles
-            if not isinstance(entry, dict) or entry.get("name") != PROFILE
-        ] + [index_profile()]
-        index_path.write_bytes(encoded(index))
-    vendored = ROOT / VENDORED_PARENT_SPEC
-    good = (
-        (ROOT / "parent-pin.json").read_bytes() == encoded(parent_pin())
-        and (ROOT / "profile.json").read_bytes() == encoded(profile())
-        and vendored.is_file()
-        and len(vendored.read_bytes()) == CANONICAL_PARENT_SPEC_BYTES
-        and hashlib.sha256(vendored.read_bytes()).hexdigest()
-        == CANONICAL_PARENT_SPEC_SHA256
-        and path.is_file()
-        and path.read_bytes() == raw
-        and check_index()
-    )
-    print(
-        "RAPP Work SDK/1 parent/profile/manifest/index pins: "
-        + ("PASS" if good else "FAIL")
-    )
+    label = "RAPP Work SDK/1 parent/profile/manifest/index pins: "
+    try:
+        if args.write_parent_profile:
+            preserve_displaced_profile()
+            install_parent_spec(args.canonical_spec)
+            (ROOT / "parent-pin.json").write_bytes(encoded(parent_pin()))
+            (ROOT / "profile.json").write_bytes(encoded(profile()))
+        raw = encoded(manifest())
+        path = ROOT / "manifest.json"
+        if args.write:
+            path.write_bytes(raw)
+        if args.write_index:
+            write_index()
+        vendored = ROOT / VENDORED_PARENT_SPEC
+        good = (
+            (ROOT / "parent-pin.json").read_bytes() == encoded(parent_pin())
+            and (ROOT / "profile.json").read_bytes() == encoded(profile())
+            and vendored.is_file()
+            and len(vendored.read_bytes()) == CANONICAL_PARENT_SPEC_BYTES
+            and hashlib.sha256(vendored.read_bytes()).hexdigest()
+            == CANONICAL_PARENT_SPEC_SHA256
+            and path.is_file()
+            and path.read_bytes() == raw
+            and check_index()
+        )
+    except (OSError, ValueError) as error:
+        print(label + "FAIL (" + str(error) + ")")
+        return 1
+    print(label + ("PASS" if good else "FAIL"))
     return int(not good)
 
 

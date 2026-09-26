@@ -1,0 +1,6 @@
+{
+  "schema": "rapp/1",
+  "rappid": "rappid:@fixture/workspace:9999999999999999999999999999999999999999999999999999999999999999",
+  "world_id": "fixture-world",
+  "workspace_spec": "legacy-local/1"
+}

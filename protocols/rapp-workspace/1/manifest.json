@@ -1,5 +1,5 @@
 {
-  "schema": "rapp-workspace-file-manifest/1",
+  "schema": "rapp-workspace-file-manifest/2",
   "profile": "rapp-workspace/1",
   "brand": "RAPP Workspace/1",
   "parent": "rapp/1",
@@ -148,8 +148,8 @@
     },
     {
       "path": "reference/pins.py",
-      "sha256": "abb4c82149b40e7782a024847b3a2f2ac37cdec1ee93413a335fd247babb6048",
-      "bytes": 5075
+      "sha256": "4aa5c506d34b7040a611d8bf2b28463f88de0f0cb118554bfe4a56ff6b80bb40",
+      "bytes": 7360
     },
     {
       "path": "reference/safe_demo.py",
@@ -174,19 +174,14 @@
   ],
   "repository_evidence": [
     {
-      "path": "README.md",
-      "sha256": "d35441bb54b21e78ff3dc92f46c1c31ad61e1934a73898b7bbe5e55c14eaae9d",
-      "bytes": 9857
-    },
-    {
       "path": "SPEC.md",
       "sha256": "6e79dfa4cf3723e25b299dc2078a683761024c122c6653f575124f4a65db044e",
       "bytes": 2176
     },
     {
       "path": "SKILL.md",
-      "sha256": "e22d03690496348c1d999ac1ee20aa16b4c8ceb27ecc3522c1e2ee877e5a2bb7",
-      "bytes": 11128
+      "sha256": "dbc62b3b918ac5faffc268e6a8ef59171ef59cbde297ce325cbfec20efcd2050",
+      "bytes": 11303
     },
     {
       "path": "tools/frame_lens.py",
@@ -204,29 +199,14 @@
       "bytes": 39062
     },
     {
-      "path": "protocols/rapp-workspace/1/reference/README.md",
-      "sha256": "f34d8e1e1e3bf4d24fd07d17ae2cd44c78d4655d9727a12547e471a6e20b6ece",
-      "bytes": 10421
-    },
-    {
-      "path": "protocols/rapp-workspace/prototypes/README.md",
-      "sha256": "dc36783a729887f5379c67cbe7a6d7132b607b046bc110cbd6ef01fcfa0e8aa2",
-      "bytes": 878
-    },
-    {
-      "path": "protocols/README.md",
-      "sha256": "870b7d6bd4516fe45d5c0204754fa964b968b84b09dec8184bd339daece47503",
-      "bytes": 3488
-    },
-    {
       "path": ".github/skills/rapp-workspace/SKILL.md",
-      "sha256": "e22d03690496348c1d999ac1ee20aa16b4c8ceb27ecc3522c1e2ee877e5a2bb7",
-      "bytes": 11128
+      "sha256": "dbc62b3b918ac5faffc268e6a8ef59171ef59cbde297ce325cbfec20efcd2050",
+      "bytes": 11303
     },
     {
       "path": ".github/skills/autonomous-rapp-estate-manager/SKILL.md",
-      "sha256": "fa25152be019916e61ed31669b594d0b8f7836a19054dec9d8d34b80dcb0b2c6",
-      "bytes": 5945
+      "sha256": "161826d57b5fe3afbdcbd5023791f093ad6cc803e422d5c4ad54b59f83bcc757",
+      "bytes": 6039
     }
   ],
   "provenance": {
@@ -242,5 +222,13 @@
   "authority_boundary": "capability/adoption controller is external to all learned/received data",
   "live_activation": "exact-document-external-verifier-required",
   "production_key_custody": "external-unqualified",
-  "synthetic_activation": "explicit-labeled-fixtures-only"
+  "synthetic_activation": "explicit-labeled-fixtures-only",
+  "predecessors": [
+    {
+      "schema": "rapp-workspace-file-manifest/1",
+      "path": "history/f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370/manifest.json",
+      "sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370",
+      "bytes": 7990
+    }
+  ]
 }

@@ -1,0 +1,11 @@
+{
+  "schema": "rapp-work-sdk-prior-release-fixture/1",
+  "pin": "591e014ad39e223b00ab343ae26e5d9a867ebeee",
+  "workspace_identity_sha256": "744348eb50ca484ac8030663a02566e30ad501bcc29d50ff0448730f14a60614",
+  "profile_sha256": "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc",
+  "discovery_sha256": "c966ee671ba68ebfd8401b23e52cce9b11bc89def2810b5e8c9cf03981bc1342",
+  "install_sha256": "eadd7aed7aedd96faa6733334b29891e7a6e4322786ed2535b526f0e84a142e2",
+  "generation_sha256": "51272d72b72edd49c00418e2bcc649f2e71a03fda6d54d5d7b6125f82de45285",
+  "native_world_declared": true,
+  "recorded_world_id": "fixture-world"
+}

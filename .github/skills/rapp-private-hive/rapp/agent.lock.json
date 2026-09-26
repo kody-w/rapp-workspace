@@ -79,7 +79,7 @@
     },
     {
       "path": "scripts/prepare_workspace.py",
-      "sha256": "40bb7642e1481bb5e043322087308ef52e3c309aaf9ea8aaa254630090fe79e9"
+      "sha256": "840143e5d14932b8a67a98e43ef3aa29c81f5847a7e940374e5f37d312c91c17"
     },
     {
       "path": "tests/_deployment_fixtures.py",

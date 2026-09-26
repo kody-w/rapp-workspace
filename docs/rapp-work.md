@@ -23,8 +23,9 @@ as:
 [`rapp-work-sdk/1`](../protocols/rapp-work-sdk/1/SPEC.md) is the additive
 Workspace integration profile. It pins the accepted exact `rapp-work/1` bytes
 at canonical `kody-w/rapp-1` commit
-`591e014ad39e223b00ab343ae26e5d9a867ebeee`, then installs an atomic,
-offline-first `.rapp-work/` sidecar beside an existing workspace. Earlier
+`e657140bf583e7caacea096af2f653cc8621f1a2`, then installs an atomic,
+offline-first `.rapp-work/` sidecar beside an existing workspace. The earlier
+byte-identical `591e014ad39e223b00ab343ae26e5d9a867ebeee` pin and the
 `kody-w/rapp-work` pins are retained only as verified migration sources.
 
 The sidecar preserves the native workspace RAPPID, world, workspace spec, and

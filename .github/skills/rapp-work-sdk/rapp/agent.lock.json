@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "protocol": {
     "name": "rapp-work-sdk/1",
-    "profile_sha256": "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc",
-    "manifest_sha256": "02059a7e3aa548da294eba9f963e2c68368424905814bab6af66217f2cad4c94",
+    "profile_sha256": "c8158333c7906f548458db30ad3b453c2a034d10bf7203c9c135ff9068e9c325",
+    "manifest_sha256": "de5b3d3877f768c969dac386f2a0db9015d06837cec51a7009ae6e361c529494",
     "rapp_work_repository": "https://github.com/kody-w/rapp-1",
-    "rapp_work_commit": "591e014ad39e223b00ab343ae26e5d9a867ebeee",
+    "rapp_work_commit": "e657140bf583e7caacea096af2f653cc8621f1a2",
     "rapp_work_path": "protocols/rapp-work/1/SPEC.md",
     "rapp_work_spec_sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e",
     "rapp_work_spec_bytes": 11427
@@ -24,6 +24,30 @@
     {
       "path": "vendor/rapp-work-sdk/1/SPEC.md",
       "sha256": "4d404a1ad5267f0f1cfa6b31dc9617efaee871607fd103503d6d6047fec8a8fc"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release-591e014/.rapp-work/generations/591e014ad39e223b00ab343ae26e5d9a867ebeee/discovery.json",
+      "sha256": "c966ee671ba68ebfd8401b23e52cce9b11bc89def2810b5e8c9cf03981bc1342"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release-591e014/.rapp-work/generations/591e014ad39e223b00ab343ae26e5d9a867ebeee/profile.json",
+      "sha256": "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release-591e014/.rapp-work/install.json",
+      "sha256": "eadd7aed7aedd96faa6733334b29891e7a6e4322786ed2535b526f0e84a142e2"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release-591e014/fixture.json",
+      "sha256": "007e3a83e82f6c129d8e93f3b4570c96e9291f570cf15f7232bdb65251a67c44"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release-591e014/native/secret.txt",
+      "sha256": "8fb70824dce5b798878cfa38495451af90587c46a43fd4cee5c96f641998d46f"
+    },
+    {
+      "path": "vendor/rapp-work-sdk/1/fixtures/prior-release-591e014/rappid.json",
+      "sha256": "744348eb50ca484ac8030663a02566e30ad501bcc29d50ff0448730f14a60614"
     },
     {
       "path": "vendor/rapp-work-sdk/1/fixtures/prior-release/.rapp-work/generations/4b4fc213c352de9157858041e57ab72bb5e17551/discovery.json",
@@ -58,16 +82,20 @@
       "sha256": "84b5afe5171b91202c96213de6767815ef1e22d743cdef97bd4ac9b4f5a66591"
     },
     {
+      "path": "vendor/rapp-work-sdk/1/history/591e014ad39e223b00ab343ae26e5d9a867ebeee/profile.json",
+      "sha256": "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc"
+    },
+    {
       "path": "vendor/rapp-work-sdk/1/manifest.json",
-      "sha256": "02059a7e3aa548da294eba9f963e2c68368424905814bab6af66217f2cad4c94"
+      "sha256": "de5b3d3877f768c969dac386f2a0db9015d06837cec51a7009ae6e361c529494"
     },
     {
       "path": "vendor/rapp-work-sdk/1/parent-pin.json",
-      "sha256": "2628c6fd6808cf58ed56b0aa95b8f33fed0fa1d92382f0400b005301f89f8f4f"
+      "sha256": "8f0cbe1fc8292e5760c2f10f1e49fa95ccae2f432d960b9cc796177b31af57dc"
     },
     {
       "path": "vendor/rapp-work-sdk/1/profile.json",
-      "sha256": "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc"
+      "sha256": "c8158333c7906f548458db30ad3b453c2a034d10bf7203c9c135ff9068e9c325"
     },
     {
       "path": "vendor/rapp-work-sdk/1/reference/scaffold.py",

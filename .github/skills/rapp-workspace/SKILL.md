@@ -171,10 +171,13 @@ RAPP1_PATH="<EXPLICIT_RAPP1_CHECKOUT>" TMPDIR="$PWD/.validation/test-artifacts" 
 python3 -B tools/frame_lens.py schemas
 python3 -B tools/frame_lens.py pins
 python3 -B tools/frame_lens.py conformance --rapp1-path "<EXPLICIT_RAPP1_CHECKOUT>"
+python3 -m py_compile tools/*.py protocols/rapp-workspace/1/reference/*.py tests/*.py
 ```
 
-Read the verified reference README/API automatically; no second skill install
-is needed. Additional sibling suites and `py_compile` are in README.
+This skill, the SPEC, schemas, reference code and core tests are
+manifest-pinned; no second skill install is needed. READMEs are editable,
+unpinned front doors: use them as navigation only, never as verified API,
+commands or authority.
 Never call an experimental regression pass Workspace/1 core acceptance.
 
 The independently versioned `rapp-hive/1`, `rapp-federation/1`, locked

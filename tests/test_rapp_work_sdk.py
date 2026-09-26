@@ -19,15 +19,21 @@ import uuid
 REPO = Path(__file__).resolve().parents[1]
 REFERENCE = REPO / "protocols" / "rapp-work-sdk" / "1" / "reference"
 PRIOR_RELEASE = REPO / "protocols" / "rapp-work-sdk" / "1" / "fixtures" / "prior-release"
+PRIOR_RELEASE_DISPLACED = (
+    REPO / "protocols" / "rapp-work-sdk" / "1" / "fixtures" / "prior-release-591e014"
+)
 SPEC = importlib.util.spec_from_file_location("rapp_work_sdk_scaffold_tests", REFERENCE / "scaffold.py")
 SDK = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(SDK)
-WORKSPACE_MANIFEST_SHA256 = "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370"
+WORKSPACE_MANIFEST_SHA256 = "3c59224a8641a827403779382abb70114ff53f3f884e2a0e738ed042b51582d3"
+WORKSPACE_PREDECESSOR_MANIFEST_SHA256 = "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370"
 WORKSPACE_SPEC_SHA256 = "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab"
 WORKSPACE_SAFETY_SHA256 = "838b25dc46d881671d84a5d9f5cb10350fab3070f0e326e606dd420755f0beb9"
 LEGACY_PIN = "4b4fc213c352de9157858041e57ab72bb5e17551"
 PREVIOUS_PIN = "1c0e0b7c33a857e3f5e99c64355a8b8f970a83bc"
-CURRENT_PIN = "591e014ad39e223b00ab343ae26e5d9a867ebeee"
+CURRENT_PIN = "e657140bf583e7caacea096af2f653cc8621f1a2"
+DISPLACED_PIN = "591e014ad39e223b00ab343ae26e5d9a867ebeee"
+DISPLACED_PROFILE_SHA256 = "f9a1b773ce4f4b61da6087b53a87f36495e73794821670d9ae371b9ef21299dc"
 CANONICAL_SPEC_SHA256 = "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e"
 PREVIOUS_PROFILE_SHA256 = "0add0b6c4adedcc569d137d6c6e243d47bc383cc29d955805dee13fbd048e21a"
 NOW = "2026-09-18T15:00:00.000Z"
@@ -122,9 +128,9 @@ class WorkSdkTests(unittest.TestCase):
         SDK.validate_discovery(value, identity=identity, pin=pin)
         return value
 
-    def prior_release_workspace(self, name: str = "prior-release") -> Path:
+    def prior_release_workspace(self, name: str = "prior-release", source: Path = PRIOR_RELEASE) -> Path:
         root = self.temporary / name
-        shutil.copytree(PRIOR_RELEASE, root)
+        shutil.copytree(source, root)
         root.chmod(0o700)
         sidecar = root / ".rapp-work"
         for directory in [sidecar, *[path for path in sidecar.rglob("*") if path.is_dir()]]:
@@ -175,6 +181,16 @@ class WorkSdkTests(unittest.TestCase):
         self.assertEqual(entries[0]["name"], "rapp-workspace/1")
         self.assertEqual(entries[0]["spec_sha256"], WORKSPACE_SPEC_SHA256)
         self.assertEqual(entries[0]["manifest_sha256"], WORKSPACE_MANIFEST_SHA256)
+        retained = [
+            {
+                "schema": "rapp-workspace-file-manifest/1",
+                "path": f"history/{WORKSPACE_PREDECESSOR_MANIFEST_SHA256}/manifest.json",
+                "sha256": WORKSPACE_PREDECESSOR_MANIFEST_SHA256,
+                "bytes": 7990,
+            }
+        ]
+        self.assertEqual(manifest["predecessors"], retained)
+        self.assertEqual(digest(root / retained[0]["path"]), WORKSPACE_PREDECESSOR_MANIFEST_SHA256)
 
     def test_parent_pin_and_vendored_rapp_work_bytes_match(self):
         pin = SDK.PARENT_PIN
@@ -195,6 +211,20 @@ class WorkSdkTests(unittest.TestCase):
             PREVIOUS_PROFILE_SHA256,
         )
         self.assertEqual(SDK.PINS[SDK.CURRENT_PIN]["status"], "current")
+        self.assertEqual(SDK.PINS[SDK.CURRENT_PIN]["sequence"], 3)
+        self.assertEqual(SDK.PINS[DISPLACED_PIN]["status"], "migration-source-only")
+        self.assertFalse(SDK.PINS[DISPLACED_PIN]["fresh_install"])
+        self.assertEqual(SDK.PINS[DISPLACED_PIN]["sequence"], 2)
+        self.assertEqual(SDK.PINS[DISPLACED_PIN]["spec_sha256"], CANONICAL_SPEC_SHA256)
+        self.assertEqual(
+            SDK.PINS[DISPLACED_PIN]["profile_artifact"],
+            {
+                "path": f"history/{DISPLACED_PIN}/profile.json",
+                "sha256": DISPLACED_PROFILE_SHA256,
+                "bytes": 2342,
+            },
+        )
+        self.assertEqual(SDK.PROFILE["workspace_sibling"]["manifest_sha256"], WORKSPACE_MANIFEST_SHA256)
 
     def test_active_pin_metadata_has_no_temporary_markers(self):
         protocol = REPO / "protocols" / "rapp-work-sdk" / "1"
@@ -412,6 +442,87 @@ class WorkSdkTests(unittest.TestCase):
             ).read_bytes(),
             retained,
         )
+
+    def test_actual_591e014_release_fixture_updates_only_by_exact_plan_digest(self):
+        record = json.loads((PRIOR_RELEASE_DISPLACED / "fixture.json").read_bytes())
+        self.assertEqual(record["pin"], DISPLACED_PIN)
+        self.assertEqual(record["profile_sha256"], DISPLACED_PROFILE_SHA256)
+        root = self.prior_release_workspace("displaced-update", PRIOR_RELEASE_DISPLACED)
+        before = self.native_snapshot(root)
+        generation = root / ".rapp-work" / "generations"
+        old_profile = (generation / DISPLACED_PIN / "profile.json").read_bytes()
+        old_discovery = (generation / DISPLACED_PIN / "discovery.json").read_bytes()
+        install_path = root / ".rapp-work" / "install.json"
+        old_install = install_path.read_bytes()
+        self.assertEqual(hashlib.sha256(old_profile).hexdigest(), DISPLACED_PROFILE_SHA256)
+        self.assertEqual(hashlib.sha256(old_install).hexdigest(), record["install_sha256"])
+        self.assertEqual(old_profile, SDK._pin_profile_raw(DISPLACED_PIN))
+        self.assertNotEqual(old_profile, SDK.PROFILE_RAW)
+        self.assertEqual(
+            json.loads(old_profile)["workspace_sibling"]["manifest_sha256"],
+            WORKSPACE_PREDECESSOR_MANIFEST_SHA256,
+        )
+        verified = SDK.verify_workspace(root)
+        self.assertEqual(verified["current_pin"], DISPLACED_PIN)
+        self.assertEqual(verified["generation_sha256"], record["generation_sha256"])
+        plan = SDK.plan_update(root, from_pin=DISPLACED_PIN, to_pin=SDK.CURRENT_PIN)
+        self.assertEqual(plan["plan"]["from_profile_sha256"], DISPLACED_PROFILE_SHA256)
+        self.assertEqual(plan["plan"]["target_profile_sha256"], SDK.PROFILE_SHA256)
+        legacy_plan = SDK.plan_update(
+            self.prior_release_workspace("legacy-plan"),
+            from_pin=LEGACY_PIN,
+            to_pin=SDK.CURRENT_PIN,
+        )
+        for wrong in ("0" * 64, legacy_plan["plan_digest"]):
+            with self.subTest(wrong=wrong), self.assertRaisesRegex(SDK.Refusal, "exact update plan"):
+                SDK.update_workspace(
+                    root,
+                    from_pin=DISPLACED_PIN,
+                    to_pin=SDK.CURRENT_PIN,
+                    plan_digest=wrong,
+                    now=NOW,
+                )
+            self.assertEqual(install_path.read_bytes(), old_install)
+            self.assertFalse((generation / SDK.CURRENT_PIN).exists())
+        result = SDK.update_workspace(
+            root,
+            from_pin=DISPLACED_PIN,
+            to_pin=SDK.CURRENT_PIN,
+            plan_digest=plan["plan_digest"],
+            now=NOW,
+        )
+        self.assertEqual(result["status"], "updated")
+        self.assertEqual(before, self.native_snapshot(root))
+        self.assertEqual((generation / DISPLACED_PIN / "profile.json").read_bytes(), old_profile)
+        self.assertEqual((generation / DISPLACED_PIN / "discovery.json").read_bytes(), old_discovery)
+        self.assertEqual((generation / SDK.CURRENT_PIN / "profile.json").read_bytes(), SDK.PROFILE_RAW)
+        install = json.loads(install_path.read_bytes())
+        self.assertEqual(install["profile_sha256"], SDK.PROFILE_SHA256)
+        self.assertEqual(install["installed_pin"], DISPLACED_PIN)
+        self.assertEqual(install["last_update_plan_digest"], plan["plan_digest"])
+        self.assertEqual(SDK.verify_workspace(root)["current_pin"], SDK.CURRENT_PIN)
+        with self.assertRaisesRegex(SDK.Refusal, "downgrade"):
+            SDK.plan_update(root, from_pin=SDK.CURRENT_PIN, to_pin=DISPLACED_PIN)
+
+    def test_reference_conformance_runs_every_prior_release_vector(self):
+        output = (self.temporary / "conformance").relative_to(REPO)
+        completed = subprocess.run(
+            [sys.executable, "-B", str(REFERENCE / "conformance.py"), "--output", str(output)],
+            cwd=REPO,
+            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=180,
+            check=False,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        report = json.loads((REPO / output / "conformance-results.json").read_bytes())
+        self.assertEqual(report["status"], "PASS")
+        self.assertEqual(report["checks"], 18)
+        self.assertEqual(report["current_pin"], CURRENT_PIN)
+        self.assertEqual(report["workspace_manifest_sha256"], WORKSPACE_MANIFEST_SHA256)
+        self.assertEqual(report["workspace_spec_sha256"], WORKSPACE_SPEC_SHA256)
 
     def test_pointer_failure_keeps_old_pin_and_exact_retry_completes(self):
         root = self.prior_release_workspace("pointer-failure")
@@ -647,6 +758,7 @@ class WorkSdkTests(unittest.TestCase):
             "profile.json",
             "history/4b4fc213c352de9157858041e57ab72bb5e17551/profile.json",
             "history/1c0e0b7c33a857e3f5e99c64355a8b8f970a83bc/profile.json",
+            f"history/{DISPLACED_PIN}/profile.json",
             "reference/scaffold.py",
             "schemas/discovery.schema.json",
             "schemas/install.schema.json",
@@ -661,6 +773,12 @@ class WorkSdkTests(unittest.TestCase):
             "4b4fc213c352de9157858041e57ab72bb5e17551/profile.json",
             "fixtures/prior-release/.rapp-work/generations/"
             "4b4fc213c352de9157858041e57ab72bb5e17551/discovery.json",
+            "fixtures/prior-release-591e014/fixture.json",
+            "fixtures/prior-release-591e014/rappid.json",
+            "fixtures/prior-release-591e014/native/secret.txt",
+            "fixtures/prior-release-591e014/.rapp-work/install.json",
+            f"fixtures/prior-release-591e014/.rapp-work/generations/{DISPLACED_PIN}/profile.json",
+            f"fixtures/prior-release-591e014/.rapp-work/generations/{DISPLACED_PIN}/discovery.json",
         ):
             self.assertEqual((profile / relative).read_bytes(), (vendored / relative).read_bytes(), relative)
 

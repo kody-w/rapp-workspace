@@ -30,7 +30,7 @@ def locked_files(root: Path) -> list[dict]:
             "path": path.relative_to(root).as_posix(),
             "sha256": sha256(path.read_bytes()),
         }
-        for path in sorted(root.rglob("*"))
+        for path in sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix())
         if path.is_file()
         and not path.is_symlink()
         and path.relative_to(root).as_posix() != "rapp/agent.lock.json"
