@@ -192,6 +192,12 @@ Citations are to `kody-w/rapp-workspace` `main` at `52d4f19` unless noted.
    `tools/skill_locks.py` regenerates the `rapp/agent.lock.json` files, and
    their hashes change whenever any skill file changes. Nothing external
    binds them, and they are not RAPP/1 identities.
+10. **The G24 tests stay outside `repository_evidence`.**
+    `tests/test_front_door.py` and `tests/test_rapp_work_sdk.py` hard-code the
+    successor hash as an independent oracle. A file that contains a
+    manifest's own hash cannot be pinned by that manifest (it would have to
+    be a fixed point). Both files run in CI on every push, and the core
+    conformance runner refuses skipped tests.
 
 **Alternatives rejected.**
 
