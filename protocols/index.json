@@ -72,6 +72,29 @@
       "rapp_work_spec_sha256": "283359355c3fe2858e28744368255683af3ed28a68e290e56c231e7d4b13c08e",
       "rapp_work_spec_bytes": 11427,
       "current_pin": "591e014ad39e223b00ab343ae26e5d9a867ebeee"
+    },
+    {
+      "name": "rapp-workspace-file-manifest/2",
+      "human_name": "RAPP Workspace/1 runtime manifest successor",
+      "parent": "rapp/1",
+      "profile": "rapp-workspace/1",
+      "authority": false,
+      "status": "candidate",
+      "acceptance": "owner-only",
+      "proposal": "docs/proposals/0024-editable-front-door.md",
+      "successor_of": {
+        "path": "protocols/rapp-workspace/1/manifest.json",
+        "sha256": "f1165f947cb5d7554906012a174a854b28454403e41e8166925a364a68680370",
+        "bytes": 7990
+      },
+      "spec_path": "protocols/rapp-workspace/1/SPEC.md",
+      "spec_sha256": "80135ae05e532f11810d31a5cf974050a8332c18bd45f16879a7286f213edfab",
+      "spec_bytes": 31443,
+      "manifest_path": "protocols/rapp-workspace/1/successor/manifest.json.staged",
+      "manifest_sha256": "e99a51d355bd66c71017f4451cdd54bc47ed2b99c4fe0d939e1c494288148814",
+      "manifest_bytes": 7484,
+      "staged_path": "protocols/rapp-workspace/1/successor/staged",
+      "generator": "tools/workspace_successor.py"
     }
   ],
   "authority": true,
